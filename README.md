@@ -1,3 +1,71 @@
+# Szellit Marketplace
+
+A simple "adok-veszek" style web marketplace for listing and discovering items - mainly targeted at SZE (Széchenyi István University) students.
+
+## 🧾 Project Overview
+
+Szellit is a community-based buy-and-sell platform. Users can:
+- Browse listed items
+- Sign in to create, edit, or manage listings
+- More features (post new item, search/filter items, and more) coming soon...
+
+## 🛠️ Tech Stack
+- Frontend: [React](https://reactjs.org/) / [Express.js](https://expressjs.com/) / HTML / CSS / [Tailwind](https://tailwindcss.com/docs/installation/using-vite)
+- Backend: (To be added - Node.js / Express )
+- Auth: (Mention provider if used – Firebase Auth, NextAuth, etc.)
+- Hosting: (e.g., Vercel, Netlify, Local only for now)
+
+
+## 📦 Project Setup (Local Development)
+
+### 1. Clone the Repository (need a revisit/modify to the exact url)
+
+```bash
+git clone https://github.com/your-username/szellit-marketplace.git
+cd szellit-marketplace
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+# or
+yarn install
+```
+
+### 3. Start the Development Server
+```bash
+npm run dev
+# or
+yarn dev
+```
+Then open your browser to:
+- http://localhost:3000 
+- or whatever port is shown in the terminal output (e.g.: `:5173`, `:5432` depending on your Vite setup)
+
+
+## 👨‍💻 Contribution Guide
+1. Fork the repo and create your branch:
+```bash
+git checkout -b feature/your-feature
+``` 
+2. Make your changes
+3. Commit and push:
+```bash
+git commit -m 'Add some feature' 
+git push origin feature/your-feature
+``` 
+4. Open a Pull Request to `main`.
+
+## ✅ To-Do / Roadmap
+ - [x] Landing Page
+ - [x] Sign In Page
+ - [ ] User Auth
+ - [ ] Item Listing Creation
+ - [ ] Search and Filters
+
+
+ # _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_ - also resz delete?
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
