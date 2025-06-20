@@ -8,79 +8,53 @@ import de from "../../assets/germany.png";
 
 const Navbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
+
   return (
-    <nav className="flex items-center justify-between px-6 pt-6 bg-white shadow-md">
-      {/* Left Side - Logo */}
-      <div className="flex items-center">
+    <nav className="w-full h-[93px] bg-white shadow-md flex items-center justify-between px-6">
+      {/* Left: Logo (vertically centered by flex) */}
+      <div className="flex items-center h-full">
         <Logo />
       </div>
 
-      {/* Desktop View - Full Navbar */}
-      <div className="hidden md:flex items-center space-x-4">
-        {/* Sell Button */}
-        <button className="flex items-center space-x-2 border-2 border-gray-700 px-4 py-2 rounded-lg text-gray-700 font-bold hover:bg-gray-100 transition">
-          <FaWallet />
-          <span>ELADÁS</span>
+      {/* Right: Actions */}
+      <div className="flex items-center gap-4">
+        {/* Eladás Button */}
+        <button className="flex items-center gap-2 border-2 border-[#313944] rounded-[15px] px-6 py-3 text-[#313944] font-extrabold uppercase hover:bg-gray-100 transition">
+          <FaWallet className="text-xl" />
+          <span>Eladás</span>
         </button>
 
-        {/* Language Selector */}
-        <div className="flex border-2 border-gray-700 px-1 py-2 rounded-lg">
-          <div className="p-2 border-r-2 border-gray-700 hover:bg-gray-400">
-            <img src={hu} alt="HU" className="h-5 w-6 " />
-          </div>
-          <div className="p-2 border-r-2 border-gray-700 hover:bg-gray-400">
-            <img src={gb} alt="EN" className="h-5 w-6" />
-          </div>
-          <div className="p-2 border-gray-700 hover:bg-gray-400">
-            <img src={de} alt="DE" className="h-5 w-6" />
-          </div>
+        {/* Language Flags */}
+        <div className="flex items-center gap-1 border-2 border-[#313944] rounded-[15px] px-1 py-1 bg-[#f3f3f3]">
+          {[hu, gb, de].map((flag, index) => (
+            <div key={index} className="p-1 rounded-md hover:bg-gray-300 transition">
+              <img src={flag} alt={`flag-${index}`} className="h-[30px] w-[40px] object-cover" />
+            </div>
+          ))}
         </div>
 
         {/* Dark Mode Toggle */}
-        <button className="text-gray-700 text-2xl">
-          <MdDarkMode />
-        </button>
-      </div>
-
-      {/* Profile Icon with Dropdown (Always Visible) */}
-      <div className="relative">
-        <button
-          onClick={() => setProfileOpen(!profileOpen)}
-          className="text-gray-700 text-3xl focus:outline-none"
-        >
-          <FaUserCircle />
+        <button className="flex items-center justify-center border-2 border-[#313944] rounded-full w-[57px] h-[57px] text-[#313944] hover:bg-gray-100 transition">
+          <MdDarkMode className="text-2xl" />
         </button>
 
-        {/* Profile Dropdown */}
-        {profileOpen && (
-          <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
-            {/* Mobile View - Move Language Selector & Dark Mode Here */}
-            <div className="md:hidden flex flex-col px-4 py-2">
-              <div className="flex space-x-2 mb-2">
-                <img src={hu} alt="HU" className="h-5 w-7 hover:bg-gray-100" />
-                <img src={gb} alt="EN" className="h-5 w-7 hover:bg-gray-100" />
-                <img src={de} alt="DE" className="h-5 w-7 hover:bg-gray-100" />
-              </div>
-              <button className="flex items-center space-x-2 text-gray-700">
-                <MdDarkMode className="text-xl" />
-                <span>Dark Mode</span>
-              </button>
+        {/* Profile Icon with Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setProfileOpen(!profileOpen)}
+            className="text-[#313944] text-[2.7rem] focus:outline-none"
+          >
+            <FaUserCircle />
+          </button>
+
+          {profileOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+              <a href="#" className="block px-4 py-2 hover:bg-gray-100">Profile</a>
+              <a href="#" className="block px-4 py-2 hover:bg-gray-100">Settings</a>
+              <a href="#" className="block px-4 py-2 text-red-600 hover:bg-gray-100">Logout</a>
             </div>
-
-            <a href="#" className="block px-4 py-2 hover:bg-gray-100">
-              Profile
-            </a>
-            <a href="#" className="block px-4 py-2 hover:bg-gray-100">
-              Settings
-            </a>
-            <a
-              href="#"
-              className="block px-4 py-2 text-red-600 hover:bg-gray-100"
-            >
-              Logout
-            </a>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </nav>
   );
