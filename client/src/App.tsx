@@ -7,17 +7,19 @@ import Footer from "./Components/Footer/Footer";
 
 function App() {
   return (
-    <>
-      <BrowserRouter>
+    <BrowserRouter>
+      <div className="min-h-screen flex flex-col">
         <Navbar />
-        <Routes>
-          <Route path="*" element={<WelcomePage />} />
-          <Route path="/login" element={<SignInPage />} />
-          <Route path="/items" element={<BrowsingPage />} />
-        </Routes>
-      </BrowserRouter>
-      <Footer />
-    </>
+        <main className="flex-grow">
+          <Routes>
+            <Route path="*" element={<WelcomePage />} />
+            <Route path="/login" element={<SignInPage />} />
+            <Route path="/items" element={<BrowsingPage />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </BrowserRouter>
   );
 }
 
