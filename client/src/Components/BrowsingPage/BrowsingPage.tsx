@@ -93,7 +93,7 @@ const BrowsingPage = () => {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 py-8 space-y-6">
+    <div className="max-w-[1500px] mx-auto px-4 py-8 space-y-6">
       <SearchBar value={searchQuery} onChange={setSearchQuery} />
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <CategorySelector
