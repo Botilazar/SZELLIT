@@ -8,6 +8,7 @@ interface ItemCardProps {
   price: number;
   location: string;
   sellerName: string;
+  imgUrl?: string;
 }
 
 const ItemCard = ({
@@ -18,12 +19,23 @@ const ItemCard = ({
   price,
   location,
   sellerName,
+  imgUrl,
 }: ItemCardProps) => {
   return (
     <div className="relative w-[340px] h-[470px] bg-white shadow-lg rounded-[15px] p-4 overflow-hidden">
-      {/* Image placeholder */}
-      <div className="absolute top-0 left-0 right-0 h-[225px] bg-gray-300 rounded-t-[15px] flex items-center justify-center text-3xl font-black">
-        KÉP
+      {/* Image */}
+      <div className="absolute top-0 left-0 right-0 h-[225px] rounded-t-[15px] overflow-hidden">
+        {imgUrl ? (
+          <img
+            src={imgUrl}
+            alt={title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-300 flex items-center justify-center text-3xl font-black text-gray-600">
+            Nincs kép
+          </div>
+        )}
       </div>
 
       {/* Content */}
