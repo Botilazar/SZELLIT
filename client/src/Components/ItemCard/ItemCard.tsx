@@ -78,7 +78,12 @@ const ItemCard = ({
         </div>
 
         <div className="mt-2 font-semibold text-lg">{title}</div>
-        <div className="text-sm text-gray-600 line-clamp-2">{description}</div>
+        <div className="text-sm text-gray-600 line-clamp-2 relative min-h-[3 rem]">
+          {description}
+          <span className="invisible block">.</span>
+        </div>
+
+
 
         <div className="mt-2 flex justify-between items-center">
           <div className="text-blue-600 font-extrabold text-2xl">
