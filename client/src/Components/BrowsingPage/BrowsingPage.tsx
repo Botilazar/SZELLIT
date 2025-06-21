@@ -20,6 +20,7 @@ const BrowsingPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("Összes");
   const [selectedFilter, setSelectedFilter] = useState("Legújabb feltöltés");
   const [items, setItems] = useState<Item[]>([]);
+  const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
 
   useEffect(() => {
     fetch("http://localhost:5000/api/items")
@@ -27,12 +28,20 @@ const BrowsingPage = () => {
         if (!res.ok) throw new Error("Network response was not ok");
         return res.json();
       })
-      .then((data) => {
-        console.log("Fetched items:", data);
-        setItems(data);
-      })
+      .then((data) => setItems(data))
       .catch((err) => console.error("Fetch error:", err));
+
+    fetch("http://localhost:5000/api/favorites")
+      .then((res) => res.json())
+      .then((ids) => setFavoriteIds(ids))
+      .catch((err) => console.error("Favorite fetch error:", err));
   }, []);
+
+  const handleToggleFavorite = (itemId: number, isNowFavorited: boolean) => {
+    setFavoriteIds((prev) =>
+      isNowFavorited ? [...prev, itemId] : prev.filter((id) => id !== itemId)
+    );
+  };
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 py-8 space-y-6">
@@ -63,6 +72,9 @@ const BrowsingPage = () => {
                 location={item.seller_city}
                 sellerName={item.seller_name}
                 imgUrl={item.img_url}
+                itemId={item.item_id}
+                isFavorited={favoriteIds.includes(item.item_id)}
+                onToggleFavorite={handleToggleFavorite}
               />
             </div>
           ))
