@@ -29,33 +29,33 @@ const BrowsingPage = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedQuery(searchQuery);
-    }, 300); // 300ms debounce
+    }, 300);
     return () => clearTimeout(timeout);
   }, [searchQuery]);
 
-  // Fetch items and favorites on mount
+  // Fetch data
   useEffect(() => {
     fetch("http://localhost:5000/api/items")
       .then((res) => {
-        if (!res.ok) throw new Error("Network response was not ok");
+        if (!res.ok) throw new Error("Network error");
         return res.json();
       })
       .then((data) => {
         setAllItems(data);
       })
-      .catch((err) => console.error("Fetch error:", err));
+      .catch((err) => console.error("Items fetch error:", err));
 
     fetch("http://localhost:5000/api/favorites")
       .then((res) => res.json())
       .then((ids) => setFavoriteIds(ids))
-      .catch((err) => console.error("Favorite fetch error:", err));
+      .catch((err) => console.error("Favorites fetch error:", err));
   }, []);
 
-  // Filter items based on search query AND selected category
+  // Filter & sort logic
   useEffect(() => {
     const q = debouncedQuery.toLowerCase();
 
-    const filtered = allItems.filter((item) => {
+    let result = allItems.filter((item) => {
       const matchesSearch =
         item.title.toLowerCase().includes(q) ||
         item.description.toLowerCase().includes(q) ||
@@ -67,8 +67,24 @@ const BrowsingPage = () => {
       return matchesSearch && matchesCategory;
     });
 
-    setFilteredItems(filtered);
-  }, [debouncedQuery, selectedCategory, allItems]);
+    // Sorting logic
+    switch (selectedFilter) {
+      case "Legújabb feltöltés":
+        result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        break;
+      case "Legrégebbi feltöltés":
+        result.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        break;
+      case "Ár szerint növekvő":
+        result.sort((a, b) => a.price - b.price);
+        break;
+      case "Ár szerint csökkenő":
+        result.sort((a, b) => b.price - a.price);
+        break;
+    }
+
+    setFilteredItems(result);
+  }, [debouncedQuery, selectedCategory, selectedFilter, allItems]);
 
   const handleToggleFavorite = (itemId: number, isNowFavorited: boolean) => {
     setFavoriteIds((prev) =>
