@@ -19,16 +19,30 @@ interface Item {
 const BrowsingPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("Összes");
   const [selectedFilter, setSelectedFilter] = useState("Legújabb feltöltés");
-  const [items, setItems] = useState<Item[]>([]);
+  const [allItems, setAllItems] = useState<Item[]>([]);
+  const [filteredItems, setFilteredItems] = useState<Item[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
 
+  // Debounce input
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 300); // 300ms debounce
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
+
+  // Fetch items and favorites on mount
   useEffect(() => {
     fetch("http://localhost:5000/api/items")
       .then((res) => {
         if (!res.ok) throw new Error("Network response was not ok");
         return res.json();
       })
-      .then((data) => setItems(data))
+      .then((data) => {
+        setAllItems(data);
+      })
       .catch((err) => console.error("Fetch error:", err));
 
     fetch("http://localhost:5000/api/favorites")
@@ -36,6 +50,18 @@ const BrowsingPage = () => {
       .then((ids) => setFavoriteIds(ids))
       .catch((err) => console.error("Favorite fetch error:", err));
   }, []);
+
+  // Filter items based on debounced search query
+  useEffect(() => {
+    const q = debouncedQuery.toLowerCase();
+    const filtered = allItems.filter(
+      (item) =>
+        item.title.toLowerCase().includes(q) ||
+        item.description.toLowerCase().includes(q) ||
+        item.seller_name.toLowerCase().includes(q)
+    );
+    setFilteredItems(filtered);
+  }, [debouncedQuery, allItems]);
 
   const handleToggleFavorite = (itemId: number, isNowFavorited: boolean) => {
     setFavoriteIds((prev) =>
@@ -45,7 +71,7 @@ const BrowsingPage = () => {
 
   return (
     <div className="max-w-[1440px] mx-auto px-4 py-8 space-y-6">
-      <SearchBar />
+      <SearchBar value={searchQuery} onChange={setSearchQuery} />
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <CategorySelector
           selected={selectedCategory}
@@ -58,10 +84,10 @@ const BrowsingPage = () => {
       </div>
 
       <div className="flex flex-wrap justify-center gap-4 p-4 rounded-xl">
-        {items.length === 0 ? (
+        {filteredItems.length === 0 ? (
           <p className="text-gray-500 text-center w-full">Nincs találat.</p>
         ) : (
-          items.map((item) => (
+          filteredItems.map((item) => (
             <div key={item.item_id}>
               <ItemCard
                 category={item.category_name}
