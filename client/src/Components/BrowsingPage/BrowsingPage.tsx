@@ -51,17 +51,24 @@ const BrowsingPage = () => {
       .catch((err) => console.error("Favorite fetch error:", err));
   }, []);
 
-  // Filter items based on debounced search query
+  // Filter items based on search query AND selected category
   useEffect(() => {
     const q = debouncedQuery.toLowerCase();
-    const filtered = allItems.filter(
-      (item) =>
+
+    const filtered = allItems.filter((item) => {
+      const matchesSearch =
         item.title.toLowerCase().includes(q) ||
         item.description.toLowerCase().includes(q) ||
-        item.seller_name.toLowerCase().includes(q)
-    );
+        item.seller_name.toLowerCase().includes(q);
+
+      const matchesCategory =
+        selectedCategory === "Összes" || item.category_name === selectedCategory;
+
+      return matchesSearch && matchesCategory;
+    });
+
     setFilteredItems(filtered);
-  }, [debouncedQuery, allItems]);
+  }, [debouncedQuery, selectedCategory, allItems]);
 
   const handleToggleFavorite = (itemId: number, isNowFavorited: boolean) => {
     setFavoriteIds((prev) =>
