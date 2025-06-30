@@ -4,6 +4,7 @@ import SignInPage from "./Components/SignInPage/SignInPage";
 import WelcomePage from "./Components/WelcomePage/WelcomePage";
 import BrowsingPage from "./Components/BrowsingPage/BrowsingPage";
 import Footer from "./Components/Footer/Footer";
+import RegisterPage from "./Components/RegisterPage/RegisterPage";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <main className="flex-grow">
           <Routes>
             <Route path="*" element={<WelcomePage />} />
+            <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<SignInPage />} />
             <Route path="/items" element={<BrowsingPage />} />
           </Routes>
