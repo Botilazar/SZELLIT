@@ -15,7 +15,7 @@ const WelcomePage = () => {
         </p>
 
         <div className="flex flex-col md:flex-row gap-4 mt-6">
-          <Link to="/registration">
+          <Link to="/register">
             <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition">
               Get Started
             </button>
