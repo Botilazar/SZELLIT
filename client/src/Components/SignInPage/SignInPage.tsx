@@ -1,4 +1,5 @@
 import "./SignInPage.css";
+import { Link } from "react-router-dom";
 
 const SignInPage = () => {
   return (
@@ -7,9 +8,11 @@ const SignInPage = () => {
         <h2 className="text-center text-2xl font-bold">Sign in</h2>
         <p className="text-center text-gray-400">
           or{" "}
-          <a href="#" className="text-blue-400 hover:underline">
-            make a new account
-          </a>
+          <Link to="/register">
+            <span className="text-blue-400 hover:underline">
+              make a new account
+            </span>
+          </Link>
         </p>
 
         <form className="space-y-4">
