@@ -3,7 +3,7 @@ import SearchBar from "../../Components/SearchBar/SearchBar";
 import CategorySelector from "../../Components/CategorySelector/CategorySelector";
 import FilterDropdown from "../../Components/FilterDropdown/FilterDropdown";
 import ItemCard from "../../Components/ItemCard/ItemCard";
-import Pagination from "../../Components/Other/Pagination";
+import Pagination from "../Pagination/Pagination";
 
 interface Item {
   item_id: number;
