@@ -1,11 +1,20 @@
+import { useTranslation } from "react-i18next";
+
 type CategorySelectorProps = {
     selected: string;
     setSelected: (cat: string) => void;
 };
 
-const categories = ["Összes", "Könyv", "Eszköz", "Lakás"];
-
 const CategorySelector = ({ selected, setSelected }: CategorySelectorProps) => {
+    const { t } = useTranslation();
+
+    const categories = [
+        t("categories.all"),
+        t("categories.book"),
+        t("categories.device"),
+        t("categories.apartment"),
+    ];
+
     return (
         <div className="flex flex-wrap gap-3">
             {categories.map((cat) => (

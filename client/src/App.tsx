@@ -1,26 +1,53 @@
-import { Route, Routes, BrowserRouter } from "react-router-dom";
+// App.tsx
+import { Route, Routes, BrowserRouter, Navigate, Outlet, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import i18n from "./i18n";
+
 import Navbar from "./Components/Navbar/Navbar";
-import SignInPage from "./Components/SignInPage/SignInPage";
-import WelcomePage from "./Components/WelcomePage/WelcomePage";
-import BrowsingPage from "./Components/BrowsingPage/BrowsingPage";
 import Footer from "./Components/Footer/Footer";
+import WelcomePage from "./Components/WelcomePage/WelcomePage";
 import RegisterPage from "./Components/RegisterPage/RegisterPage";
+import SignInPage from "./Components/SignInPage/SignInPage";
+import BrowsingPage from "./Components/BrowsingPage/BrowsingPage";
+
+function LocaleWrapper() {
+  const { lng } = useParams<{ lng: string }>();
+
+  useEffect(() => {
+    if (lng && i18n.language !== lng) {
+      i18n.changeLanguage(lng);
+    }
+  }, [lng]);
+
+  return (
+    <>
+      <Navbar />
+      <main className="flex-grow">
+        <Outlet /> {/* Render nested routes here */}
+      </main>
+      <Footer />
+    </>
+  );
+}
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-grow">
-          <Routes>
-            <Route path="*" element={<WelcomePage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/login" element={<SignInPage />} />
-            <Route path="/items" element={<BrowsingPage />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      <Routes>
+        {/* Redirect root to default language */}
+        <Route path="/" element={<Navigate to="/en" replace />} />
+
+        {/* Language-prefixed routes */}
+        <Route path="/:lng" element={<LocaleWrapper />}>
+          <Route index element={<WelcomePage />} />
+          <Route path="register" element={<RegisterPage />} />
+          <Route path="login" element={<SignInPage />} />
+          <Route path="items" element={<BrowsingPage />} />
+        </Route>
+
+        {/* Catch all */}
+        <Route path="*" element={<Navigate to="/en" replace />} />
+      </Routes>
     </BrowserRouter>
   );
 }

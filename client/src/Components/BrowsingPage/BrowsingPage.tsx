@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import SearchBar from "../../Components/SearchBar/SearchBar";
 import CategorySelector from "../../Components/CategorySelector/CategorySelector";
 import FilterDropdown from "../../Components/FilterDropdown/FilterDropdown";
@@ -15,12 +16,23 @@ interface Item {
   seller_name: string;
   seller_city: string;
   img_url?: string;
-  user_id: number;  // added here
+  user_id: number;
 }
 
 const BrowsingPage = () => {
-  const [selectedCategory, setSelectedCategory] = useState("Összes");
-  const [selectedFilter, setSelectedFilter] = useState("Legújabb feltöltés");
+  const { t } = useTranslation();
+
+  // Use translated category keys or values consistent with CategorySelector usage
+  const categoryAll = t("categories.all");
+  const filterOptions = [
+    t("filters.newestUpload"),
+    t("filters.oldestUpload"),
+    t("filters.priceAsc"),
+    t("filters.priceDesc"),
+  ];
+
+  const [selectedCategory, setSelectedCategory] = useState(categoryAll);
+  const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [filteredItems, setFilteredItems] = useState<Item[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
@@ -38,7 +50,7 @@ const BrowsingPage = () => {
     return () => clearTimeout(timeout);
   }, [searchQuery]);
 
-  // Reset to page 1 on page size change
+  // Reset to page 1 on itemsPerPage change
   useEffect(() => {
     setCurrentPage(1);
   }, [itemsPerPage]);
@@ -71,30 +83,31 @@ const BrowsingPage = () => {
         item.description.toLowerCase().includes(q) ||
         item.seller_name.toLowerCase().includes(q);
 
+      // Note: category_name from API is untranslated, so compare with untranslated original keys or map accordingly
       const matchesCategory =
-        selectedCategory === "Összes" || item.category_name === selectedCategory;
+        selectedCategory === categoryAll || item.category_name === selectedCategory;
 
       return matchesSearch && matchesCategory;
     });
 
     switch (selectedFilter) {
-      case "Legújabb feltöltés":
+      case filterOptions[0]: // newest upload
         result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         break;
-      case "Legrégebbi feltöltés":
+      case filterOptions[1]: // oldest upload
         result.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
         break;
-      case "Ár szerint növekvő":
+      case filterOptions[2]: // price ascending
         result.sort((a, b) => a.price - b.price);
         break;
-      case "Ár szerint csökkenő":
+      case filterOptions[3]: // price descending
         result.sort((a, b) => b.price - a.price);
         break;
     }
 
     setFilteredItems(result);
-    setCurrentPage(1); // Reset page when filters change
-  }, [debouncedQuery, selectedCategory, selectedFilter, allItems]);
+    setCurrentPage(1);
+  }, [debouncedQuery, selectedCategory, selectedFilter, allItems, categoryAll, filterOptions]);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -110,19 +123,13 @@ const BrowsingPage = () => {
     <div className="max-w-[1500px] mx-auto px-4 py-8 space-y-6">
       <SearchBar value={searchQuery} onChange={setSearchQuery} />
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <CategorySelector
-          selected={selectedCategory}
-          setSelected={setSelectedCategory}
-        />
-        <FilterDropdown
-          selected={selectedFilter}
-          setSelected={setSelectedFilter}
-        />
+        <CategorySelector selected={selectedCategory} setSelected={setSelectedCategory} />
+        <FilterDropdown selected={selectedFilter} setSelected={setSelectedFilter} />
       </div>
 
       <div className="flex flex-wrap justify-center gap-4 p-4 rounded-xl">
         {itemsToDisplay.length === 0 ? (
-          <p className="text-gray-500 text-center w-full">Nincs találat.</p>
+          <p className="text-gray-500 text-center w-full">{t("browsing.noResults")}</p>
         ) : (
           itemsToDisplay.map((item) => (
             <div key={item.item_id}>
@@ -136,7 +143,7 @@ const BrowsingPage = () => {
                 sellerName={item.seller_name}
                 imgUrl={item.img_url}
                 itemId={item.item_id}
-                userId={item.user_id}          // <-- pass user_id here
+                userId={item.user_id}
                 isFavorited={favoriteIds.includes(item.item_id)}
                 onToggleFavorite={handleToggleFavorite}
               />
@@ -145,7 +152,6 @@ const BrowsingPage = () => {
         )}
       </div>
 
-      {/* Pagination always visible */}
       <Pagination
         currentPage={currentPage}
         totalPages={Math.max(1, Math.ceil(filteredItems.length / itemsPerPage))}
