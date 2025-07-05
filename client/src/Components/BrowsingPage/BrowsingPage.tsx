@@ -3,6 +3,7 @@ import SearchBar from "../../Components/SearchBar/SearchBar";
 import CategorySelector from "../../Components/CategorySelector/CategorySelector";
 import FilterDropdown from "../../Components/FilterDropdown/FilterDropdown";
 import ItemCard from "../../Components/ItemCard/ItemCard";
+import Pagination from "../../Components/Other/Pagination";
 
 interface Item {
   item_id: number;
@@ -25,6 +26,9 @@ const BrowsingPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
+
   // Debounce input
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -32,6 +36,11 @@ const BrowsingPage = () => {
     }, 300);
     return () => clearTimeout(timeout);
   }, [searchQuery]);
+
+  // Reset to page 1 on page size change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [itemsPerPage]);
 
   // Fetch data
   useEffect(() => {
@@ -67,7 +76,6 @@ const BrowsingPage = () => {
       return matchesSearch && matchesCategory;
     });
 
-    // Sorting logic
     switch (selectedFilter) {
       case "Legújabb feltöltés":
         result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -84,7 +92,12 @@ const BrowsingPage = () => {
     }
 
     setFilteredItems(result);
+    setCurrentPage(1); // Reset page when filters change
   }, [debouncedQuery, selectedCategory, selectedFilter, allItems]);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const itemsToDisplay = filteredItems.slice(startIndex, endIndex);
 
   const handleToggleFavorite = (itemId: number, isNowFavorited: boolean) => {
     setFavoriteIds((prev) =>
@@ -107,10 +120,10 @@ const BrowsingPage = () => {
       </div>
 
       <div className="flex flex-wrap justify-center gap-4 p-4 rounded-xl">
-        {filteredItems.length === 0 ? (
+        {itemsToDisplay.length === 0 ? (
           <p className="text-gray-500 text-center w-full">Nincs találat.</p>
         ) : (
-          filteredItems.map((item) => (
+          itemsToDisplay.map((item) => (
             <div key={item.item_id}>
               <ItemCard
                 category={item.category_name}
@@ -129,6 +142,15 @@ const BrowsingPage = () => {
           ))
         )}
       </div>
+
+      {/* Pagination always visible */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={Math.max(1, Math.ceil(filteredItems.length / itemsPerPage))}
+        onPageChange={setCurrentPage}
+        itemsPerPage={itemsPerPage}
+        onItemsPerPageChange={setItemsPerPage}
+      />
     </div>
   );
 };
