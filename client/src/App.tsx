@@ -1,4 +1,4 @@
-// App.tsx
+// src/App.tsx
 import { Route, Routes, BrowserRouter, Navigate, Outlet, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import i18n from "./i18n";
@@ -23,7 +23,7 @@ function LocaleWrapper() {
     <>
       <Navbar />
       <main className="flex-grow">
-        <Outlet /> {/* Render nested routes here */}
+        <Outlet />
       </main>
       <Footer />
     </>
@@ -34,18 +34,13 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Redirect root to default language */}
         <Route path="/" element={<Navigate to="/en" replace />} />
-
-        {/* Language-prefixed routes */}
         <Route path="/:lng" element={<LocaleWrapper />}>
           <Route index element={<WelcomePage />} />
           <Route path="register" element={<RegisterPage />} />
           <Route path="login" element={<SignInPage />} />
           <Route path="items" element={<BrowsingPage />} />
         </Route>
-
-        {/* Catch all */}
         <Route path="*" element={<Navigate to="/en" replace />} />
       </Routes>
     </BrowserRouter>

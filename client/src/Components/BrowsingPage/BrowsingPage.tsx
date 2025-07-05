@@ -1,5 +1,9 @@
-import { useState, useEffect } from "react";
+// src/Components/BrowsingPage/BrowsingPage.tsx
+
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
+
 import SearchBar from "../../Components/SearchBar/SearchBar";
 import CategorySelector from "../../Components/CategorySelector/CategorySelector";
 import FilterDropdown from "../../Components/FilterDropdown/FilterDropdown";
@@ -21,28 +25,38 @@ interface Item {
 
 const BrowsingPage = () => {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  // Use translated category keys or values consistent with CategorySelector usage
   const categoryAll = t("categories.all");
-  const filterOptions = [
+
+  // Memoize filterOptions to prevent recreation on every render
+  const filterOptions = useMemo(() => [
     t("filters.newestUpload"),
     t("filters.oldestUpload"),
     t("filters.priceAsc"),
     t("filters.priceDesc"),
-  ];
+  ], [t]);
+
+  // Initialize from URL params or fallback defaults
+  const initialPage = parseInt(searchParams.get("page") || "1", 10);
+  const initialLimit = parseInt(searchParams.get("limit") || "8", 10);
 
   const [selectedCategory, setSelectedCategory] = useState(categoryAll);
   const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [filteredItems, setFilteredItems] = useState<Item[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [itemsPerPage, setItemsPerPage] = useState(initialLimit);
 
-  // Debounce input
+  // Ref to prevent loops on URL sync
+  const isSyncingFromUrl = useRef(false);
+
+  // Debounce search query
   useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedQuery(searchQuery);
@@ -50,12 +64,48 @@ const BrowsingPage = () => {
     return () => clearTimeout(timeout);
   }, [searchQuery]);
 
-  // Reset to page 1 on itemsPerPage change
+  // Sync state from URL params once or when URL params change externally
+  useEffect(() => {
+    const pageParam = parseInt(searchParams.get("page") || "1", 10);
+    const limitParam = parseInt(searchParams.get("limit") || "8", 10);
+
+    // Only update state if different to avoid loops
+    if (pageParam !== currentPage || limitParam !== itemsPerPage) {
+      isSyncingFromUrl.current = true;  // flag to skip URL update on next effect
+
+      setCurrentPage(pageParam);
+      setItemsPerPage(limitParam);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  // Sync URL from state changes, skip if just synced from URL (avoid loop)
+  useEffect(() => {
+    if (isSyncingFromUrl.current) {
+      isSyncingFromUrl.current = false;
+      return; // skip updating URL this time
+    }
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", currentPage.toString());
+    params.set("limit", itemsPerPage.toString());
+
+    // Only update if params differ (prevent unnecessary URL updates)
+    if (
+      params.get("page") !== searchParams.get("page") ||
+      params.get("limit") !== searchParams.get("limit")
+    ) {
+      setSearchParams(params);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, itemsPerPage]);
+
+  // Reset page to 1 if itemsPerPage changes (user changed items per page)
   useEffect(() => {
     setCurrentPage(1);
   }, [itemsPerPage]);
 
-  // Fetch data
+  // Fetch items and favorites once on mount
   useEffect(() => {
     fetch("http://localhost:5000/api/items")
       .then((res) => {
@@ -73,7 +123,7 @@ const BrowsingPage = () => {
       .catch((err) => console.error("Favorites fetch error:", err));
   }, []);
 
-  // Filter & sort logic
+  // Filter and sort items when filters or items change
   useEffect(() => {
     const q = debouncedQuery.toLowerCase();
 
@@ -83,7 +133,6 @@ const BrowsingPage = () => {
         item.description.toLowerCase().includes(q) ||
         item.seller_name.toLowerCase().includes(q);
 
-      // Note: category_name from API is untranslated, so compare with untranslated original keys or map accordingly
       const matchesCategory =
         selectedCategory === categoryAll || item.category_name === selectedCategory;
 
@@ -91,22 +140,22 @@ const BrowsingPage = () => {
     });
 
     switch (selectedFilter) {
-      case filterOptions[0]: // newest upload
+      case filterOptions[0]:
         result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         break;
-      case filterOptions[1]: // oldest upload
+      case filterOptions[1]:
         result.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
         break;
-      case filterOptions[2]: // price ascending
+      case filterOptions[2]:
         result.sort((a, b) => a.price - b.price);
         break;
-      case filterOptions[3]: // price descending
+      case filterOptions[3]:
         result.sort((a, b) => b.price - a.price);
         break;
     }
 
     setFilteredItems(result);
-    setCurrentPage(1);
+    setCurrentPage(1); // reset page on filters/search change
   }, [debouncedQuery, selectedCategory, selectedFilter, allItems, categoryAll, filterOptions]);
 
   const startIndex = (currentPage - 1) * itemsPerPage;

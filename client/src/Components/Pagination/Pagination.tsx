@@ -1,4 +1,3 @@
-// src/Components/Pagination/Pagination.tsx
 import React from "react";
 
 interface PaginationProps {
@@ -22,32 +21,28 @@ const Pagination: React.FC<PaginationProps> = ({
 
     return (
         <div className="flex justify-center items-center gap-4 mt-6 flex-wrap">
-            {/* Previous arrow */}
             <button
                 onClick={() => onPageChange(currentPage - 1)}
-                disabled={currentPage === 1}
+                disabled={currentPage <= 1}
                 className="p-2 rounded-full bg-gray-200 disabled:opacity-40"
                 aria-label="Previous page"
             >
                 ←
             </button>
 
-            {/* Page indicator */}
             <span className="text-gray-700">
                 {currentPage} / {totalPages}
             </span>
 
-            {/* Next arrow */}
             <button
                 onClick={() => onPageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
+                disabled={currentPage >= totalPages}
                 className="p-2 rounded-full bg-gray-200 disabled:opacity-40"
                 aria-label="Next page"
             >
                 →
             </button>
 
-            {/* Items per page selector */}
             <select
                 value={itemsPerPage}
                 onChange={handlePerPageChange}

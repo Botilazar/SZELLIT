@@ -33,8 +33,13 @@ const Navbar = () => {
     const newPath = pathSegments.join("/") || `/${lang}`;
 
     i18n.changeLanguage(lang);
-    // Use replace:true to avoid adding new entries on language change
     navigate(newPath, { replace: true });
+  };
+
+  const goTo = (path: string) => {
+    if (!lng) return;
+    navigate(`/${lng}${path}`);
+    setProfileOpen(false); // close menu after navigation
   };
 
   return (
@@ -84,24 +89,33 @@ const Navbar = () => {
 
           {profileOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-              <a
-                href="#"
-                className="block px-4 py-2 hover:bg-gray-100"
+              <button
+                onClick={() => goTo("/profile")}
+                className="w-full text-left px-4 py-2 hover:bg-gray-100"
               >
                 {t("navbar.profile")}
-              </a>
-              <a
-                href="#"
-                className="block px-4 py-2 hover:bg-gray-100"
+              </button>
+              <button
+                onClick={() => goTo("/settings")}
+                className="w-full text-left px-4 py-2 hover:bg-gray-100"
               >
                 {t("navbar.settings")}
-              </a>
-              <a
-                href="#"
-                className="block px-4 py-2 text-red-600 hover:bg-gray-100"
+              </button>
+              <button
+                onClick={() => goTo("/favorites")}
+                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+              >
+                {t("navbar.favorites")}
+              </button>
+              <button
+                onClick={() => {
+                  // Add logout logic if needed
+                  setProfileOpen(false);
+                }}
+                className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
               >
                 {t("navbar.logout")}
-              </a>
+              </button>
             </div>
           )}
         </div>
