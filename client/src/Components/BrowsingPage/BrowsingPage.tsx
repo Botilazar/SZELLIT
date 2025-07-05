@@ -15,6 +15,7 @@ interface Item {
   seller_name: string;
   seller_city: string;
   img_url?: string;
+  user_id: number;  // added here
 }
 
 const BrowsingPage = () => {
@@ -135,6 +136,7 @@ const BrowsingPage = () => {
                 sellerName={item.seller_name}
                 imgUrl={item.img_url}
                 itemId={item.item_id}
+                userId={item.user_id}          // <-- pass user_id here
                 isFavorited={favoriteIds.includes(item.item_id)}
                 onToggleFavorite={handleToggleFavorite}
               />

@@ -1,6 +1,7 @@
 import { MapPin, Heart, MessageCircle, UserCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
 
+
 interface ItemCardProps {
   category: string;
   date: string;
@@ -11,6 +12,7 @@ interface ItemCardProps {
   sellerName: string;
   imgUrl?: string;
   itemId: number;
+  userId: number;             // new prop for seller user id
   isFavorited: boolean;
   onToggleFavorite: (itemId: number, isNowFavorited: boolean) => void;
 }
