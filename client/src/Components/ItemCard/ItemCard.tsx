@@ -1,5 +1,6 @@
 import { MapPin, Heart, MessageCircle, UserCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 interface ItemCardProps {
   category: string;
@@ -11,6 +12,7 @@ interface ItemCardProps {
   sellerName: string;
   imgUrl?: string;
   itemId: number;
+  userId: number;
   isFavorited: boolean;
   onToggleFavorite: (itemId: number, isNowFavorited: boolean) => void;
 }
@@ -28,6 +30,7 @@ const ItemCard = ({
   isFavorited,
   onToggleFavorite,
 }: ItemCardProps) => {
+  const { t } = useTranslation();
   const [favorited, setFavorited] = useState(isFavorited);
 
   useEffect(() => {
@@ -63,7 +66,7 @@ const ItemCard = ({
           />
         ) : (
           <div className="w-full h-full bg-gray-300 flex items-center justify-center text-3xl font-black text-gray-600">
-            Nincs kép
+            {t("itemCard.noImage", "Nincs kép")}
           </div>
         )}
       </div>
@@ -72,7 +75,7 @@ const ItemCard = ({
       <div className="mt-[225px] pb-5">
         <div className="mt-4 flex justify-between items-center">
           <div className="inline-block px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm font-semibold">
-            {category}
+            {t(`categories.${category}`, category)}
           </div>
           <div className="text-sm text-gray-500">{date}</div>
         </div>
@@ -82,8 +85,6 @@ const ItemCard = ({
           {description}
           <span className="invisible block">.</span>
         </div>
-
-
 
         <div className="mt-2 flex justify-between items-center">
           <div className="text-blue-600 font-extrabold text-2xl">

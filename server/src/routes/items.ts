@@ -13,6 +13,7 @@ router.get("/", async (req, res) => {
         i.price,
         i.created_at,
         c.name AS category_name,
+        u.user_id,                    -- Added user_id here
         u.fname || ' ' || u.lname AS seller_name,
         'Budapest' AS seller_city,
         img.img_url
@@ -22,7 +23,6 @@ router.get("/", async (req, res) => {
       LEFT JOIN (
         SELECT item_id, img_url
         FROM "IMAGE"
-        
       ) img ON img.item_id = i.item_id
       ORDER BY i.created_at DESC
     `);

@@ -1,21 +1,23 @@
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type FilterDropdownProps = {
     selected: string;
     setSelected: (f: string) => void;
 };
 
-const filters = [
-    "Legújabb feltöltés",
-    "Legrégebbi feltöltés",
-    "Ár szerint növekvő",
-    "Ár szerint csökkenő",
-];
-
 const FilterDropdown = ({ selected, setSelected }: FilterDropdownProps) => {
+    const { t } = useTranslation();
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const filters = [
+        t("filters.newestUpload"),
+        t("filters.oldestUpload"),
+        t("filters.priceAscending"),
+        t("filters.priceDescending"),
+    ];
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
