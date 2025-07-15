@@ -2,10 +2,12 @@ import "./RegisterPage.css";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
   const { t } = useTranslation();
   const { lng } = useParams(); // For dynamic route links
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -26,8 +28,22 @@ const RegisterPage = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (
+      !formData.fullName ||
+      !formData.email ||
+      !formData.username ||
+      !formData.password
+    ) {
+      alert(t("register.requiredFields"));
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      alert(t("register.invalidEmail"));
+      return;
+    }
     if (formData.password !== formData.confirmPassword) {
       alert(t("register.passwordMismatch"));
       return;
@@ -36,7 +52,39 @@ const RegisterPage = () => {
       alert(t("register.acceptTermsAlert"));
       return;
     }
-    console.log("Registration Data:", formData);
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
+    if (!passwordRegex.test(formData.password)) {
+      alert(t("register.passwordInvalid"));
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          username: formData.username,
+          password: formData.password,
+        }),
+      });
+      //debug:
+      const text = await response.text();
+      console.log("Response text:", text);
+      const result = text ? JSON.parse(text) : {};
+
+      if (response.ok) {
+        alert(t("register.success"));
+        navigate(`/${lng}/login`);
+      } else {
+        alert(result.error || t("register.genericError"));
+      }
+    } catch (err) {
+      alert(t("register.networkError"));
+      console.error("Register error:", err);
+    }
   };
 
   return (
@@ -116,13 +164,19 @@ const RegisterPage = () => {
             />
             <span>
               {t("register.accept")}{" "}
-              <a href="#" className="text-blue-400 hover:underline">
+              <Link
+                to={`/${lng}/terms`}
+                className="text-blue-400 hover:underline"
+              >
                 {t("register.terms")}
-              </a>{" "}
+              </Link>{" "}
               {t("register.and")}{" "}
-              <a href="#" className="text-blue-400 hover:underline">
+              <Link
+                to={`/${lng}/privacy`}
+                className="text-blue-400 hover:underline"
+              >
                 {t("register.privacy")}
-              </a>
+              </Link>
             </span>
           </label>
 
