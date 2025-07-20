@@ -17,6 +17,7 @@ import RegisterPage from "./Components/RegisterPage/RegisterPage";
 import SignInPage from "./Components/SignInPage/SignInPage";
 import BrowsingPage from "./Components/BrowsingPage/BrowsingPage";
 import { AuthProvider } from "./AuthContext";
+import ResetPasswordPage from "./Components/ResetPasswordPage/ResetPasswordPage";
 
 function LocaleWrapper() {
   const { lng } = useParams<{ lng: string }>();
@@ -49,6 +50,7 @@ function App() {
             <Route path="register" element={<RegisterPage />} />
             <Route path="login" element={<SignInPage />} />
             <Route path="items" element={<BrowsingPage />} />
+            <Route path="reset-password" element={<ResetPasswordPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/en" replace />} />
         </Routes>

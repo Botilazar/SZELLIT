@@ -102,9 +102,12 @@ const SignInPage = () => {
               />
               {t("signin.remember")}
             </label>
-            <a href="#" className="text-sm text-blue-400 hover:underline">
+            <Link
+              to={`/${lng}/reset-password`}
+              className="text-sm text-blue-400 hover:underline"
+            >
               {t("signin.forgot")}
-            </a>
+            </Link>
           </div>
 
           <button
