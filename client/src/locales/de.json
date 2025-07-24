@@ -1,15 +1,65 @@
 {
-    "welcome": {
-        "title": "Kaufen, Verkaufen, Verbinden – Alles an einem Ort.",
-        "description": "Stelle deine Artikel ein, entdecke lokale Angebote und speichere deine Favoriten – schnell, sicher und einfach zu bedienen.",
-        "buttons": {
-            "getStarted": "Loslegen",
-            "signIn": "Anmelden"
-        },
-        "features": {
-            "message": "Schreibe Verkäufern direkt Nachrichten",
-            "favorite": "Speichere Artikel in deinen Favoriten",
-            "post": "Stelle deine Angebote in Sekunden ein"
-        }
+  "welcome": {
+    "title": "Kaufen, Verkaufen, Verbinden – Alles an einem Ort.",
+    "description": "Stelle deine Artikel ein, entdecke lokale Angebote und speichere deine Favoriten – schnell, sicher und einfach zu bedienen.",
+    "buttons": {
+      "getStarted": "Loslegen",
+      "signIn": "Anmelden"
+    },
+    "features": {
+      "message": "Schreibe Verkäufern direkt Nachrichten",
+      "favorite": "Speichere Artikel in deinen Favoriten",
+      "post": "Stelle deine Angebote in Sekunden ein"
     }
+  },
+  "navbar": {
+    "sell": "Verkaufen",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "favorites": "Favoriten",
+    "logout": "Abmelden"
+  },
+  "signin": {
+    "title": "Anmelden",
+    "or": "oder",
+    "createAccount": "ein neues Konto erstellen",
+    "email": "E-Mail-Adresse",
+    "password": "Passwort",
+    "remember": "Angemeldet bleiben",
+    "forgot": "Passwort vergessen?",
+    "button": "Anmelden"
+  },
+  "register": {
+    "title": "Konto erstellen",
+    "haveAccount": "Hast du bereits ein Konto?",
+    "signIn": "Anmelden",
+    "fullName": "Vollständiger Name",
+    "email": "E-Mail-Adresse",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "passwordRequirementsTitle": "Passwortanforderungen:",
+    "passwordRequirement": {
+      "length": "Mindestens 8 Zeichen",
+      "uppercase": "Mindestens ein Großbuchstabe",
+      "lowercase": "Mindestens ein Kleinbuchstabe",
+      "number": "Mindestens eine Zahl",
+      "special": "Mindestens ein Sonderzeichen"
+    },
+    "accept": "Ich akzeptiere die",
+    "terms": "Allgemeinen Geschäftsbedingungen",
+    "and": "und",
+    "privacy": "Datenschutzrichtlinie",
+    "createAccount": "Konto erstellen",
+    "passwordMismatch": "Passwörter stimmen nicht überein!",
+    "acceptTermsAlert": "Bitte akzeptiere die Allgemeinen Geschäftsbedingungen"
+  },
+  "reset": {
+    "title": "Passwort zurücksetzen",
+    "subtitle": "Gib deine E-Mail-Adresse ein, und wir senden dir Anweisungen zum Zurücksetzen des Passworts.",
+    "emailPlaceholder": "E-Mail-Adresse",
+    "button": "Passwort zurücksetzen",
+    "backToLogin": "Zurück zum Login",
+    "success": "Wenn die E-Mail existiert, wurden Anweisungen gesendet."
+  }
 }

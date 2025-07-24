@@ -1,5 +1,12 @@
 // src/App.tsx
-import { Route, Routes, BrowserRouter, Navigate, Outlet, useParams } from "react-router-dom";
+import {
+  Route,
+  Routes,
+  BrowserRouter,
+  Navigate,
+  Outlet,
+  useParams,
+} from "react-router-dom";
 import { useEffect } from "react";
 import i18n from "./i18n";
 
@@ -9,6 +16,8 @@ import WelcomePage from "./Components/WelcomePage/WelcomePage";
 import RegisterPage from "./Components/RegisterPage/RegisterPage";
 import SignInPage from "./Components/SignInPage/SignInPage";
 import BrowsingPage from "./Components/BrowsingPage/BrowsingPage";
+import { AuthProvider } from "./AuthContext";
+import ResetPasswordPage from "./Components/ResetPasswordPage/ResetPasswordPage";
 
 function LocaleWrapper() {
   const { lng } = useParams<{ lng: string }>();
@@ -33,16 +42,19 @@ function LocaleWrapper() {
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to="/en" replace />} />
-        <Route path="/:lng" element={<LocaleWrapper />}>
-          <Route index element={<WelcomePage />} />
-          <Route path="register" element={<RegisterPage />} />
-          <Route path="login" element={<SignInPage />} />
-          <Route path="items" element={<BrowsingPage />} />
-        </Route>
-        <Route path="*" element={<Navigate to="/en" replace />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Navigate to="/en" replace />} />
+          <Route path="/:lng" element={<LocaleWrapper />}>
+            <Route index element={<WelcomePage />} />
+            <Route path="register" element={<RegisterPage />} />
+            <Route path="login" element={<SignInPage />} />
+            <Route path="items" element={<BrowsingPage />} />
+            <Route path="reset-password" element={<ResetPasswordPage />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/en" replace />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
