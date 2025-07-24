@@ -1,6 +1,6 @@
 // src/Components/BrowsingPage/BrowsingPage.tsx
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 
@@ -23,26 +23,23 @@ interface Item {
   user_id: number;
 }
 
+type FilterOptionKey =
+  | "filters.newestUpload"
+  | "filters.oldestUpload"
+  | "filters.priceAsc"
+  | "filters.priceDesc";
+
 const BrowsingPage = () => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const categoryAll = t("categories.all");
 
-  // Memoize filterOptions to prevent recreation on every render
-  const filterOptions = useMemo(() => [
-    t("filters.newestUpload"),
-    t("filters.oldestUpload"),
-    t("filters.priceAsc"),
-    t("filters.priceDesc"),
-  ], [t]);
-
-  // Initialize from URL params or fallback defaults
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
   const initialLimit = parseInt(searchParams.get("limit") || "8", 10);
 
   const [selectedCategory, setSelectedCategory] = useState(categoryAll);
-  const [selectedFilter, setSelectedFilter] = useState(filterOptions[0]);
+  const [selectedFilter, setSelectedFilter] = useState<FilterOptionKey>("filters.newestUpload");
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [filteredItems, setFilteredItems] = useState<Item[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
@@ -53,10 +50,9 @@ const BrowsingPage = () => {
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState(initialLimit);
 
-  // Ref to prevent loops on URL sync
   const isSyncingFromUrl = useRef(false);
 
-  // Debounce search query
+  // Debounce search input
   useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedQuery(searchQuery);
@@ -64,48 +60,43 @@ const BrowsingPage = () => {
     return () => clearTimeout(timeout);
   }, [searchQuery]);
 
-  // Sync state from URL params once or when URL params change externally
+  // Sync state from URL parameters
   useEffect(() => {
     const pageParam = parseInt(searchParams.get("page") || "1", 10);
     const limitParam = parseInt(searchParams.get("limit") || "8", 10);
 
-    // Only update state if different to avoid loops
     if (pageParam !== currentPage || limitParam !== itemsPerPage) {
-      isSyncingFromUrl.current = true;  // flag to skip URL update on next effect
-
+      isSyncingFromUrl.current = true;
       setCurrentPage(pageParam);
       setItemsPerPage(limitParam);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  // Sync URL from state changes, skip if just synced from URL (avoid loop)
+  // Sync URL from state (skip if just synced from URL)
   useEffect(() => {
     if (isSyncingFromUrl.current) {
       isSyncingFromUrl.current = false;
-      return; // skip updating URL this time
+      return;
     }
 
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", currentPage.toString());
     params.set("limit", itemsPerPage.toString());
 
-    // Only update if params differ (prevent unnecessary URL updates)
     if (
       params.get("page") !== searchParams.get("page") ||
       params.get("limit") !== searchParams.get("limit")
     ) {
       setSearchParams(params);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, itemsPerPage]);
 
-  // Reset page to 1 if itemsPerPage changes (user changed items per page)
+  // Reset page to 1 on items per page change
   useEffect(() => {
     setCurrentPage(1);
   }, [itemsPerPage]);
 
-  // Fetch items and favorites once on mount
+  // Fetch items and favorites
   useEffect(() => {
     fetch("http://localhost:5000/api/items")
       .then((res) => {
@@ -123,7 +114,7 @@ const BrowsingPage = () => {
       .catch((err) => console.error("Favorites fetch error:", err));
   }, []);
 
-  // Filter and sort items when filters or items change
+  // Apply filters and sorting
   useEffect(() => {
     const q = debouncedQuery.toLowerCase();
 
@@ -140,23 +131,23 @@ const BrowsingPage = () => {
     });
 
     switch (selectedFilter) {
-      case filterOptions[0]:
+      case "filters.newestUpload":
         result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         break;
-      case filterOptions[1]:
+      case "filters.oldestUpload":
         result.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
         break;
-      case filterOptions[2]:
+      case "filters.priceAsc":
         result.sort((a, b) => a.price - b.price);
         break;
-      case filterOptions[3]:
+      case "filters.priceDesc":
         result.sort((a, b) => b.price - a.price);
         break;
     }
 
     setFilteredItems(result);
-    setCurrentPage(1); // reset page on filters/search change
-  }, [debouncedQuery, selectedCategory, selectedFilter, allItems, categoryAll, filterOptions]);
+    setCurrentPage(1); // reset to first page on filter/search change
+  }, [debouncedQuery, selectedCategory, selectedFilter, allItems, categoryAll]);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
