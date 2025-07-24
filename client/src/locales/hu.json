@@ -1,50 +1,65 @@
 {
-    "welcome": {
-        "title": "Vásárolj, Adj el, Kapcsolódj – Minden egy helyen.",
-        "description": "Listázd a termékeidet, fedezd fel a helyi ajánlatokat, és mentsd el a kedvenceidet – gyorsan, biztonságosan és egyszerűen.",
-        "buttons": {
-            "getStarted": "Kezdd el",
-            "signIn": "Bejelentkezés"
-        },
-        "features": {
-            "message": "Üzenj közvetlenül az eladóknak",
-            "favorite": "Mentsd el a termékeket a kedvencek közé",
-            "post": "Hirdess percek alatt"
-        }
+  "welcome": {
+    "title": "Vásárolj, Adj el, Kapcsolódj - Minden egy helyen.",
+    "description": "Listázd a termékeidet, fedezd fel a helyi ajánlatokat, és mentsd el a kedvenceidet - gyorsan, biztonságosan és egyszerűen.",
+    "buttons": {
+      "getStarted": "Kezdd el",
+      "signIn": "Bejelentkezés"
     },
-    "signin": {
-        "title": "Bejelentkezés",
-        "or": "or",
-        "createAccount": "make a new account",
-        "email": "Email address",
-        "password": "Password",
-        "remember": "Remember me",
-        "forgot": "Forgot your password?",
-        "button": "Sign in"
-    },
-    "register": {
-        "title": "Fiók létrehozása",
-        "haveAccount": "Already have an account?",
-        "signIn": "Sign in",
-        "fullName": "Full name",
-        "email": "Email address",
-        "username": "Username",
-        "password": "Password",
-        "confirmPassword": "Confirm password",
-        "passwordRequirementsTitle": "Password requirements:",
-        "passwordRequirement": {
-            "length": "At least 8 characters",
-            "uppercase": "At least one uppercase letter",
-            "lowercase": "At least one lowercase letter",
-            "number": "At least one number",
-            "special": "At least one special character"
-        },
-        "accept": "I accept the",
-        "terms": "Terms and Conditions",
-        "and": "and",
-        "privacy": "Privacy Policy",
-        "createAccount": "Create account",
-        "passwordMismatch": "Passwords don't match!",
-        "acceptTermsAlert": "Please accept the Terms and Conditions"
+    "features": {
+      "message": "Üzenj közvetlenül az eladóknak",
+      "favorite": "Mentsd el a termékeket a kedvencek közé",
+      "post": "Hirdess percek alatt"
     }
+  },
+  "navbar": {
+    "sell": "Eladás",
+    "profile": "Profil",
+    "settings": "Beállítások",
+    "favorites": "Kedvencek",
+    "logout": "Kijelentkezés"
+  },
+  "signin": {
+    "title": "Bejelentkezés",
+    "or": "vagy",
+    "createAccount": "hozz létre egy új fiókot",
+    "email": "Email-cím",
+    "password": "Jelszó",
+    "remember": "Emlékezz rám",
+    "forgot": "Elfelejtetted a jelszavad?",
+    "button": "Bejelentkezés"
+  },
+  "register": {
+    "title": "Fiók létrehozása",
+    "haveAccount": "Már van fiókod?",
+    "signIn": "Bejelentkezés",
+    "fullName": "Teljes név",
+    "email": "Email-cím",
+    "username": "Felhasználónév",
+    "password": "Jelszó",
+    "confirmPassword": "Jelszó megerősítése",
+    "passwordRequirementsTitle": "Jelszó követelmények:",
+    "passwordRequirement": {
+      "length": "Legalább 8 karakter",
+      "uppercase": "Legalább egy nagybetű",
+      "lowercase": "Legalább egy kisbetű",
+      "number": "Legalább egy szám",
+      "special": "Legalább egy speciális karakter"
+    },
+    "accept": "Elfogadom a",
+    "terms": "Felhasználási feltételeket",
+    "and": "és",
+    "privacy": "az Adatvédelmi irányelveket",
+    "createAccount": "Fiók létrehozása",
+    "passwordMismatch": "A jelszavak nem egyeznek!",
+    "acceptTermsAlert": "Kérjük, fogadd el a Felhasználási feltételeket"
+  },
+  "reset": {
+    "title": "Jelszó visszaállítása",
+    "subtitle": "Add meg az email-címed és elküldjük az instrukciókat a jelszavad visszaállításához!",
+    "emailPlaceholder": "Email-cím",
+    "button": "Jelszó visszaállítása",
+    "backToLogin": "Vissza a bejelentkezéshez",
+    "success": "Ha az e-mail létezik, elküldtük az utasításokat."
+  }
 }
