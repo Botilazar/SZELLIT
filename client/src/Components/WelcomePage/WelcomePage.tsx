@@ -7,7 +7,7 @@ const WelcomePage = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="min-h-screen bg-zinc-900 text-white flex flex-col">
+    <div className="szellit-background min-h-screen flex flex-col">
       <main className="flex-grow flex flex-col items-center justify-center text-center px-4 py-8 space-y-6">
         <h1 className="text-3xl md:text-5xl font-bold">{t("welcome.title")}</h1>
         <p className="text-zinc-400 max-w-md">{t("welcome.description")}</p>

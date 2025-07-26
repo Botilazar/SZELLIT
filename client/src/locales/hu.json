@@ -61,5 +61,18 @@
     "button": "Jelszó visszaállítása",
     "backToLogin": "Vissza a bejelentkezéshez",
     "success": "Ha az e-mail létezik, elküldtük az utasításokat."
+  },
+  "categories": {
+    "all": "Összes",
+    "book": "Könyv",
+    "device": "Eszköz",
+    "apartment": "Lakás"
+  },
+  "filters": {
+    "newestUpload": "Legújabbak elöl",
+    "oldestUpload": "Legrégebbiek elöl",
+    "priceAsc": "Ár szerint növekvő",
+    "priceDesc": "Ár szerint csökkenő",
+    "placeholder": "Mit keresel?"
   }
 }

@@ -61,5 +61,18 @@
     "button": "Passwort zurücksetzen",
     "backToLogin": "Zurück zum Login",
     "success": "Wenn die E-Mail existiert, wurden Anweisungen gesendet."
+  },
+  "categories": {
+    "all": "Alle",
+    "book": "Buch",
+    "device": "Gerät",
+    "apartment": "Wohnung"
+  },
+  "filters": {
+    "newestUpload": "Neueste zuerst",
+    "oldestUpload": "Älteste zuerst",
+    "priceAsc": "Preis aufsteigend",
+    "priceDesc": "Preis absteigend",
+    "placeholder": "Was suchst du?"
   }
 }

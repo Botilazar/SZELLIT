@@ -1,5 +1,3 @@
-// src/Components/BrowsingPage/BrowsingPage.tsx
-
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
@@ -33,15 +31,14 @@ const BrowsingPage = () => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const categoryAll = t("categories.all");
-
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
   const initialLimit = parseInt(searchParams.get("limit") || "8", 10);
 
-  const [selectedCategory, setSelectedCategory] = useState(categoryAll);
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedFilter, setSelectedFilter] = useState<FilterOptionKey>("filters.newestUpload");
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [filteredItems, setFilteredItems] = useState<Item[]>([]);
+
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,7 +69,7 @@ const BrowsingPage = () => {
     }
   }, [searchParams]);
 
-  // Sync URL from state (skip if just synced from URL)
+  // Sync URL from state
   useEffect(() => {
     if (isSyncingFromUrl.current) {
       isSyncingFromUrl.current = false;
@@ -125,7 +122,7 @@ const BrowsingPage = () => {
         item.seller_name.toLowerCase().includes(q);
 
       const matchesCategory =
-        selectedCategory === categoryAll || item.category_name === selectedCategory;
+        selectedCategory === "all" || item.category_name === selectedCategory;
 
       return matchesSearch && matchesCategory;
     });
@@ -146,8 +143,8 @@ const BrowsingPage = () => {
     }
 
     setFilteredItems(result);
-    setCurrentPage(1); // reset to first page on filter/search change
-  }, [debouncedQuery, selectedCategory, selectedFilter, allItems, categoryAll]);
+    setCurrentPage(1);
+  }, [debouncedQuery, selectedCategory, selectedFilter, allItems]);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -160,7 +157,7 @@ const BrowsingPage = () => {
   };
 
   return (
-    <div className="max-w-[1500px] mx-auto px-4 py-8 space-y-6">
+    <div className="szellit-background max-w-[1500px] mx-auto px-4 py-8 space-y-6">
       <SearchBar value={searchQuery} onChange={setSearchQuery} />
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <CategorySelector selected={selectedCategory} setSelected={setSelectedCategory} />
@@ -174,7 +171,7 @@ const BrowsingPage = () => {
           itemsToDisplay.map((item) => (
             <div key={item.item_id}>
               <ItemCard
-                category={item.category_name}
+                category={t(`categories.${item.category_name}`)}
                 date={new Date(item.created_at).toLocaleDateString("hu-HU")}
                 title={item.title}
                 description={item.description}

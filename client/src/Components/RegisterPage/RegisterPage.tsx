@@ -19,7 +19,7 @@ const RegisterPage = () => {
 
   const [acceptTerms, setAcceptTerms] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const { name, value, type, checked } = e.target;
     if (type === "checkbox") {
       setAcceptTerms(checked);
@@ -28,7 +28,7 @@ const RegisterPage = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (
       !formData.fullName ||
@@ -88,8 +88,8 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-900 text-white">
-      <div className="w-full max-w-md p-8 space-y-6 bg-gray-800 rounded-lg shadow-lg">
+    <div className="flex min-h-screen items-center justify-center szellit-background">
+      <div className="w-full max-w-md p-8 space-y-6 szellit-form rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold">{t("register.title")}</h1>
         <p className="text-gray-400">
           {t("register.haveAccount")}{" "}
@@ -100,12 +100,12 @@ const RegisterPage = () => {
           </Link>
         </p>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="szellit-form space-y-4" onSubmit={handleSubmit}>
           <input
             type="text"
             name="fullName"
             placeholder={t("register.fullName")}
-            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md"
+            className="w-full px-4 py-2 szellit-forminput"
             value={formData.fullName}
             onChange={handleChange}
           />
@@ -113,7 +113,7 @@ const RegisterPage = () => {
             type="email"
             name="email"
             placeholder={t("register.email")}
-            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md"
+            className="w-full px-4 py-2  szellit-forminput"
             value={formData.email}
             onChange={handleChange}
           />
@@ -121,7 +121,7 @@ const RegisterPage = () => {
             type="text"
             name="username"
             placeholder={t("register.username")}
-            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md"
+            className="w-full px-4 py-2 szellit-forminput"
             value={formData.username}
             onChange={handleChange}
           />
@@ -129,7 +129,7 @@ const RegisterPage = () => {
             type="password"
             name="password"
             placeholder={t("register.password")}
-            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md"
+            className="w-full px-4 py-2 szellit-forminput"
             value={formData.password}
             onChange={handleChange}
           />
@@ -137,7 +137,7 @@ const RegisterPage = () => {
             type="password"
             name="confirmPassword"
             placeholder={t("register.confirmPassword")}
-            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md"
+            className="w-full px-4 py-2 szellit-forminput"
             value={formData.confirmPassword}
             onChange={handleChange}
           />

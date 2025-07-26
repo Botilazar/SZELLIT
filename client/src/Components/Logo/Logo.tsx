@@ -1,10 +1,14 @@
-import logo from "../../assets/Group 45.svg";
+import logo_light from "../../assets/logo_light.png";
+import logo_dark from "../../assets/logo_dark.png";
+
 
 const Logo = () => {
+
+
   return (
-    <div className="h-[93px] flex items-center">
+    <div className="h-[93px] flex items-center p-2">
       <img
-        src={logo}
+        src={localStorage.getItem("theme") == "light" ? logo_dark : logo_light}
         alt="Logo image"
         className="max-h-full object-contain -mt-1"
       />

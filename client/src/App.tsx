@@ -31,7 +31,7 @@ function LocaleWrapper() {
   return (
     <>
       <Navbar />
-      <main className="flex-grow">
+      <main className="szellit-background flex-grow">
         <Outlet />
       </main>
       <Footer />

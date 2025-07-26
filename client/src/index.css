@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+/* Define dark-mode variant using the .dark class on <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* example using @layer utilities or theme layer */
+
+
+[data-theme] {
+    --dark_background1: 17, 24, 39;
+
+
+}
+
+@layer utilities {
+    .szellit-background {
+        @apply bg-gray-100 dark:bg-gray-900 text-black dark:text-white;
+    }
+
+    .szellit-button {
+        @apply dark:bg-gray-900 text-black dark:text-white dark:border-white border-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700;
+    }
+
+    .szellit-text {
+        @apply text-gray-900 dark:text-white;
+    }
+
+    .szellit-navbar {
+        @apply bg-white dark:bg-gray-950 text-black dark:text-white;
+    }
+
+    .szellit-search {
+        @apply bg-gray-200 dark:bg-gray-800 hover:bg-gray-600 dark:hover:bg-gray-600 focus-within:ring-2 focus-within:ring-blue-500;
+    }
+
+    .szellit-br {
+        @apply border-gray-300 dark:border-gray-600;
+    }
+
+    .szellit-form {
+        @apply bg-white dark:bg-gray-800;
+    }
+
+    .szellit-forminput {
+        @apply bg-gray-100 dark:bg-gray-700 border hover:bg-gray-200 dark:hover:bg-gray-600 dark:border-gray-600 rounded-md;
+    }
+
+
+
+}

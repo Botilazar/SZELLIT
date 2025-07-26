@@ -40,7 +40,7 @@ const FilterDropdown = ({ selected, setSelected }: FilterDropdownProps) => {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setOpen((prev) => !prev)}
-                className="flex items-center px-5 py-2 bg-gray-100 rounded-full font-semibold text-gray-700 hover:bg-gray-200"
+                className="flex items-center px-5 py-2 szellit-search rounded-full font-semibold "
             >
                 <ChevronDown className="mr-2 w-4 h-4" />
                 {t(selected)}
@@ -54,7 +54,7 @@ const FilterDropdown = ({ selected, setSelected }: FilterDropdownProps) => {
                                 setSelected(key);
                                 setOpen(false);
                             }}
-                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                            className="px-4 py-2 szellit-search cursor-pointer text-sm"
                         >
                             {t(key)}
                         </div>

@@ -55,7 +55,7 @@ const ItemCard = ({
   };
 
   return (
-    <div className="relative w-[340px] h-[470px] bg-white shadow-lg rounded-[15px] p-4 overflow-hidden">
+    <div className="szellit-navbar relative w-[340px] h-[470px]  shadow-lg rounded-[15px] p-4 overflow-hidden">
       {/* Image */}
       <div className="absolute top-0 left-0 right-0 h-[225px] rounded-t-[15px] overflow-hidden">
         {imgUrl ? (
@@ -65,23 +65,23 @@ const ItemCard = ({
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-gray-300 flex items-center justify-center text-3xl font-black text-gray-600">
+          <div className=" w-full h-full  flex items-center justify-center text-3xl font-black text-gray-600">
             {t("itemCard.noImage", "Nincs kép")}
           </div>
         )}
       </div>
 
       {/* Content */}
-      <div className="mt-[225px] pb-5">
+      <div className="szellit-navbar mt-[225px] pb-5">
         <div className="mt-4 flex justify-between items-center">
           <div className="inline-block px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm font-semibold">
             {t(`categories.${category}`, category)}
           </div>
-          <div className="text-sm text-gray-500">{date}</div>
+          <div className="text-sm szellit-text">{date}</div>
         </div>
 
-        <div className="mt-2 font-semibold text-lg">{title}</div>
-        <div className="text-sm text-gray-600 line-clamp-2 relative min-h-[3 rem]">
+        <div className="mt-2 font-semibold text-lg szellit-text">{title}</div>
+        <div className="text-sm szellit-text line-clamp-2 relative min-h-[3 rem]">
           {description}
           <span className="invisible block">.</span>
         </div>
@@ -90,13 +90,13 @@ const ItemCard = ({
           <div className="text-blue-600 font-extrabold text-2xl">
             {price.toLocaleString("hu-HU")} Ft
           </div>
-          <div className="flex items-center gap-1 text-sm text-gray-500">
+          <div className="flex items-center gap-1 text-sm szellit-text">
             <MapPin className="w-4 h-4" />
             {location}
           </div>
         </div>
 
-        <hr className="my-4 border-gray-300" />
+        <hr className="my-4 szellit-br" />
 
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
