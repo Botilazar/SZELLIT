@@ -14,9 +14,13 @@ export default function useDarkMode() {
             if (next) {
                 html.classList.add("dark");
                 localStorage.setItem("theme", "dark");
+                localStorage.setItem("isDarkMode", "true");
+                localStorage.setItem("dark-mode", "true");
             } else {
                 html.classList.remove("dark");
                 localStorage.setItem("theme", "light");
+                localStorage.setItem("isDarkMode", "false");
+                localStorage.setItem("dark-mode", "false");
             }
             return next;
         });

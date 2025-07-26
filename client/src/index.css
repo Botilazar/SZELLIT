@@ -30,7 +30,7 @@
     }
 
     .szellit-search {
-        @apply bg-gray-200 dark:bg-gray-800 hover:bg-gray-600 dark:hover:bg-gray-600 focus-within:ring-2 focus-within:ring-blue-500;
+        @apply bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-600 focus-within:ring-2 focus-within:ring-blue-500;
     }
 
     .szellit-br {

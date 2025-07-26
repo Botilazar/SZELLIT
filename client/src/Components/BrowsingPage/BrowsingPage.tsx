@@ -7,6 +7,8 @@ import CategorySelector from "../../Components/CategorySelector/CategorySelector
 import FilterDropdown from "../../Components/FilterDropdown/FilterDropdown";
 import ItemCard from "../../Components/ItemCard/ItemCard";
 import Pagination from "../Pagination/Pagination";
+import DetailedItemDialog from "../Dialog/detailedItemDialog"; // <-- updated import
+import DetailedItem from "../Other/DetailedItem";
 
 interface Item {
   item_id: number;
@@ -46,6 +48,15 @@ const BrowsingPage = () => {
 
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState(initialLimit);
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+
+  const handleCardClick = (item: Item) => {
+    setSelectedItem(item);
+  };
+
+  const handleCloseDialog = () => {
+    setSelectedItem(null);
+  };
 
   const isSyncingFromUrl = useRef(false);
 
@@ -67,7 +78,7 @@ const BrowsingPage = () => {
       setCurrentPage(pageParam);
       setItemsPerPage(limitParam);
     }
-  }, [searchParams]);
+  }, [currentPage, itemsPerPage, searchParams]);
 
   // Sync URL from state
   useEffect(() => {
@@ -86,7 +97,7 @@ const BrowsingPage = () => {
     ) {
       setSearchParams(params);
     }
-  }, [currentPage, itemsPerPage]);
+  }, [currentPage, itemsPerPage, searchParams, setSearchParams]);
 
   // Reset page to 1 on items per page change
   useEffect(() => {
@@ -115,7 +126,7 @@ const BrowsingPage = () => {
   useEffect(() => {
     const q = debouncedQuery.toLowerCase();
 
-    let result = allItems.filter((item) => {
+    const result = allItems.filter((item) => {
       const matchesSearch =
         item.title.toLowerCase().includes(q) ||
         item.description.toLowerCase().includes(q) ||
@@ -169,7 +180,7 @@ const BrowsingPage = () => {
           <p className="text-gray-500 text-center w-full">{t("browsing.noResults")}</p>
         ) : (
           itemsToDisplay.map((item) => (
-            <div key={item.item_id}>
+            <div key={item.item_id} onClick={() => handleCardClick(item)}>
               <ItemCard
                 category={t(`categories.${item.category_name}`)}
                 date={new Date(item.created_at).toLocaleDateString("hu-HU")}
@@ -186,6 +197,16 @@ const BrowsingPage = () => {
               />
             </div>
           ))
+        )}
+
+        {selectedItem && (
+          <DetailedItemDialog onClose={handleCloseDialog}>
+            <DetailedItem
+              item={selectedItem}
+              isFavorited={favoriteIds.includes(selectedItem.item_id)}
+              onToggleFavorite={handleToggleFavorite}
+            />
+          </DetailedItemDialog>
         )}
       </div>
 
