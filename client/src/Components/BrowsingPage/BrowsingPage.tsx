@@ -19,7 +19,7 @@ interface Item {
   category_name: string;
   seller_name: string;
   seller_city: string;
-  img_url?: string;
+  img_urls?: string[];
   user_id: number;
 }
 
@@ -189,9 +189,9 @@ const BrowsingPage = () => {
                 price={item.price}
                 location={item.seller_city}
                 sellerName={item.seller_name}
-                imgUrl={item.img_url}
+                imgUrl={item.img_urls?.[0] ?? undefined}
                 itemId={item.item_id}
-                userId={item.user_id}
+
                 isFavorited={favoriteIds.includes(item.item_id)}
                 onToggleFavorite={handleToggleFavorite}
               />

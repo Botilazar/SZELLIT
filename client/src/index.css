@@ -45,6 +45,31 @@
         @apply bg-gray-100 dark:bg-gray-700 border hover:bg-gray-200 dark:hover:bg-gray-600 dark:border-gray-600 rounded-md;
     }
 
+}
 
+/* Light mode (default) scrollbars — optional */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
 
+::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+}
+
+/* Dark mode scrollbars */
+.dark ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 6px;
+}
+
+.dark ::-webkit-scrollbar-track {
+    background-color: #222;
+}
+
+/* Firefox scrollbar (dark mode) */
+.dark {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.4) #222;
 }

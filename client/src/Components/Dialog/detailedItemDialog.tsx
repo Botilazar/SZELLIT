@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { X } from "lucide-react";
 
 interface DetailedItemDialogProps {
@@ -7,14 +7,26 @@ interface DetailedItemDialogProps {
 }
 
 const DetailedItemDialog = ({ children, onClose }: DetailedItemDialogProps) => {
+  // Prevent background scroll on mount, restore on unmount
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
   return (
     <>
-      
-      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" onClick={onClose} />
-      
-      <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+        onClick={onClose}
+      />
+
+      <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
         <div
-          className="relative  rounded-lg p-10 szellit-navbar max-w-4xl w-full"
+          className="relative rounded-lg p-10 szellit-navbar max-w-4xl w-full max-h-[80vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           <button
