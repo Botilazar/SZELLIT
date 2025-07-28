@@ -52,7 +52,9 @@
     "privacy": "az Adatvédelmi irányelveket",
     "createAccount": "Fiók létrehozása",
     "passwordMismatch": "A jelszavak nem egyeznek!",
-    "acceptTermsAlert": "Kérjük, fogadd el a Felhasználási feltételeket"
+    "acceptTermsAlert": "Kérjük, fogadd el a Felhasználási feltételeket",
+    "successEmailSent": "Egy ellenőrző e-mailt küldtünk. Kérjük, ellenőrizd a bejövő leveleidet.",
+    "loading": "Regisztrálás folyamatban..."
   },
   "reset": {
     "title": "Jelszó visszaállítása",
@@ -61,5 +63,12 @@
     "button": "Jelszó visszaállítása",
     "backToLogin": "Vissza a bejelentkezéshez",
     "success": "Ha az e-mail létezik, elküldtük az utasításokat."
+  },
+  "verifyEmail": {
+    "verifying": "E-mail ellenőrzése...",
+    "success": "E-mail sikeresen ellenőrizve!",
+    "error": "Hiba az e-mail ellenőrzésekor. A link érvénytelen vagy lejárt.",
+    "invalidToken": "A verifikációs token érvénytelen vagy lejárt.",
+    "networkError": "Hálózati hiba történt. Kérjük, ellenőrizd az internetkapcsolatodat és próbáld újra."
   }
 }

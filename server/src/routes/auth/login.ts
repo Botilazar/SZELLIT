@@ -12,7 +12,7 @@ router.post("/", async (req: any, res: any) => {
 
   try {
     const userResult = await pool.query(
-      `SELECT user_id, email, pw_hashed, fname, lname FROM "USER" WHERE email = $1`,
+      `SELECT user_id, email, pw_hashed, fname, lname, is_verified FROM "USER" WHERE email = $1`,
       [email]
     );
 
@@ -27,6 +27,11 @@ router.post("/", async (req: any, res: any) => {
     if (!isMatch) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
+
+    if (!user.is_verified) {
+      return res.status(401).json({ error: "Email not verified" });
+    }
+
     //create a safe user object to return
     // This is to avoid sending sensitive information like password hash - else it could be used for malicious purposes (visible in dev tools)
     const safeUser = {

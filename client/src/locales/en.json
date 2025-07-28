@@ -52,15 +52,53 @@
     "privacy": "Privacy Policy",
     "createAccount": "Create account",
     "passwordMismatch": "Passwords don't match!",
-    "acceptTermsAlert": "Please accept the Terms and Conditions"
+    "acceptTermsAlert": "Please accept the Terms and Conditions",
+    "successEmailSent": "A verification email was sent. Please check your inbox.",
+    "loading": "Registering...",
+    "checkEmail": {
+      "title": "Check Your Email",
+      "message": "We've sent a verification link to",
+      "instruction": "Click the link in your email to verify your account and get started.",
+      "goToLogin": "Go to Login",
+      "tryAgain": "Register Again"
+    }
   },
-
   "reset": {
     "title": "Reset Password",
     "subtitle": "Enter your email address and we'll send you instructions to reset your password.",
     "emailPlaceholder": "Email address",
     "button": "Reset Password",
+    "cooldownMessage": "Please wait",
     "backToLogin": "Back to login",
-    "success": "If the email exists, reset instructions have been sent."
+    "success": "If the email exists, reset instructions have been sent.",
+    "error": {
+      "emptyEmail": "Please enter your email address.",
+      "default": "Failed to send reset link. Please try again.",
+      "network": "Network error. Please try again later."
+    }
+  },
+  "verifyEmail": {
+    "verifying": "Verifying your email...",
+    "success": "Your email has been verified! Redirecting to login...",
+    "error": "Verification failed. The link may be expired or invalid.",
+    "invalidToken": "No token found in the link.",
+    "networkError": "A network error occurred. Please try again later.",
+    "pleaseWait": "Please wait while we verify your email address...",
+    "welcomeMessage": "Welcome",
+    "successMessage": "Your email has been successfully verified. You can now access your account.",
+    "redirectingMessage": "Redirecting you to the application in a few seconds...",
+    "continueToApp": "Continue to App",
+    "failed": "Verification Failed",
+    "failedMessage": "We couldn't verify your email. The link may have expired or is invalid.",
+    "missingToken": "Verification token is missing",
+    "goToLogin": "Go to Login",
+    "tryAgain": "Try Again",
+    "alreadyVerified": "Your email is already verified. Please login."
+  },
+  "verifyEmailModal": {
+    "title": "Check your email!",
+    "description": "We've sent a confirmation email to {{email}}. Please click the link to activate your account.",
+    "resend": "Resend email",
+    "cooldown": "Wait {{seconds}}s..."
   }
 }

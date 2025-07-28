@@ -2,6 +2,11 @@ import { Router } from "express";
 import bcrypt from "bcrypt";
 import pool from "../../db";
 import Joi from "joi";
+//import nodemailer from "nodemailer";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+//import { emailTemplates } from "../../utils/emailTemplates";
+import { sendVerificationEmail } from "../../services/email.service";
 
 const router = Router();
 
@@ -16,6 +21,7 @@ const registerSchema = Joi.object({
     .pattern(/[0-9]/)
     .pattern(/[\W_]/)
     .required(),
+  lng: Joi.string().valid("en", "hu", "de").optional(),
 });
 
 // Register new user
@@ -25,7 +31,8 @@ router.post("/", async (req: any, res: any) => {
     return res.status(400).json({ error: error.details[0].message });
   }
 
-  const { fullName, email, password } = req.body; //USERNAME NINCS A DB-ben??? MOST AKKOR TAROLJUK VAGY NE?
+  const { fullName, email, password } = req.body;
+  const lng = req.body.lng || "en";
 
   try {
     const [fname, ...rest] = fullName.trim().split(" ");
@@ -41,21 +48,12 @@ router.post("/", async (req: any, res: any) => {
       return res.status(409).json({ error: "Email already exists" });
     }
 
-    // Check if username already exists
-    /*const usernameCheck = await pool.query(
-      `SELECT user_id FROM "USER" WHERE username = $1`,
-      [username]
-    );
-
-    if (usernameCheck.rows.length > 0) {
-      return res.status(409).json({ error: "Username already exists" });
-    }*/
-
     // Hash password
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const neptun = ""; // Placeholder for neptun code, if needed
+
     // Insert new user
     const result = await pool.query(
       `INSERT INTO "USER" (email, pw_hashed, is_verified, created_at, fname, lname, neptun) 
@@ -66,14 +64,30 @@ router.post("/", async (req: any, res: any) => {
 
     const newUser = result.rows[0];
 
+    const jwtSecret = process.env.JWT_SECRET!;
+    const frontendURL = process.env.FRONTEND_URL || "http://localhost:5173";
+
+    const token = jwt.sign({ email }, jwtSecret, { expiresIn: "1d" });
+    const verificationLink = `${frontendURL}/${lng}/verify-email?token=${token}`;
+
+    try {
+      await sendVerificationEmail(email, fullName, verificationLink, lng);
+
+      console.log(`Verification email sent to ${email}`);
+    } catch (emailError) {
+      console.error("Error sending verification email:", emailError);
+      return res
+        .status(500)
+        .json({ error: "Failed to send verification email" });
+    }
+
     // Return user data (excluding password)
     res.status(201).json({
-      message: "User registered successfully",
+      message: "User registered successfully. Please verify your email.",
       user: {
         id: newUser.user_id,
         fullName: `${newUser.fname} ${newUser.lname}`,
         email: newUser.email,
-        //username: newUser.username,
         createdAt: newUser.created_at,
       },
     });
@@ -99,22 +113,5 @@ router.get("/check-email/:email", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
-// Check if username exists (for frontend validation)
-/*router.get("/check-username/:username", async (req, res) => {
-  const { username } = req.params;
-
-  try {
-    const result = await pool.query(
-      `SELECT user_id FROM "USER" WHERE username = $1`,
-      [username]
-    );
-
-    res.json({ exists: result.rows.length > 0 });
-  } catch (err) {
-    console.error("Error checking username:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});*/
 
 export default router;

@@ -18,6 +18,8 @@ import SignInPage from "./Components/SignInPage/SignInPage";
 import BrowsingPage from "./Components/BrowsingPage/BrowsingPage";
 import { AuthProvider } from "./AuthContext";
 import ResetPasswordPage from "./Components/ResetPasswordPage/ResetPasswordPage";
+import EmailVerifyPage from "./Components/EmailVerifyPage/EmailVerify";
+import ConfirmResetPasswordPage from "./Components/confirmResetPasswordPage/confirmResetPasswordPage";
 
 function LocaleWrapper() {
   const { lng } = useParams<{ lng: string }>();
@@ -51,6 +53,11 @@ function App() {
             <Route path="login" element={<SignInPage />} />
             <Route path="items" element={<BrowsingPage />} />
             <Route path="reset-password" element={<ResetPasswordPage />} />
+            <Route
+              path="reset-password-confirm"
+              element={<ConfirmResetPasswordPage />}
+            />
+            <Route path="verify-email" element={<EmailVerifyPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/en" replace />} />
         </Routes>
