@@ -1,13 +1,21 @@
 import "./RegisterPage.css";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams /*useSearchParams*/ } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState /*useEffect*/ } from "react";
+//import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import VerifyEmailModal from "../verifyEmailModal/verifyEmailModal";
 
 const RegisterPage = () => {
   const { t } = useTranslation();
   const { lng } = useParams(); // For dynamic route links
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
+  //const [searchParams] = useSearchParams();
+  const [loading, setLoading] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [, /*emailSent*/ setEmailSent] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [showModal, setShowModal] = useState(false); // add this
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -17,9 +25,7 @@ const RegisterPage = () => {
     confirmPassword: "",
   });
 
-  const [acceptTerms, setAcceptTerms] = useState(false);
-
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     if (type === "checkbox") {
       setAcceptTerms(checked);
@@ -28,7 +34,7 @@ const RegisterPage = () => {
     }
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (
       !formData.fullName ||
@@ -36,29 +42,30 @@ const RegisterPage = () => {
       !formData.username ||
       !formData.password
     ) {
-      alert(t("register.requiredFields"));
+      toast.error(t("register.requiredFields"));
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      alert(t("register.invalidEmail"));
+      toast.error(t("register.invalidEmail"));
       return;
     }
     if (formData.password !== formData.confirmPassword) {
-      alert(t("register.passwordMismatch"));
+      toast.error(t("register.passwordMismatch"));
       return;
     }
     if (!acceptTerms) {
-      alert(t("register.acceptTermsAlert"));
+      toast.error(t("register.acceptTermsAlert"));
       return;
     }
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
     if (!passwordRegex.test(formData.password)) {
-      alert(t("register.passwordInvalid"));
+      toast.error(t("register.passwordInvalid"));
       return;
     }
 
+    setLoading(true);
     try {
       const response = await fetch("/api/auth/register", {
         method: "POST",
@@ -68,6 +75,7 @@ const RegisterPage = () => {
           email: formData.email,
           username: formData.username,
           password: formData.password,
+          lng: lng, // Pass the language for email templates
         }),
       });
       //debug:
@@ -76,14 +84,40 @@ const RegisterPage = () => {
       const result = text ? JSON.parse(text) : {};
 
       if (response.ok) {
-        alert(t("register.success"));
-        navigate(`/${lng}/login`);
+        setUserEmail(formData.email);
+        setEmailSent(true);
+        setShowModal(true);
+        toast.success(t("register.success"));
+        //navigate(`/${lng}/login`);
       } else {
-        alert(result.error || t("register.genericError"));
+        toast.error(result.error || t("register.genericError"));
       }
     } catch (err) {
-      alert(t("register.networkError"));
+      toast.error(t("register.networkError"));
       console.error("Register error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleResendVerification = async () => {
+    if (!userEmail) {
+      toast.error(t("register.checkEmail.noEmail"));
+      return;
+    }
+    try {
+      const res = await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: userEmail, lng }),
+      });
+      if (res.ok) {
+        toast.success(t("register.checkEmail.resendSuccess"));
+      } else {
+        toast.error(t("register.checkEmail.resendError"));
+      }
+    } catch (err) {
+      console.error("Resend error:", err);
+      toast.error(t("register.checkEmail.resendError"));
     }
   };
 
@@ -108,6 +142,7 @@ const RegisterPage = () => {
             className="w-full px-4 py-2 szellit-forminput"
             value={formData.fullName}
             onChange={handleChange}
+            disabled={loading}
           />
           <input
             type="email"
@@ -116,6 +151,7 @@ const RegisterPage = () => {
             className="w-full px-4 py-2  szellit-forminput"
             value={formData.email}
             onChange={handleChange}
+            disabled={loading}
           />
           <input
             type="text"
@@ -124,6 +160,7 @@ const RegisterPage = () => {
             className="w-full px-4 py-2 szellit-forminput"
             value={formData.username}
             onChange={handleChange}
+            disabled={loading}
           />
           <input
             type="password"
@@ -132,6 +169,7 @@ const RegisterPage = () => {
             className="w-full px-4 py-2 szellit-forminput"
             value={formData.password}
             onChange={handleChange}
+            disabled={loading}
           />
           <input
             type="password"
@@ -140,6 +178,7 @@ const RegisterPage = () => {
             className="w-full px-4 py-2 szellit-forminput"
             value={formData.confirmPassword}
             onChange={handleChange}
+            disabled={loading}
           />
 
           <div>
@@ -160,6 +199,7 @@ const RegisterPage = () => {
               type="checkbox"
               checked={acceptTerms}
               onChange={handleChange}
+              disabled={loading}
               className="form-checkbox h-4 w-4 text-blue-600"
             />
             <span>
@@ -182,11 +222,46 @@ const RegisterPage = () => {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-500 transition-colors"
+            disabled={loading}
+            className={`w-full py-2 rounded transition-colors flex items-center justify-center gap-2 ${
+              loading
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-500"
+            }`}
           >
-            {t("register.createAccount")}
+            {loading && (
+              <svg
+                className="animate-spin h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  strokeWidth="4"
+                  d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            )}
+            <span>
+              {loading ? t("register.loading") : t("register.createAccount")}
+            </span>
           </button>
         </form>
+        <VerifyEmailModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          email={userEmail}
+          onResend={handleResendVerification}
+        />
       </div>
     </div>
   );

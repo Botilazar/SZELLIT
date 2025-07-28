@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useAuth } from "../../AuthContext";
+import { toast } from "react-hot-toast";
 
 const SignInPage = () => {
   const { t } = useTranslation();
@@ -31,14 +32,14 @@ const SignInPage = () => {
       if (response.ok) {
         localStorage.setItem("accessToken", result.token); // Save JWT token
         login(result.user);
-        alert(t("signin.success"));
+        toast.success(t("signin.success"));
         navigate(`/${lng}/items`); // or wherever you want
       } else {
-        alert(result.error || t("signin.genericError"));
+        toast.error(result.error || t("signin.genericError"));
       }
     } catch (err) {
       console.error("Login error:", err);
-      alert(t("signin.networkError"));
+      toast.error(t("signin.networkError"));
     }
   };
 

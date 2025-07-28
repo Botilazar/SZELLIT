@@ -8,6 +8,10 @@ import registerRouter from "./routes/auth/register";
 import loginRouter from "./routes/auth/login";
 import refreshTokenRouter from "./routes/auth/refreshToken";
 import logoutRouter from "./routes/auth/logout";
+import verifyEmailRouter from "./routes/auth/verifyEmail";
+import resendVerificationEmailRouter from "./routes/auth/resendVerificationEmail";
+import requestResetPasswordRouter from "./routes/auth/requestResetPassword";
+import confirmResetPasswordRouter from "./routes/auth/confirmResetPassword";
 
 const app = express();
 
@@ -30,6 +34,10 @@ app.use("/api/auth/register", registerRouter);
 app.use("/api/auth/login", loginRouter);
 app.use("/api/auth/refresh-token", refreshTokenRouter);
 app.use("/api/auth/logout", logoutRouter);
+app.use("/api/auth/verify-email", verifyEmailRouter);
+app.use("/api/auth/resend-verification", resendVerificationEmailRouter);
+app.use("/api/auth/request-reset-password", requestResetPasswordRouter);
+app.use("/api/auth/confirm-reset-password", confirmResetPasswordRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });

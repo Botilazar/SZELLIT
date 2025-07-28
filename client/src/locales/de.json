@@ -52,7 +52,9 @@
     "privacy": "Datenschutzrichtlinie",
     "createAccount": "Konto erstellen",
     "passwordMismatch": "Passwörter stimmen nicht überein!",
-    "acceptTermsAlert": "Bitte akzeptiere die Allgemeinen Geschäftsbedingungen"
+    "acceptTermsAlert": "Bitte akzeptiere die Allgemeinen Geschäftsbedingungen",
+    "successEmailSent": "Eine Bestätigungs-E-Mail wurde gesendet. Bitte überprüfe deinen Posteingang.",
+    "loading": "Registrierung läuft..."
   },
   "reset": {
     "title": "Passwort zurücksetzen",
@@ -61,6 +63,13 @@
     "button": "Passwort zurücksetzen",
     "backToLogin": "Zurück zum Login",
     "success": "Wenn die E-Mail existiert, wurden Anweisungen gesendet."
+  },
+  "verifyEmail": {
+    "verifying": "Überprüfe deine E-Mail...",
+    "success": "E-Mail erfolgreich verifiziert!",
+    "error": "Fehler bei der E-Mail-Verifizierung. Der Link ist ungültig oder abgelaufen.",
+    "invalidToken": "Der Verifizierungstoken ist ungültig oder abgelaufen.",
+    "networkError": "Netzwerkfehler. Bitte überprüfe deine Internetverbindung und versuche es erneut."
   },
   "categories": {
     "all": "Alle",
