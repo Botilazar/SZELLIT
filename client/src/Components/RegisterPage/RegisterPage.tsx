@@ -223,11 +223,10 @@ const RegisterPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2 rounded transition-colors flex items-center justify-center gap-2 ${
-              loading
-                ? "bg-gray-500 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-500"
-            }`}
+            className={`w-full py-2 rounded transition-colors flex items-center justify-center gap-2 ${loading
+              ? "bg-gray-500 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-500 text-white "
+              }`}
           >
             {loading && (
               <svg
