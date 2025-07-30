@@ -24,20 +24,20 @@ const Pagination: React.FC<PaginationProps> = ({
             <button
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage <= 1}
-                className="p-2 rounded-full bg-gray-200 disabled:opacity-40"
+                className="p-2 rounded-full szellit-search disabled:opacity-40"
                 aria-label="Previous page"
             >
                 ←
             </button>
 
-            <span className="text-gray-700">
+            <span className="szellit-text">
                 {currentPage} / {totalPages}
             </span>
 
             <button
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage >= totalPages}
-                className="p-2 rounded-full bg-gray-200 disabled:opacity-40"
+                className="p-2 rounded-full szellit-search  disabled:opacity-40"
                 aria-label="Next page"
             >
                 →
@@ -46,7 +46,7 @@ const Pagination: React.FC<PaginationProps> = ({
             <select
                 value={itemsPerPage}
                 onChange={handlePerPageChange}
-                className="ml-4 border border-gray-300 rounded px-2 py-1"
+                className="ml-4 border szellit-background rounded px-2 py-1"
                 aria-label="Items per page"
             >
                 {[4, 8, 12, 16, 24, 32].map((count) => (

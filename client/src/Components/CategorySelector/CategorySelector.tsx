@@ -8,26 +8,21 @@ type CategorySelectorProps = {
 const CategorySelector = ({ selected, setSelected }: CategorySelectorProps) => {
     const { t } = useTranslation();
 
-    const categories = [
-        t("categories.all"),
-        t("categories.book"),
-        t("categories.device"),
-        t("categories.apartment"),
-    ];
+    const categoryKeys = ["all", "book", "device", "apartment"];
 
     return (
         <div className="flex flex-wrap gap-3">
-            {categories.map((cat) => (
+            {categoryKeys.map((key) => (
                 <button
-                    key={cat}
-                    onClick={() => setSelected(cat)}
-                    className={`px-6 py-2 rounded-full text-sm font-semibold transition-all
-            ${selected === cat
+                    key={key}
+                    onClick={() => setSelected(key)}
+                    className={`px-6 py-2 rounded-full text-sm font-semibold 
+                        ${selected === key
                             ? "bg-blue-600 text-white"
-                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            : "szellit-search"
                         }`}
                 >
-                    {cat}
+                    {t(`categories.${key}`)}
                 </button>
             ))}
         </div>

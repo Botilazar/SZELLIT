@@ -70,5 +70,18 @@
     "error": "Fehler bei der E-Mail-Verifizierung. Der Link ist ungültig oder abgelaufen.",
     "invalidToken": "Der Verifizierungstoken ist ungültig oder abgelaufen.",
     "networkError": "Netzwerkfehler. Bitte überprüfe deine Internetverbindung und versuche es erneut."
+  },
+  "categories": {
+    "all": "Alle",
+    "book": "Buch",
+    "device": "Gerät",
+    "apartment": "Wohnung"
+  },
+  "filters": {
+    "newestUpload": "Neueste zuerst",
+    "oldestUpload": "Älteste zuerst",
+    "priceAsc": "Preis aufsteigend",
+    "priceDesc": "Preis absteigend",
+    "placeholder": "Was suchst du?"
   }
 }

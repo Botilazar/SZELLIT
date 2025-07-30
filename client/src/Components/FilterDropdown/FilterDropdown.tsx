@@ -1,10 +1,17 @@
+// src/Components/FilterDropdown/FilterDropdown.tsx
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+type FilterOptionKey =
+    | "filters.newestUpload"
+    | "filters.oldestUpload"
+    | "filters.priceAsc"
+    | "filters.priceDesc";
+
 type FilterDropdownProps = {
-    selected: string;
-    setSelected: (f: string) => void;
+    selected: FilterOptionKey;
+    setSelected: (f: FilterOptionKey) => void;
 };
 
 const FilterDropdown = ({ selected, setSelected }: FilterDropdownProps) => {
@@ -12,11 +19,11 @@ const FilterDropdown = ({ selected, setSelected }: FilterDropdownProps) => {
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const filters = [
-        t("filters.newestUpload"),
-        t("filters.oldestUpload"),
-        t("filters.priceAscending"),
-        t("filters.priceDescending"),
+    const filterKeys: FilterOptionKey[] = [
+        "filters.newestUpload",
+        "filters.oldestUpload",
+        "filters.priceAsc",
+        "filters.priceDesc",
     ];
 
     useEffect(() => {
@@ -33,23 +40,23 @@ const FilterDropdown = ({ selected, setSelected }: FilterDropdownProps) => {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setOpen((prev) => !prev)}
-                className="flex items-center px-5 py-2 bg-gray-100 rounded-full font-semibold text-gray-700 hover:bg-gray-200"
+                className="flex items-center px-5 py-2 szellit-search rounded-full font-semibold "
             >
                 <ChevronDown className="mr-2 w-4 h-4" />
-                {selected}
+                {t(selected)}
             </button>
             {open && (
                 <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-10">
-                    {filters.map((option) => (
+                    {filterKeys.map((key) => (
                         <div
-                            key={option}
+                            key={key}
                             onClick={() => {
-                                setSelected(option);
+                                setSelected(key);
                                 setOpen(false);
                             }}
-                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                            className="px-4 py-2 szellit-search cursor-pointer text-sm"
                         >
-                            {option}
+                            {t(key)}
                         </div>
                     ))}
                 </div>

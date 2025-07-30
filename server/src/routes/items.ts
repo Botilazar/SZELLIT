@@ -13,18 +13,18 @@ router.get("/", async (req, res) => {
         i.price,
         i.created_at,
         c.name AS category_name,
-        u.user_id,                    -- Added user_id here
+        u.user_id,
         u.fname || ' ' || u.lname AS seller_name,
         'Budapest' AS seller_city,
-        img.img_url
+        (
+          SELECT json_agg(img.img_url ORDER BY img.place)
+          FROM "IMAGE" img
+          WHERE img.item_id = i.item_id
+        ) AS img_urls
       FROM "ITEM" i
       JOIN "CATEGORY" c ON i.category_id = c.category_id
       JOIN "USER" u ON i.user_id = u.user_id
-      LEFT JOIN (
-        SELECT item_id, img_url
-        FROM "IMAGE"
-      ) img ON img.item_id = i.item_id
-      ORDER BY i.created_at DESC
+      ORDER BY i.created_at DESC;
     `);
 
     res.json(result.rows);

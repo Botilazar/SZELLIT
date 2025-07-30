@@ -54,8 +54,8 @@ const ResetPasswordPage = () => {
   }, [isCooldown, secondsLeft]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white px-4">
-      <div className="max-w-md w-full bg-white text-gray-900 p-8 rounded-md shadow-md">
+    <div className="min-h-screen flex items-center justify-center szellit-background px-4">
+      <div className="max-w-md w-full szellit-form p-8 rounded-md shadow-md">
         <h1 className="text-2xl font-bold text-center mb-2">
           {t("reset.title")}
         </h1>
@@ -70,16 +70,15 @@ const ResetPasswordPage = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder={t("reset.emailPlaceholder")}
-            className="w-full p-3 mb-4 border rounded bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 mb-4 border rounded szellit-forminput focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             type="submit"
             disabled={isCooldown}
-            className={`w-full py-2 font-semibold rounded transition ${
-              isCooldown
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-500 text-white"
-            }`}
+            className={`w-full py-2 font-semibold rounded transition ${isCooldown
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-500 text-white"
+              }`}
           >
             {isCooldown
               ? `${t("reset.cooldownMessage")} (${secondsLeft}s)`

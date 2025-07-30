@@ -100,5 +100,18 @@
     "description": "We've sent a confirmation email to {{email}}. Please click the link to activate your account.",
     "resend": "Resend email",
     "cooldown": "Wait {{seconds}}s..."
+  },
+  "categories": {
+    "all": "All",
+    "book": "Book",
+    "device": "Device",
+    "apartment": "Apartment"
+  },
+  "filters": {
+    "newestUpload": "Newest first",
+    "oldestUpload": "Oldest first",
+    "priceAsc": "Price: Low to High",
+    "priceDesc": "Price: High to Low",
+    "placeholder": "What are you looking for?"
   }
 }
