@@ -18,7 +18,7 @@ const app = express();
 app.use(
   cors({
     origin: process.env.CLIENT_URL || "http://localhost:5173",
-    credentials: true, // Allow cookies to be sent
+    credentials: true,
   })
 );
 app.use(express.json());
@@ -30,6 +30,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/items", itemsRouter);
 app.use("/api/favorites", favoritesRoute);
+app.use("/api/favourites", favoritesRoute);
 app.use("/api/auth/register", registerRouter);
 app.use("/api/auth/login", loginRouter);
 app.use("/api/auth/refresh-token", refreshTokenRouter);

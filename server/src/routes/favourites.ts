@@ -8,7 +8,7 @@ const router = Router();
 // Minden végpont védett
 router.use(verifyToken);
 
-// Segéd: user_id a tokenből
+// user_id a JWT payloadból
 function getUserId(req: Request): number {
   const u = (req as any).user as { user_id?: number } | undefined;
   if (!u || typeof u.user_id !== "number") {
@@ -35,10 +35,6 @@ router.get("/", getIdsHandler);
 
 /**
  * GET /api/favorites/items -> teljes kedvenc lista
- * - CATEGORY.name -> category_name
- * - USER.fname, USER.lname -> seller_name
- * - Nincs city -> '' AS seller_city
- * - IMAGE(img_url, place) -> img_urls (ARRAY), place szerint rendezve
  */
 const getItemsHandler: RequestHandler = async (req: Request, res: Response) => {
   try {
@@ -90,7 +86,6 @@ const addHandler: RequestHandler = async (req: Request, res: Response) => {
     res.status(400).json({ error: "item_id required" });
     return;
   }
-
   try {
     const userId = getUserId(req);
     await pool.query(
@@ -106,14 +101,13 @@ const addHandler: RequestHandler = async (req: Request, res: Response) => {
 };
 router.post("/", addHandler);
 
-// DELETE /api/favorites { item_id } -> törlés
-const deleteHandler: RequestHandler = async (req: Request, res: Response) => {
-  const { item_id } = req.body;
+// DELETE /api/favorites/:item_id  -> path param (ticket szerint)
+const deleteParamHandler: RequestHandler = async (req: Request, res: Response) => {
+  const item_id = Number(req.params.item_id);
   if (!item_id) {
-    res.status(400).json({ error: "item_id required" });
+    res.status(400).json({ error: "item_id param required" });
     return;
   }
-
   try {
     const userId = getUserId(req);
     await pool.query(
@@ -126,6 +120,27 @@ const deleteHandler: RequestHandler = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to remove favorite" });
   }
 };
-router.delete("/", deleteHandler);
+router.delete("/:item_id", deleteParamHandler);
+
+// (Opciós, visszafelé kompatibilitás) DELETE { item_id } body-ban – deprecált
+const deleteBodyHandler: RequestHandler = async (req: Request, res: Response) => {
+  const { item_id } = req.body;
+  if (!item_id) {
+    res.status(400).json({ error: "item_id required" });
+    return;
+  }
+  try {
+    const userId = getUserId(req);
+    await pool.query(
+      `DELETE FROM "FAVORITE" WHERE user_id = $1 AND item_id = $2`,
+      [userId, item_id]
+    );
+    res.sendStatus(204);
+  } catch (err) {
+    console.error("Error removing favorite (body):", err);
+    res.status(500).json({ error: "Failed to remove favorite" });
+  }
+};
+router.delete("/", deleteBodyHandler);
 
 export default router;

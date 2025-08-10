@@ -1,4 +1,3 @@
-// client/src/Components/FavoritesPage/FavoritesPage.tsx
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ItemCard from "../ItemCard/ItemCard";
@@ -41,7 +40,7 @@ export default function FavoritesPage() {
         const token = localStorage.getItem("accessToken") || "";
         const res = await fetch("http://localhost:5000/api/favorites/items", {
           headers: {
-            "Authorization": token ? `Bearer ${token}` : "",
+            Authorization: token ? `Bearer ${token}` : "",
           },
         });
         if (!res.ok) throw new Error(`Favorites items failed (${res.status})`);
@@ -72,17 +71,29 @@ export default function FavoritesPage() {
     );
 
     const token = localStorage.getItem("accessToken") || "";
-    fetch("http://localhost:5000/api/favorites", {
-      method: isNowFavorited ? "POST" : "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": token ? `Bearer ${token}` : "",
-      },
-      body: JSON.stringify({ item_id: itemId }),
-    }).catch(console.error);
 
-    if (!isNowFavorited)
+    if (isNowFavorited) {
+      // POST /api/favorites
+      fetch("http://localhost:5000/api/favorites", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({ item_id: itemId }),
+      }).catch(console.error);
+    } else {
+      // DELETE /api/favourites/:item_id  (ticket szerint, UK útvonal is támogatott)
+      fetch(`http://localhost:5000/api/favorites/${itemId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      }).catch(console.error);
+
+      // azonnal eltüntetjük a listából
       setItems((prev) => prev.filter((x) => x.item_id !== itemId));
+    }
   };
 
   const start = (currentPage - 1) * itemsPerPage;
