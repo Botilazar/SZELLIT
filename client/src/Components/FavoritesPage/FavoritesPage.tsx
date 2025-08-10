@@ -1,5 +1,5 @@
 // client/src/Components/FavoritesPage/FavoritesPage.tsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import SearchBar from "../SearchBar/SearchBar";
@@ -49,6 +49,11 @@ export default function FavoritesPage() {
   // locale a dátumhoz
   const locale =
     i18n.language === "hu" ? "hu-HU" : i18n.language === "de" ? "de-DE" : "en-GB";
+
+  // A11y: fókusz cél (skip linkhez)
+  const headingId = "favorites-heading";
+  const listId = "favorites-list";
+  const mainRef = useRef<HTMLElement | null>(null);
 
   // Kedvencek lekérése (teljes adatok)
   useEffect(() => {
@@ -159,59 +164,126 @@ export default function FavoritesPage() {
   const start = (currentPage - 1) * itemsPerPage;
   const pageItems = filteredAndSorted.slice(start, start + itemsPerPage);
 
-  // Állapot nézetek
-  if (loading) return <div className="p-4">{t("favorites.loading")}</div>;
+  // Állapot nézetek (ARIA live)
+  if (loading)
+    return (
+      <div className="p-4" role="status" aria-live="polite" aria-busy="true">
+        {t("favorites.loading")}
+      </div>
+    );
+
   if (error)
     return (
-      <div className="p-4 text-red-500">
+      <div className="p-4 text-red-500" role="alert" aria-live="assertive">
         {t("favorites.error")}: {error}
       </div>
     );
 
   return (
-    <div className="szellit-background max-w-[1500px] mx-auto px-4 py-8 space-y-6">
-      {/* Kereső */}
-      <SearchBar value={searchQuery} onChange={setSearchQuery} />
+    <>
+      {/* Skip link a fő tartalomhoz */}
+      <a
+        href={`#${headingId}`}
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-white focus:text-black focus:px-3 focus:py-2 focus:rounded"
+      >
+        {t("a11y.skipToContent", { defaultValue: "Ugrás a tartalomra" })}
+      </a>
 
-      {/* Szűrők és rendezés */}
-      <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-        <CategorySelector selected={selectedCategory} setSelected={setSelectedCategory} />
-        <FilterDropdown selected={selectedFilter} setSelected={setSelectedFilter} />
-      </div>
+      <main
+        ref={mainRef as any}
+        role="main"
+        aria-labelledby={headingId}
+        className="szellit-background max-w-[1500px] mx-auto px-4 py-8 space-y-6 outline-none"
+        tabIndex={-1}
+      >
+        {/* Oldalcím */}
+        <h1 id={headingId} className="text-xl font-semibold mb-2">
+          {t("favorites.title")}
+        </h1>
 
-      {/* Lista */}
-      {pageItems.length === 0 ? (
-        <div className="text-sm text-gray-500">{t("browsing.noResults")}</div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {pageItems.map((item) => (
-            <div key={item.item_id}>
-              <ItemCard
-                category={item.category_name}
-                date={new Date(item.created_at).toLocaleDateString(locale)}
-                title={item.title}
-                description={item.description}
-                price={item.price}
-                location={item.seller_city}
-                sellerName={item.seller_name}
-                imgUrl={item.img_urls?.[0] ?? undefined}
-                itemId={item.item_id}
-                isFavorited={favoriteIds.includes(item.item_id)}
-                onToggleFavorite={handleToggleFavorite}
-              />
-            </div>
-          ))}
-        </div>
-      )}
+        {/* Kereső */}
+        <section aria-label={t("filters.placeholder", { defaultValue: "Mit keresel?" })}>
+          <SearchBar value={searchQuery} onChange={setSearchQuery} />
+        </section>
 
-      {/* Lapozó */}
-      <Pagination
-        currentPage={currentPage}
-        totalPages={Math.max(1, Math.ceil(filteredAndSorted.length / itemsPerPage))}
-        onPageChange={setCurrentPage}
-        itemsPerPage={itemsPerPage}
-        onItemsPerPageChange={setItemsPerPage}
-      />
-    </div>
+        {/* Szűrők és rendezés */}
+        <section
+          className="flex flex-col md:flex-row justify-between items-start gap-4"
+          aria-label={t("filters.section", { defaultValue: "Szűrők és rendezés" })}
+        >
+          <CategorySelector
+            selected={selectedCategory}
+            setSelected={setSelectedCategory}
+          />
+          <FilterDropdown
+            selected={selectedFilter}
+            setSelected={setSelectedFilter}
+          />
+        </section>
+
+        {/* Lista */}
+        {pageItems.length === 0 ? (
+          <div
+            className="text-sm text-gray-500"
+            role="status"
+            aria-live="polite"
+          >
+            {t("browsing.noResults")}
+          </div>
+        ) : (
+          <div
+            id={listId}
+            role="list"
+            aria-describedby={`${listId}-desc`}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            <span id={`${listId}-desc`} className="sr-only">
+              {t("a11y.resultsList", { defaultValue: "Kedvencek listája." })}
+            </span>
+
+            {pageItems.map((item) => (
+              <div
+                key={item.item_id}
+                role="listitem"
+                className="focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-blue-500 rounded-lg"
+                tabIndex={0}
+                aria-label={`${item.title}, ${item.price} Ft`}
+              >
+                <ItemCard
+                  category={item.category_name}
+                  date={new Date(item.created_at).toLocaleDateString(locale)}
+                  title={item.title}
+                  description={item.description}
+                  price={item.price}
+                  location={item.seller_city}
+                  sellerName={item.seller_name}
+                  imgUrl={item.img_urls?.[0] ?? undefined}
+                  itemId={item.item_id}
+                  isFavorited={favoriteIds.includes(item.item_id)}
+                  onToggleFavorite={handleToggleFavorite}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Lapozó */}
+        <nav aria-label={t("a11y.pagination", { defaultValue: "Lapozás" })}>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.max(1, Math.ceil(filteredAndSorted.length / itemsPerPage))}
+            onPageChange={(p) => {
+              setCurrentPage(p);
+              // a11y: fókusz vissza a main-re lapozás után
+              setTimeout(() => {
+                mainRef.current?.focus?.();
+              }, 0);
+            }}
+            itemsPerPage={itemsPerPage}
+            onItemsPerPageChange={setItemsPerPage}
+          />
+        </nav>
+      </main>
+    </>
   );
 }
