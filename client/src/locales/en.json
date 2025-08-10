@@ -113,5 +113,14 @@
     "priceAsc": "Price: Low to High",
     "priceDesc": "Price: High to Low",
     "placeholder": "What are you looking for?"
+  },
+  "favorites": {
+    "title": "Favorites",
+    "empty": "No favorite listings.",
+    "loading": "Loading…",
+    "error": "Error"
+  },
+  "browsing": {
+    "noResults": "No results."
   }
 }

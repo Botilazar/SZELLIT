@@ -83,5 +83,14 @@
     "error": "Hiba az e-mail ellenőrzésekor. A link érvénytelen vagy lejárt.",
     "invalidToken": "A verifikációs token érvénytelen vagy lejárt.",
     "networkError": "Hálózati hiba történt. Kérjük, ellenőrizd az internetkapcsolatodat és próbáld újra."
+  },
+  "favorites": {
+    "title": "Kedvencek",
+    "empty": "Nincs kedvenc hirdetés.",
+    "loading": "Betöltés…",
+    "error": "Hiba"
+  },
+  "browsing": {
+    "noResults": "Nincs találat."
   }
 }

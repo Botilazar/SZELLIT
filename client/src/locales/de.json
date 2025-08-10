@@ -83,5 +83,14 @@
     "priceAsc": "Preis aufsteigend",
     "priceDesc": "Preis absteigend",
     "placeholder": "Was suchst du?"
+  },
+  "favorites": {
+    "title": "Favoriten",
+    "empty": "Keine Favoriten-Anzeigen.",
+    "loading": "Wird geladen…",
+    "error": "Fehler"
+  },
+  "browsing": {
+    "noResults": "Keine Ergebnisse."
   }
 }
