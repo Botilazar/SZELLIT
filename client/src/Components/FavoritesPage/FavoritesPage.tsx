@@ -1,3 +1,4 @@
+// client/src/Components/FavoritesPage/FavoritesPage.tsx
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import ItemCard from "../ItemCard/ItemCard";
@@ -26,7 +27,6 @@ export default function FavoritesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // locale a dátumhoz (nyelv alapján)
   const locale =
     i18n.language === "hu" ? "hu-HU" : i18n.language === "de" ? "de-DE" : "en-GB";
 
@@ -38,7 +38,12 @@ export default function FavoritesPage() {
         setLoading(true);
         setError(null);
 
-        const res = await fetch("http://localhost:5000/api/favorites/items");
+        const token = localStorage.getItem("accessToken") || "";
+        const res = await fetch("http://localhost:5000/api/favorites/items", {
+          headers: {
+            "Authorization": token ? `Bearer ${token}` : "",
+          },
+        });
         if (!res.ok) throw new Error(`Favorites items failed (${res.status})`);
 
         const rows: unknown = await res.json();
@@ -47,7 +52,7 @@ export default function FavoritesPage() {
         const favItems = rows as Item[];
         if (alive) {
           setItems(favItems);
-          setFavoriteIds(favItems.map((r) => r.item_id)); // mind kedvenc
+          setFavoriteIds(favItems.map((r) => r.item_id));
         }
       } catch (e: any) {
         if (alive) setError(e?.message ?? "Unknown error");
@@ -62,23 +67,24 @@ export default function FavoritesPage() {
   }, []);
 
   const handleToggleFavorite = (itemId: number, isNowFavorited: boolean) => {
-    // optimista frissítés
     setFavoriteIds((prev) =>
       isNowFavorited ? [...prev, itemId] : prev.filter((id) => id !== itemId)
     );
 
+    const token = localStorage.getItem("accessToken") || "";
     fetch("http://localhost:5000/api/favorites", {
       method: isNowFavorited ? "POST" : "DELETE",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": token ? `Bearer ${token}` : "",
+      },
       body: JSON.stringify({ item_id: itemId }),
     }).catch(console.error);
 
-    // Ha töröljük a kedvencekből, el is tüntetjük a listából
     if (!isNowFavorited)
       setItems((prev) => prev.filter((x) => x.item_id !== itemId));
   };
 
-  // Egyszerű lapozás (ugyanaz a logika, mint a BrowsingPage-ben)
   const start = (currentPage - 1) * itemsPerPage;
   const pageItems = items.slice(start, start + itemsPerPage);
 
