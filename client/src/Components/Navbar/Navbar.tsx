@@ -46,7 +46,7 @@ const Navbar = () => {
   return (
     <nav className="w-full h-[93px] szellit-navbar shadow-md flex items-center justify-between px-6">
       {/* Logo */}
-      <div className="flex items-center h-full">
+      <div className="flex items-center h-full cursor-pointer" onClick={() => goTo("/items")}>
         <Logo />
       </div>
 

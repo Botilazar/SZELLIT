@@ -1,14 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 import SearchBar from "../../Components/SearchBar/SearchBar";
 import CategorySelector from "../../Components/CategorySelector/CategorySelector";
 import FilterDropdown from "../../Components/FilterDropdown/FilterDropdown";
 import ItemCard from "../../Components/ItemCard/ItemCard";
 import Pagination from "../Pagination/Pagination";
-import DetailedItemDialog from "../Dialog/detailedItemDialog"; // <-- updated import
-import DetailedItem from "../Other/DetailedItem";
 
 interface Item {
   item_id: number;
@@ -32,6 +30,7 @@ type FilterOptionKey =
 const BrowsingPage = () => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
   const initialLimit = parseInt(searchParams.get("limit") || "8", 10);
@@ -48,15 +47,6 @@ const BrowsingPage = () => {
 
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState(initialLimit);
-  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
-
-  const handleCardClick = (item: Item) => {
-    setSelectedItem(item);
-  };
-
-  const handleCloseDialog = () => {
-    setSelectedItem(null);
-  };
 
   const isSyncingFromUrl = useRef(false);
 
@@ -106,20 +96,29 @@ const BrowsingPage = () => {
 
   // Fetch items and favorites
   useEffect(() => {
-    fetch("http://localhost:5000/api/items")
-      .then((res) => {
-        if (!res.ok) throw new Error("Network error");
-        return res.json();
-      })
-      .then((data) => {
-        setAllItems(data);
-      })
-      .catch((err) => console.error("Items fetch error:", err));
+    let alive = true;
+    (async () => {
+      try {
+        const itemsRes = await fetch("http://localhost:5000/api/items");
+        if (!itemsRes.ok) throw new Error(`Items fetch failed (${itemsRes.status})`);
+        const itemsData: unknown = await itemsRes.json();
+        if (alive) setAllItems(itemsData as Item[]);
 
-    fetch("http://localhost:5000/api/favorites")
-      .then((res) => res.json())
-      .then((ids) => setFavoriteIds(ids))
-      .catch((err) => console.error("Favorites fetch error:", err));
+        const token = localStorage.getItem("accessToken") || "";
+        const favRes = await fetch("http://localhost:5000/api/favourites", {
+          headers: { Authorization: token ? `Bearer ${token}` : "" },
+        });
+        if (!favRes.ok) throw new Error(`Favorites fetch failed (${favRes.status})`);
+        const favData: unknown = await favRes.json();
+        if (!Array.isArray(favData)) throw new Error("Unexpected favorites response");
+        if (alive) setFavoriteIds(favData as number[]);
+      } catch (e: any) {
+        console.error("Fetch error:", e?.message ?? e);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
   }, []);
 
   // Apply filters and sorting
@@ -167,6 +166,10 @@ const BrowsingPage = () => {
     );
   };
 
+  const handleCardClick = (item: Item) => {
+    navigate(`${item.item_id}`);
+  };
+
   return (
     <div className="szellit-background max-w-[1500px] mx-auto px-4 py-8 space-y-6">
       <SearchBar value={searchQuery} onChange={setSearchQuery} />
@@ -191,22 +194,11 @@ const BrowsingPage = () => {
                 sellerName={item.seller_name}
                 imgUrl={item.img_urls?.[0] ?? undefined}
                 itemId={item.item_id}
-
                 isFavorited={favoriteIds.includes(item.item_id)}
                 onToggleFavorite={handleToggleFavorite}
               />
             </div>
           ))
-        )}
-
-        {selectedItem && (
-          <DetailedItemDialog onClose={handleCloseDialog}>
-            <DetailedItem
-              item={selectedItem}
-              isFavorited={favoriteIds.includes(selectedItem.item_id)}
-              onToggleFavorite={handleToggleFavorite}
-            />
-          </DetailedItemDialog>
         )}
       </div>
 

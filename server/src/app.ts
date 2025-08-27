@@ -29,7 +29,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/items", itemsRouter);
-app.use("/api/favorites", favoritesRoute);
+//app.use("/api/favorites", favoritesRoute);
 app.use("/api/favourites", favoritesRoute);
 app.use("/api/auth/register", registerRouter);
 app.use("/api/auth/login", loginRouter);

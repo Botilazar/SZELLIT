@@ -64,7 +64,7 @@ export default function FavoritesPage() {
         setError(null);
 
         const token = localStorage.getItem("accessToken") || "";
-        const res = await fetch("http://localhost:5000/api/favorites/items", {
+        const res = await fetch("http://localhost:5000/api/favourites/items", {
           headers: { Authorization: token ? `Bearer ${token}` : "" },
         });
         if (!res.ok) throw new Error(`Favorites items failed (${res.status})`);

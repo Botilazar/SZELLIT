@@ -40,15 +40,24 @@ const ItemCard = ({
 
   const handleFavoriteClick = async (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    const url = "http://localhost:5000/api/favorites";
+    const url = "http://localhost:5000/api/favourites";
     const method = favorited ? "DELETE" : "POST";
+    const token = localStorage.getItem("accessToken") || "";
 
     try {
-      await fetch(url, {
+      const res = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
         body: JSON.stringify({ item_id: itemId }),
       });
+
+      if (!res.ok) {
+        throw new Error(`Favorite request failed (${res.status})`);
+      }
+
       setFavorited(!favorited);
       onToggleFavorite(itemId, !favorited);
     } catch (err) {
@@ -56,8 +65,9 @@ const ItemCard = ({
     }
   };
 
+
   return (
-    <div className="szellit-navbar relative w-[340px] h-[470px] shadow-lg rounded-[15px] p-4 overflow-hidden">
+    <div className="szellit-navbar relative w-[340px] h-[480px] shadow-md rounded-2xl p-6 overflow-hidden">
       <div
         className="absolute top-0 left-0 right-0 h-[225px] rounded-t-[15px] overflow-hidden cursor-pointer"
         onClick={onCardClick}
