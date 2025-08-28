@@ -17,7 +17,8 @@
     "profile": "Profil",
     "settings": "Beállítások",
     "favorites": "Kedvencek",
-    "logout": "Kijelentkezés"
+    "logout": "Kijelentkezés",
+    "login": "Bejelentkezés"
   },
   "signin": {
     "title": "Bejelentkezés",
@@ -27,7 +28,8 @@
     "password": "Jelszó",
     "remember": "Emlékezz rám",
     "forgot": "Elfelejtetted a jelszavad?",
-    "button": "Bejelentkezés"
+    "button": "Bejelentkezés",
+    "success": "Sikeres bejelentkezés"
   },
   "register": {
     "title": "Fiók létrehozása",

@@ -32,38 +32,12 @@ const ItemCard = ({
   onCardClick,
 }: ItemCardProps) => {
   const { t } = useTranslation();
-  const [favorited, setFavorited] = useState(isFavorited);
 
-  useEffect(() => {
-    setFavorited(isFavorited);
-  }, [isFavorited]);
-
-  const handleFavoriteClick = async (e: MouseEvent<HTMLButtonElement>) => {
+  const handleFavoriteClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    const url = "http://localhost:5000/api/favourites";
-    const method = favorited ? "DELETE" : "POST";
-    const token = localStorage.getItem("accessToken") || "";
-
-    try {
-      const res = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        body: JSON.stringify({ item_id: itemId }),
-      });
-
-      if (!res.ok) {
-        throw new Error(`Favorite request failed (${res.status})`);
-      }
-
-      setFavorited(!favorited);
-      onToggleFavorite(itemId, !favorited);
-    } catch (err) {
-      console.error("Failed to update favorite", err);
-    }
+    onToggleFavorite(itemId, !isFavorited); // delegate to parent
   };
+
 
 
   return (
@@ -99,7 +73,7 @@ const ItemCard = ({
         </div>
 
         <div className=" flex justify-between items-center">
-          <div className="text-blue-600 font-extrabold text-2xl ">
+          <div className="text-blue-500 font-extrabold text-2xl ">
             {price.toLocaleString("hu-HU")} Ft
           </div>
           <div className="flex items-center gap-1 text-sm szellit-text">
@@ -121,10 +95,10 @@ const ItemCard = ({
         <div className="flex gap-3">
           <button
             onClick={handleFavoriteClick}
-            className={`text-gray-500 hover:text-red-500 ${favorited ? "text-red-500" : ""
+            className={`text-gray-500 hover:text-red-500 ${isFavorited ? "text-red-500" : ""
               }`}
           >
-            <Heart className={`w-5 h-5 ${favorited ? "fill-red-500" : ""}`} />
+            <Heart className={`w-5 h-5 ${isFavorited ? "fill-red-500" : ""}`} />
           </button>
           <button className="text-gray-500 hover:text-blue-500">
             <MessageCircle className="w-5 h-5" />

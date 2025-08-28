@@ -17,7 +17,8 @@
     "profile": "Profile",
     "settings": "Settings",
     "favorites": "Favorites",
-    "logout": "Logout"
+    "logout": "Logout",
+    "login": "Login"
   },
   "signin": {
     "title": "Sign in",
@@ -27,7 +28,8 @@
     "password": "Password",
     "remember": "Remember me",
     "forgot": "Forgot your password?",
-    "button": "Sign in"
+    "button": "Sign in",
+    "success":"Signed in successfully"
   },
   "register": {
     "title": "Create your account",
