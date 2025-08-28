@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 import SearchBar from "../../Components/SearchBar/SearchBar";
 import CategorySelector from "../../Components/CategorySelector/CategorySelector";
 import FilterDropdown from "../../Components/FilterDropdown/FilterDropdown";
 import ItemCard from "../../Components/ItemCard/ItemCard";
 import Pagination from "../Pagination/Pagination";
+import useDarkMode from "../../hooks/useDarkMode";
+import { useAuth } from "../../AuthContext";
 
 interface Item {
   item_id: number;
@@ -31,20 +34,20 @@ const BrowsingPage = () => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const { isDarkMode } = useDarkMode();
 
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
   const initialLimit = parseInt(searchParams.get("limit") || "8", 10);
 
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedFilter, setSelectedFilter] = useState<FilterOptionKey>("filters.newestUpload");
+  const [selectedFilter, setSelectedFilter] =
+    useState<FilterOptionKey>("filters.newestUpload");
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [filteredItems, setFilteredItems] = useState<Item[]>([]);
-
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
-
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState(initialLimit);
 
@@ -52,23 +55,20 @@ const BrowsingPage = () => {
 
   // Debounce search input
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setDebouncedQuery(searchQuery);
-    }, 300);
+    const timeout = setTimeout(() => setDebouncedQuery(searchQuery), 300);
     return () => clearTimeout(timeout);
   }, [searchQuery]);
 
-  // Sync state from URL parameters
+  // Sync state from URL
   useEffect(() => {
     const pageParam = parseInt(searchParams.get("page") || "1", 10);
     const limitParam = parseInt(searchParams.get("limit") || "8", 10);
-
     if (pageParam !== currentPage || limitParam !== itemsPerPage) {
       isSyncingFromUrl.current = true;
       setCurrentPage(pageParam);
       setItemsPerPage(limitParam);
     }
-  }, [currentPage, itemsPerPage, searchParams]);
+  }, [searchParams]);
 
   // Sync URL from state
   useEffect(() => {
@@ -76,23 +76,14 @@ const BrowsingPage = () => {
       isSyncingFromUrl.current = false;
       return;
     }
-
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", currentPage.toString());
     params.set("limit", itemsPerPage.toString());
+    setSearchParams(params);
+  }, [currentPage, itemsPerPage]);
 
-    if (
-      params.get("page") !== searchParams.get("page") ||
-      params.get("limit") !== searchParams.get("limit")
-    ) {
-      setSearchParams(params);
-    }
-  }, [currentPage, itemsPerPage, searchParams, setSearchParams]);
-
-  // Reset page to 1 on items per page change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [itemsPerPage]);
+  // Reset page on itemsPerPage change
+  useEffect(() => setCurrentPage(1), [itemsPerPage]);
 
   // Fetch items and favorites
   useEffect(() => {
@@ -101,7 +92,7 @@ const BrowsingPage = () => {
       try {
         const itemsRes = await fetch("http://localhost:5000/api/items");
         if (!itemsRes.ok) throw new Error(`Items fetch failed (${itemsRes.status})`);
-        const itemsData: unknown = await itemsRes.json();
+        const itemsData = await itemsRes.json();
         if (alive) setAllItems(itemsData as Item[]);
 
         const token = localStorage.getItem("accessToken") || "";
@@ -109,9 +100,8 @@ const BrowsingPage = () => {
           headers: { Authorization: token ? `Bearer ${token}` : "" },
         });
         if (!favRes.ok) throw new Error(`Favorites fetch failed (${favRes.status})`);
-        const favData: unknown = await favRes.json();
-        if (!Array.isArray(favData)) throw new Error("Unexpected favorites response");
-        if (alive) setFavoriteIds(favData as number[]);
+        const favData = await favRes.json();
+        if (alive && Array.isArray(favData)) setFavoriteIds(favData as number[]);
       } catch (e: any) {
         console.error("Fetch error:", e?.message ?? e);
       }
@@ -124,18 +114,13 @@ const BrowsingPage = () => {
   // Apply filters and sorting
   useEffect(() => {
     const q = debouncedQuery.toLowerCase();
-
-    const result = allItems.filter((item) => {
-      const matchesSearch =
-        item.title.toLowerCase().includes(q) ||
-        item.description.toLowerCase().includes(q) ||
-        item.seller_name.toLowerCase().includes(q);
-
-      const matchesCategory =
-        selectedCategory === "all" || item.category_name === selectedCategory;
-
-      return matchesSearch && matchesCategory;
-    });
+    const result = allItems.filter(
+      (item) =>
+        (item.title.toLowerCase().includes(q) ||
+          item.description.toLowerCase().includes(q) ||
+          item.seller_name.toLowerCase().includes(q)) &&
+        (selectedCategory === "all" || item.category_name === selectedCategory)
+    );
 
     switch (selectedFilter) {
       case "filters.newestUpload":
@@ -160,22 +145,53 @@ const BrowsingPage = () => {
   const endIndex = startIndex + itemsPerPage;
   const itemsToDisplay = filteredItems.slice(startIndex, endIndex);
 
-  const handleToggleFavorite = (itemId: number, isNowFavorited: boolean) => {
-    setFavoriteIds((prev) =>
-      isNowFavorited ? [...prev, itemId] : prev.filter((id) => id !== itemId)
-    );
+  // Favorite handler with login check
+  const handleToggleFavorite = async (itemId: number, isNowFavorited: boolean) => {
+    if (!isAuthenticated) {
+      toast.error("You must log in to favorite items!");
+      return;
+    }
+
+    const url = "http://localhost:5000/api/favourites";
+    const method = isNowFavorited ? "POST" : "DELETE";
+    const token = localStorage.getItem("accessToken") || "";
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({ item_id: itemId }),
+      });
+
+      if (!res.ok) throw new Error(`Request failed (${res.status})`);
+
+      setFavoriteIds((prev) =>
+        isNowFavorited ? [...prev, itemId] : prev.filter((id) => id !== itemId)
+      );
+    } catch (err) {
+      console.error(err);
+      toast.error("You have to log in to do this!");
+    }
   };
 
-  const handleCardClick = (item: Item) => {
-    navigate(`${item.item_id}`);
-  };
+  const handleCardClick = (item: Item) => navigate(`${item.item_id}`);
 
   return (
     <div className="szellit-background max-w-[1500px] mx-auto px-4 py-8 space-y-6">
       <SearchBar value={searchQuery} onChange={setSearchQuery} />
+
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <CategorySelector selected={selectedCategory} setSelected={setSelectedCategory} />
-        <FilterDropdown selected={selectedFilter} setSelected={setSelectedFilter} />
+        <CategorySelector
+          selected={selectedCategory}
+          setSelected={setSelectedCategory}
+        />
+        <FilterDropdown
+          selected={selectedFilter}
+          setSelected={setSelectedFilter}
+        />
       </div>
 
       <div className="flex flex-wrap justify-center gap-4 p-4 rounded-xl">
