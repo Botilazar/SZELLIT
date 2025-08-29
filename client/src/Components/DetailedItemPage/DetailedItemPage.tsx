@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, MouseEvent } from "react";
 import { Heart } from "lucide-react";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
-import useDarkMode from "../../hooks/useDarkMode";
+//import useDarkMode from "../../hooks/useDarkMode";
 import { useAuth } from "../../AuthContext";
 
 interface Item {
@@ -19,7 +19,7 @@ interface Item {
 
 const DetailedItemPage = () => {
   const navigate = useNavigate();
-  const { isDarkMode } = useDarkMode();
+  //const { isDarkMode } = useDarkMode();
   const { user } = useAuth();
 
   const [item, setItem] = useState<Item | null>(null);

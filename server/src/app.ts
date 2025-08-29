@@ -13,6 +13,7 @@ import resendVerificationEmailRouter from "./routes/auth/resendVerificationEmail
 import requestResetPasswordRouter from "./routes/auth/requestResetPassword";
 import confirmResetPasswordRouter from "./routes/auth/confirmResetPassword";
 import categoriesRouter from "./routes/categories";
+import usersRouter from "./routes/users"
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use("/api/items", itemsRouter);
 app.use("/api/categories", categoriesRouter);
 //app.use("/api/favorites", favoritesRoute);
 app.use("/api/favourites", favoritesRoute);
+app.use("/api/users", usersRouter)
 app.use("/api/auth/register", registerRouter);
 app.use("/api/auth/login", loginRouter);
 app.use("/api/auth/refresh-token", refreshTokenRouter);

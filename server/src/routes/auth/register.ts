@@ -56,9 +56,9 @@ router.post("/", async (req: any, res: any) => {
 
     // Insert new user
     const result = await pool.query(
-      `INSERT INTO "USER" (email, pw_hashed, is_verified, created_at, fname, lname, neptun) 
-             VALUES ($1, $2, false, NOW(), $3, $4, $5) 
-             RETURNING user_id, email, created_at, fname, lname`,
+      `INSERT INTO "USER" (email, pw_hashed, is_verified, created_at, fname, lname, neptun, role) 
+             VALUES ($1, $2, false, NOW(), $3, $4, $5, 'STDUSER') 
+             RETURNING user_id, email, created_at, fname, lname, role`,
       [email, hashedPassword, fname, lname, neptun]
     );
 
@@ -88,6 +88,7 @@ router.post("/", async (req: any, res: any) => {
         id: newUser.user_id,
         fullName: `${newUser.fname} ${newUser.lname}`,
         email: newUser.email,
+        role: newUser.role,
         createdAt: newUser.created_at,
       },
     });

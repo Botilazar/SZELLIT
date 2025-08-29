@@ -141,6 +141,7 @@ const Navbar = () => {
                       { label: t("navbar.profile"), action: () => goTo("/profile") },
                       { label: t("navbar.settings"), action: () => goTo("/settings") },
                       { label: t("navbar.favorites"), action: () => goTo("/favorites") },
+                      ...(user?.role === "ADMIN" ? [{ label: "Admin Panel", action: () => goTo("/adminpanel") }] : [])
                     ].map(({ label, action }) => (
                       <button
                         key={label}
