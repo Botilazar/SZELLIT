@@ -1,7 +1,9 @@
 import { MapPin, Heart, MessageCircle, UserCircle2 } from "lucide-react";
-import { MouseEvent } from "react";
+import { MouseEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
+import { toast } from "react-hot-toast";
+import { useAuth } from "../../AuthContext";
 
 interface ItemCardProps {
   category: string;
@@ -14,7 +16,7 @@ interface ItemCardProps {
   imgUrl?: string;
   itemId: number;
   isFavorited: boolean;
-  onToggleFavorite: (itemId: number, isNowFavorited: boolean) => void;
+  sellerProfilePic?: string;
   onCardClick?: () => void;
 }
 
@@ -28,15 +30,44 @@ const ItemCard = ({
   sellerName,
   imgUrl,
   itemId,
-  isFavorited,
-  onToggleFavorite,
+  isFavorited: initialFavorited,
+  sellerProfilePic,
   onCardClick,
 }: ItemCardProps) => {
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
+  const [isFavorited, setIsFavorited] = useState(initialFavorited);
 
-  const handleFavoriteClick = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleFavoriteClick = async (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    onToggleFavorite(itemId, !isFavorited);
+
+    if (!isAuthenticated) {
+      toast.error("You must log in to favorite items!");
+      return;
+    }
+
+    const newState = !isFavorited;
+    const url = "http://localhost:5000/api/favourites";
+    const method = newState ? "POST" : "DELETE";
+    const token = localStorage.getItem("accessToken") || "";
+
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({ item_id: itemId }),
+      });
+
+      if (!res.ok) throw new Error(`Request failed (${res.status})`);
+
+      setIsFavorited(newState);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update favorites!");
+    }
   };
 
   return (
@@ -70,13 +101,15 @@ const ItemCard = ({
           </div>
 
           <h3 className="text-lg font-semibold szellit-text">{title}</h3>
-          <div className="text-sm szellit-text overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+          <div
+            className="text-sm szellit-text overflow-hidden"
+            style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}
+          >
             {description}
           </div>
 
-
           <div className="flex justify-between items-center mt-3">
-            <span className="text-blue-500 font-extrabold text-2xl   px-2 py-1 rounded-md inline-block">
+            <span className="text-blue-500 font-extrabold text-2xl px-2 py-1 rounded-md inline-block">
               {price.toLocaleString("hu-HU", { minimumFractionDigits: 0 })} Ft
             </span>
             <div className="flex items-center gap-1 text-sm szellit-text">
@@ -91,8 +124,16 @@ const ItemCard = ({
         {/* Seller & Actions */}
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center shadow-sm">
-              <UserCircle2 className="w-6 h-6 text-gray-500" />
+            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shadow-sm">
+              {sellerProfilePic ? (
+                <img
+                  src={sellerProfilePic}
+                  alt={sellerName}
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <UserCircle2 className="w-6 h-6 text-gray-400" />
+              )}
             </div>
             <span className="text-sm font-medium">{sellerName}</span>
           </div>

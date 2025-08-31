@@ -123,8 +123,19 @@ const Navbar = () => {
             ${isDarkMode ? "bg-gray-800 text-white hover:bg-gray-700" : "bg-white text-gray-900 hover:bg-gray-100"}`}
                 >
                   {/* Initials avatar */}
-                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white ">
-                    {user?.fname?.[0]}{user?.lname?.[0]}
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden text-white">
+                    {user.prof_pic_url ? (
+                      <img
+                        src={`http://localhost:5000${user.prof_pic_url}`}
+                        alt={`${user.fname} ${user.lname}`}
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <span className="font-medium">
+                        {user?.fname?.[0]}
+                        {user?.lname?.[0]}
+                      </span>
+                    )}
                   </div>
                   {/* Name */}
                   <span className="hidden sm:inline">{user?.fname} {user?.lname}</span>
@@ -138,7 +149,7 @@ const Navbar = () => {
               ${isDarkMode ? "bg-gray-800 text-gray-200 ring-white/20" : "bg-white text-gray-900 ring-black/10"}`}
                   >
                     {[
-                      { label: t("navbar.profile"), action: () => goTo("/profile") },
+                      { label: t("navbar.profile"), action: () => goTo(`/profiles/${user.user_id}`) },
                       { label: t("navbar.settings"), action: () => goTo("/settings") },
                       { label: t("navbar.favorites"), action: () => goTo("/favorites") },
                       ...(user?.role === "ADMIN" ? [{ label: "Admin Panel", action: () => goTo("/adminpanel") }] : [])

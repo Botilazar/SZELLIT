@@ -1,16 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
+import { useAuth } from "../../AuthContext";
 
 import SearchBar from "../../Components/SearchBar/SearchBar";
 import CategorySelector from "../../Components/CategorySelector/CategorySelector";
 import FilterDropdown from "../../Components/FilterDropdown/FilterDropdown";
 import ItemCard from "../../Components/ItemCard/ItemCard";
 import Pagination from "../Pagination/Pagination";
-import useDarkMode from "../../hooks/useDarkMode";
-import { useAuth } from "../../AuthContext";
-
 interface Item {
   item_id: number;
   title: string;
@@ -22,6 +19,7 @@ interface Item {
   seller_city: string;
   img_urls?: string[];
   user_id: number;
+  prof_pic_url?: string
 }
 
 type FilterOptionKey =
@@ -34,8 +32,6 @@ const BrowsingPage = () => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-  const { isDarkMode } = useDarkMode();
 
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
   const initialLimit = parseInt(searchParams.get("limit") || "8", 10);
@@ -50,6 +46,8 @@ const BrowsingPage = () => {
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState(initialLimit);
+  const { user } = useAuth()
+
 
   const isSyncingFromUrl = useRef(false);
 
@@ -145,37 +143,6 @@ const BrowsingPage = () => {
   const endIndex = startIndex + itemsPerPage;
   const itemsToDisplay = filteredItems.slice(startIndex, endIndex);
 
-  // Favorite handler with login check
-  const handleToggleFavorite = async (itemId: number, isNowFavorited: boolean) => {
-    if (!isAuthenticated) {
-      toast.error("You must log in to favorite items!");
-      return;
-    }
-
-    const url = "http://localhost:5000/api/favourites";
-    const method = isNowFavorited ? "POST" : "DELETE";
-    const token = localStorage.getItem("accessToken") || "";
-
-    try {
-      const res = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        body: JSON.stringify({ item_id: itemId }),
-      });
-
-      if (!res.ok) throw new Error(`Request failed (${res.status})`);
-
-      setFavoriteIds((prev) =>
-        isNowFavorited ? [...prev, itemId] : prev.filter((id) => id !== itemId)
-      );
-    } catch (err) {
-      console.error(err);
-      toast.error("You have to log in to do this!");
-    }
-  };
 
   const handleCardClick = (item: Item) => navigate(`${item.item_id}`);
 
@@ -211,7 +178,7 @@ const BrowsingPage = () => {
                 imgUrl={item.img_urls?.[0] ?? undefined}
                 itemId={item.item_id}
                 isFavorited={favoriteIds.includes(item.item_id)}
-                onToggleFavorite={handleToggleFavorite}
+                sellerProfilePic={`http://localhost:5000${item.prof_pic_url}`}
               />
             </div>
           ))

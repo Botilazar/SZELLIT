@@ -1,3 +1,4 @@
+// server/src/routes/items.ts
 import { Router } from "express";
 import type { Request, Response, RequestHandler } from "express";
 import pool from "../db";
@@ -6,12 +7,11 @@ const router = Router();
 
 /**
  * GET /api/items
- * → all items
+ * → all items with seller info including profile pic
  */
 const getAllItemsHandler: RequestHandler = async (_req: Request, res: Response) => {
   try {
-    const result = await pool.query(
-      `
+    const result = await pool.query(`
       SELECT 
         i.item_id,
         i.title,
@@ -22,6 +22,7 @@ const getAllItemsHandler: RequestHandler = async (_req: Request, res: Response) 
         u.user_id,
         (COALESCE(NULLIF(TRIM(u.fname), ''), '') ||
          CASE WHEN TRIM(COALESCE(u.lname, '')) <> '' THEN ' ' || TRIM(u.lname) ELSE '' END) AS seller_name,
+        u.prof_pic_url,
         'Budapest' AS seller_city,
         (
           SELECT ARRAY_REMOVE(ARRAY_AGG(img.img_url ORDER BY img.place ASC), NULL)
@@ -32,8 +33,7 @@ const getAllItemsHandler: RequestHandler = async (_req: Request, res: Response) 
       JOIN "CATEGORY" c ON i.category_id = c.category_id
       JOIN "USER" u ON u.user_id = i.user_id
       ORDER BY i.created_at DESC;
-      `
-    );
+    `);
 
     res.json(result.rows);
   } catch (err) {
@@ -41,14 +41,14 @@ const getAllItemsHandler: RequestHandler = async (_req: Request, res: Response) 
     res.status(500).json({ error: "Failed to fetch items" });
   }
 };
-router.get("/", getAllItemsHandler);
 
 /**
  * GET /api/items/:itemId
- * → single item detail
+ * → single item with seller info including profile pic
  */
 const getSingleItemHandler: RequestHandler = async (req: Request, res: Response) => {
   const { itemId } = req.params;
+
   if (!itemId || isNaN(Number(itemId))) {
     res.status(400).json({ error: "Valid itemId param required" });
     return;
@@ -67,6 +67,7 @@ const getSingleItemHandler: RequestHandler = async (req: Request, res: Response)
         u.user_id,
         (COALESCE(NULLIF(TRIM(u.fname), ''), '') ||
          CASE WHEN TRIM(COALESCE(u.lname, '')) <> '' THEN ' ' || TRIM(u.lname) ELSE '' END) AS seller_name,
+        u.prof_pic_url,
         'Budapest' AS seller_city,
         (
           SELECT ARRAY_REMOVE(ARRAY_AGG(img.img_url ORDER BY img.place ASC), NULL)
@@ -93,6 +94,9 @@ const getSingleItemHandler: RequestHandler = async (req: Request, res: Response)
     res.status(500).json({ error: "Failed to fetch item" });
   }
 };
+
+// Routes
+router.get("/", getAllItemsHandler);
 router.get("/:itemId", getSingleItemHandler);
 
 export default router;

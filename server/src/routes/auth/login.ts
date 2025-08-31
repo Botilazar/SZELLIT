@@ -12,7 +12,7 @@ router.post("/", async (req: any, res: any) => {
 
   try {
     const userResult = await pool.query(
-      `SELECT user_id, email, pw_hashed, fname, lname, is_verified, role FROM "USER" WHERE email = $1`,
+      `SELECT user_id, email, pw_hashed, fname, lname, is_verified, role, prof_pic_url FROM "USER" WHERE email = $1`,
       [email]
     );
 
@@ -39,7 +39,8 @@ router.post("/", async (req: any, res: any) => {
       email: user.email,
       fname: user.fname,
       lname: user.lname,
-      role: user.role
+      role: user.role,
+      prof_pic_url: user.prof_pic_url
     };
 
     const token = jwt.sign(safeUser, JWT_SECRET, { expiresIn: "1h" });

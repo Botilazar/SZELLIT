@@ -7,6 +7,7 @@ interface User {
   fname: string;
   lname: string;
   role: "STDUSER" | "ADMIN";
+  prof_pic_url?: string;
 }
 
 interface AuthContextType {

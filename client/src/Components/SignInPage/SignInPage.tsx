@@ -1,5 +1,5 @@
 import "./SignInPage.css";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useAuth } from "../../AuthContext";
@@ -9,15 +9,18 @@ const SignInPage = () => {
   const { t } = useTranslation();
   const { lng } = useParams(); // for dynamic links
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const from = (location.state as { from?: string })?.from || `/${lng}/items`;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    console.log(from)
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
@@ -33,7 +36,7 @@ const SignInPage = () => {
         localStorage.setItem("accessToken", result.token); // Save JWT token
         login(result.user);
         toast.success(t("signin.success"));
-        navigate(`/${lng}/items`); // or wherever you want
+        navigate(from, { replace: true }); // or wherever you want
       } else {
         toast.error(result.error || t("signin.genericError"));
       }

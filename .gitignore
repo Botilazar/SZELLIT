@@ -25,3 +25,6 @@ dist-ssr
 
 # environment variables
 .env
+
+#profile-pics
+server/uploads/profile-pics/*
