@@ -1,10 +1,10 @@
-// src/Pages/SettingsPage/SettingsPage.tsx
 import { useEffect, useState } from "react";
 import { useAuth } from "../../AuthContext";
 import { toast } from "react-hot-toast";
 import LoadingAnimation from "../../Components/LoadingAnimation/LoadingAnimation";
 import useDarkMode from "../../hooks/useDarkMode";
 import { UserCircle2, UploadCloud } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface UserData {
     user_id: number;
@@ -16,6 +16,7 @@ interface UserData {
 }
 
 const SettingsPage = () => {
+    const { t } = useTranslation();
     const { user, login } = useAuth();
     const [formData, setFormData] = useState<UserData | null>(null);
     const [loading, setLoading] = useState(true);
@@ -32,19 +33,19 @@ const SettingsPage = () => {
                 const res = await fetch(`http://localhost:5000/api/users/${user.user_id}`, {
                     headers: { Authorization: token ? `Bearer ${token}` : "" },
                 });
-                if (!res.ok) throw new Error("Failed to fetch user data");
+                if (!res.ok) throw new Error(t("settings.fetchError"));
                 const data = await res.json();
                 setFormData(data);
             } catch (err: any) {
                 console.error(err);
-                toast.error(err?.message || "Failed to load user data");
+                toast.error(err?.message || t("settings.fetchError"));
             } finally {
                 setLoading(false);
             }
         };
 
         fetchUser();
-    }, [user]);
+    }, [user, t]);
 
     const handleChange = (key: keyof UserData, value: string) => {
         if (!formData) return;
@@ -72,16 +73,16 @@ const SettingsPage = () => {
 
             if (!res.ok) {
                 const errData = await res.json();
-                throw new Error(errData.error || "Failed to update profile");
+                throw new Error(errData.error || t("settings.saveError"));
             }
 
             const updatedUser = await res.json();
             setFormData(updatedUser);
-            login(updatedUser); // update context
-            toast.success("Profile updated successfully!");
+            login(updatedUser);
+            toast.success(t("settings.saveSuccess"));
         } catch (err: any) {
             console.error(err);
-            toast.error(err?.message || "Failed to update profile");
+            toast.error(err?.message || t("settings.saveError"));
         } finally {
             setSaving(false);
         }
@@ -108,27 +109,26 @@ const SettingsPage = () => {
 
             if (!res.ok) {
                 const errData = await res.json();
-                throw new Error(errData.error || "Failed to upload profile picture");
+                throw new Error(errData.error || t("settings.uploadError"));
             }
 
             const updatedUser = await res.json();
             setFormData(updatedUser);
             login(updatedUser);
-            toast.success("Profile picture updated!");
+            toast.success(t("settings.uploadSuccess"));
         } catch (err: any) {
             console.error(err);
-            toast.error(err?.message || "Failed to upload profile picture");
+            toast.error(err?.message || t("settings.uploadError"));
         }
     };
 
     if (loading) return <LoadingAnimation />;
-    if (!formData) return <div className="text-center p-10">User data not found</div>;
+    if (!formData) return <div className="text-center p-10">{t("settings.userNotFound")}</div>;
 
     return (
         <div className={`max-w-3xl mx-auto p-8 ${isDarkMode ? "text-gray-200" : "text-gray-900"}`}>
-            <h1 className="text-3xl font-bold mb-6 text-center szellit-text">Account Settings</h1>
+            <h1 className="text-3xl font-bold mb-6 text-center szellit-text">{t("settings.title")}</h1>
 
-            {/* White/dark card container */}
             <div className={`szellit-navbar rounded-2xl shadow-md p-8 space-y-8`}>
                 {/* Profile Picture */}
                 <div className="relative w-32 h-32 mx-auto rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden shadow-md group cursor-pointer">
@@ -141,17 +141,15 @@ const SettingsPage = () => {
                     ) : (
                         <UserCircle2 className="w-20 h-20 text-gray-400 dark:text-gray-300" />
                     )}
-
-                    {/* Hover overlay for upload */}
                     <label className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-full transition-opacity cursor-pointer">
                         <UploadCloud className="text-white w-6 h-6" />
                         <input type="file" className="hidden" onChange={handleUpload} />
                     </label>
                 </div>
 
-                {/* Neptun Field (read-only) */}
+                {/* Neptun */}
                 <div className="flex flex-col">
-                    <label className="mb-1 font-medium">Neptun</label>
+                    <label className="mb-1 font-medium">{t("settings.neptun")}</label>
                     <input
                         type="text"
                         value={formData.neptun || ""}
@@ -163,7 +161,7 @@ const SettingsPage = () => {
                 {/* Name Fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex flex-col">
-                        <label className="mb-1 font-medium">First Name</label>
+                        <label className="mb-1 font-medium">{t("settings.firstName")}</label>
                         <input
                             type="text"
                             value={formData.fname}
@@ -172,7 +170,7 @@ const SettingsPage = () => {
                         />
                     </div>
                     <div className="flex flex-col">
-                        <label className="mb-1 font-medium">Last Name</label>
+                        <label className="mb-1 font-medium">{t("settings.lastName")}</label>
                         <input
                             type="text"
                             value={formData.lname}
@@ -184,7 +182,7 @@ const SettingsPage = () => {
 
                 {/* Email Field */}
                 <div className="flex flex-col">
-                    <label className="mb-1 font-medium">Email</label>
+                    <label className="mb-1 font-medium">{t("settings.email")}</label>
                     <input
                         type="email"
                         value={formData.email}
@@ -193,20 +191,17 @@ const SettingsPage = () => {
                     />
                 </div>
 
-
                 {/* Save Button */}
                 <button
                     onClick={handleSave}
                     disabled={saving}
                     className="w-full px-6 py-3 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50"
                 >
-                    {saving ? "Saving..." : "Save Changes"}
+                    {saving ? t("settings.saving") : t("settings.saveChanges")}
                 </button>
             </div>
         </div>
     );
-
-
 };
 
 export default SettingsPage;

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../../AuthContext";
+//import { useAuth } from "../../AuthContext";
 
 import SearchBar from "../../Components/SearchBar/SearchBar";
 import CategorySelector from "../../Components/CategorySelector/CategorySelector";
@@ -46,7 +46,7 @@ const BrowsingPage = () => {
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState(initialLimit);
-  const { user } = useAuth()
+  //const { user } = useAuth()
 
 
   const isSyncingFromUrl = useRef(false);
@@ -179,6 +179,7 @@ const BrowsingPage = () => {
                 itemId={item.item_id}
                 isFavorited={favoriteIds.includes(item.item_id)}
                 sellerProfilePic={`http://localhost:5000${item.prof_pic_url}`}
+                sellerId={item.user_id}
               />
             </div>
           ))

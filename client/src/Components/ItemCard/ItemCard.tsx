@@ -1,9 +1,10 @@
 import { MapPin, Heart, MessageCircle, UserCircle2 } from "lucide-react";
-import { MouseEvent, useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../../AuthContext";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface ItemCardProps {
   category: string;
@@ -13,6 +14,7 @@ interface ItemCardProps {
   price: number;
   location: string;
   sellerName: string;
+  sellerId: number;
   imgUrl?: string;
   itemId: number;
   isFavorited: boolean;
@@ -28,6 +30,7 @@ const ItemCard = ({
   price,
   location,
   sellerName,
+  sellerId,
   imgUrl,
   itemId,
   isFavorited: initialFavorited,
@@ -37,6 +40,12 @@ const ItemCard = ({
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const [isFavorited, setIsFavorited] = useState(initialFavorited);
+  const navigate = useNavigate();
+  const { lng } = useParams();
+
+  useEffect(() => {
+    setIsFavorited(initialFavorited);
+  }, [initialFavorited]);
 
   const handleFavoriteClick = async (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -135,7 +144,11 @@ const ItemCard = ({
                 <UserCircle2 className="w-6 h-6 text-gray-400" />
               )}
             </div>
-            <span className="text-sm font-medium">{sellerName}</span>
+            <span onClick={(e) => {
+              e.stopPropagation();
+              console.log(`${lng}/profiles/${sellerId}`)
+              navigate(`/${lng}/profiles/${sellerId}`); // <-- navigate to seller profile
+            }} className="text-sm font-medium hover">{sellerName}</span>
           </div>
           <div className="flex gap-3">
             <button

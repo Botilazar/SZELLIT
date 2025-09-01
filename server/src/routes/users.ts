@@ -56,7 +56,8 @@ const listUsersHandler: RequestHandler = async (req, res) => {
                 role,
                 is_verified,
                 prof_pic_url,
-                created_at
+                created_at,
+                neptun
              FROM "USER"
              ORDER BY user_id ASC`
         );

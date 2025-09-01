@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Ban, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 import hasRight from "../../utils/hasRight";
 import useDarkMode from "../../hooks/useDarkMode";
@@ -13,6 +14,7 @@ interface User {
     role: "ADMIN" | "STDUSER";
     is_verified: boolean;
     created_at: string;
+    neptun: string;
 }
 
 interface Item {
@@ -29,6 +31,7 @@ interface Item {
 type TableType = "users" | "items";
 
 const AdminPanelPage = () => {
+    const { t } = useTranslation();
     const [tableType, setTableType] = useState<TableType>("users");
     const [users, setUsers] = useState<User[]>([]);
     const [items, setItems] = useState<Item[]>([]);
@@ -99,21 +102,21 @@ const AdminPanelPage = () => {
 
     return (
         <div className={`max-w-7xl mx-auto p-8 space-y-8 ${isDarkMode ? "text-gray-200" : "text-gray-900"}`}>
-            <h1 className="text-3xl font-bold mb-6 szellit-text">Admin Panel</h1>
+            <h1 className="text-3xl font-bold mb-6 szellit-text">{t("adminPanel.title", "Admin Panel")}</h1>
 
             {/* Table Selector */}
             <div className="flex gap-4 mb-4">
                 <button
-                    className={`px-4 py-2 rounded-lg shadow-md ${tableType === "users" ? "bg-blue-500 text-white dark:bg-blue-600" : "szellit-button"}`}
+                    className={`px-4 py-2 rounded-lg shadow-md ${tableType === "users" ? "szellit-thead" : "szellit-button"}`}
                     onClick={() => setTableType("users")}
                 >
-                    Users
+                    {t("adminPanel.tables.users", "Users")}
                 </button>
                 <button
-                    className={`px-4 py-2 rounded-lg shadow-md ${tableType === "items" ? "bg-blue-500 text-white dark:bg-blue-600" : "szellit-button"}`}
+                    className={`px-4 py-2 rounded-lg shadow-md ${tableType === "items" ? "szellit-thead" : "szellit-button"}`}
                     onClick={() => setTableType("items")}
                 >
-                    Items
+                    {t("adminPanel.tables.items", "Items")}
                 </button>
             </div>
 
@@ -123,7 +126,11 @@ const AdminPanelPage = () => {
                     <Search className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                     <input
                         type="text"
-                        placeholder={tableType === "users" ? "Search by name or email..." : "Search by title or description..."}
+                        placeholder={
+                            tableType === "users"
+                                ? t("adminPanel.search.users", "Search by name or email...")
+                                : t("adminPanel.search.items", "Search by title or description...")
+                        }
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="szellit-search-input"
@@ -136,9 +143,9 @@ const AdminPanelPage = () => {
                         onChange={(e) => setRoleFilter(e.target.value as "all" | "admin" | "stduser")}
                         className="szellit-filter-select"
                     >
-                        <option value="all">All Roles</option>
-                        <option value="admin">Admins</option>
-                        <option value="stduser">Standard Users</option>
+                        <option value="all">{t("adminPanel.filters.allRoles", "All Roles")}</option>
+                        <option value="admin">{t("adminPanel.filters.admins", "Admins")}</option>
+                        <option value="stduser">{t("adminPanel.filters.stdUsers", "Standard Users")}</option>
                     </select>
                 )}
             </div>
@@ -150,24 +157,25 @@ const AdminPanelPage = () => {
                         <tr>
                             {tableType === "users" ? (
                                 <>
-                                    <th className="px-6 py-3 font-semibold">ID</th>
-                                    <th className="px-6 py-3 font-semibold">Name</th>
-                                    <th className="px-6 py-3 font-semibold">Email</th>
-                                    <th className="px-6 py-3 font-semibold">Role</th>
-                                    <th className="px-6 py-3 font-semibold">Verified</th>
-                                    <th className="px-6 py-3 font-semibold">Created</th>
-                                    <th className="px-6 py-3 font-semibold">Actions</th>
+                                    <th className="px-6 py-3 font-semibold">{t("adminPanel.tableHeaders.id", "ID")}</th>
+                                    <th className="px-6 py-3 font-semibold">{t("adminPanel.tableHeaders.neptun", "Neptun")}</th>
+                                    <th className="px-6 py-3 font-semibold">{t("adminPanel.tableHeaders.name", "Name")}</th>
+                                    <th className="px-6 py-3 font-semibold">{t("adminPanel.tableHeaders.email", "Email")}</th>
+                                    <th className="px-6 py-3 font-semibold">{t("adminPanel.tableHeaders.role", "Role")}</th>
+                                    <th className="px-6 py-3 font-semibold">{t("adminPanel.tableHeaders.verified", "Verified")}</th>
+                                    <th className="px-6 py-3 font-semibold">{t("adminPanel.tableHeaders.created", "Created")}</th>
+                                    <th className="px-6 py-3 font-semibold">{t("adminPanel.tableHeaders.actions", "Actions")}</th>
                                 </>
                             ) : (
                                 <>
-                                    <th className="px-6 py-3 font-semibold">ID</th>
-                                    <th className="px-6 py-3 font-semibold">Title</th>
-                                    <th className="px-6 py-3 font-semibold">Description</th>
-                                    <th className="px-6 py-3 font-semibold">Price</th>
-                                    <th className="px-6 py-3 font-semibold">Category</th>
-                                    <th className="px-6 py-3 font-semibold">Seller</th>
-                                    <th className="px-6 py-3 font-semibold">City</th>
-                                    <th className="px-6 py-3 font-semibold">Created</th>
+                                    <th className="px-6 py-3 font-semibold">{t("adminPanel.tableHeaders.id", "ID")}</th>
+                                    <th className="px-6 py-3 font-semibold">{t("adminPanel.tableHeaders.title", "Title")}</th>
+                                    <th className="px-6 py-3 font-semibold">{t("adminPanel.tableHeaders.description", "Description")}</th>
+                                    <th className="px-6 py-3 font-semibold">{t("adminPanel.tableHeaders.price", "Price")}</th>
+                                    <th className="px-6 py-3 font-semibold">{t("adminPanel.tableHeaders.category", "Category")}</th>
+                                    <th className="px-6 py-3 font-semibold">{t("adminPanel.tableHeaders.seller", "Seller")}</th>
+                                    <th className="px-6 py-3 font-semibold">{t("adminPanel.tableHeaders.city", "City")}</th>
+                                    <th className="px-6 py-3 font-semibold">{t("adminPanel.tableHeaders.created", "Created")}</th>
                                 </>
                             )}
                         </tr>
@@ -175,25 +183,30 @@ const AdminPanelPage = () => {
                     <tbody>
                         {tableType === "users" && filteredUsers.length > 0 ? (
                             filteredUsers.map((u, idx) => (
-                                <tr key={u.user_id} className={rowBg(idx)}>
+                                <tr
+                                    key={u.user_id}
+                                    className={`${rowBg(idx)} cursor-pointer table-hover transition`}
+                                    onClick={() => navigate(`/${lng}/profiles/${u.user_id}`)}
+                                >
                                     <td className="px-6 py-3">{u.user_id}</td>
+                                    <td className="px-6 py-3">{u.neptun}</td>
                                     <td className="px-6 py-3">{u.fname} {u.lname}</td>
                                     <td className="px-6 py-3">{u.email}</td>
                                     <td className="px-6 py-3 capitalize">{u.role.toLowerCase()}</td>
                                     <td className="px-6 py-3">
                                         {u.is_verified ? (
-                                            <span className="text-green-600 font-semibold">Yes</span>
+                                            <span className="text-green-600 font-semibold">{t("adminPanel.yes", "Yes")}</span>
                                         ) : (
-                                            <span className="text-red-600 font-semibold">No</span>
+                                            <span className="text-red-600 font-semibold">{t("adminPanel.no", "No")}</span>
                                         )}
                                     </td>
                                     <td className="px-6 py-3">{new Date(u.created_at).toLocaleDateString()}</td>
-                                    <td className="px-6 py-3">
+                                    <td className="px-6 py-3" onClick={(e) => e.stopPropagation()}>
                                         <button
-                                            onClick={() => alert(`Ban user ${u.email} (TODO)`)}
+                                            onClick={() => alert(t("adminPanel.banAlert", `Ban user ${u.email} (TODO)`))}
                                             className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition"
                                         >
-                                            <Ban className="w-4 h-4" /> Ban
+                                            <Ban className="w-4 h-4" /> {t("adminPanel.ban", "Ban")}
                                         </button>
                                     </td>
                                 </tr>
@@ -218,8 +231,8 @@ const AdminPanelPage = () => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan={tableType === "users" ? 7 : 8} className="px-6 py-6 text-center text-gray-500 dark:text-gray-300">
-                                    No records found.
+                                <td colSpan={tableType === "users" ? 8 : 8} className="px-6 py-6 text-center text-gray-500 dark:text-gray-300">
+                                    {t("adminPanel.noRecords", "No records found.")}
                                 </td>
                             </tr>
                         )}
@@ -231,25 +244,23 @@ const AdminPanelPage = () => {
             <div className="grid md:grid-cols-2 gap-6">
                 {tableType === "users" ? (
                     <div className="szellit-navbar p-6 rounded-2xl shadow-md">
-                        <h2 className="text-xl font-semibold mb-3">User Statistics</h2>
-                        <p>Total Users: {users.length}</p>
-                        <p>Admins: {users.filter(u => u.role === "ADMIN").length}</p>
-                        <p>Standard Users: {users.filter(u => u.role === "STDUSER").length}</p>
+                        <h2 className="text-xl font-semibold mb-3">{t("adminPanel.stats.userStats", "User Statistics")}</h2>
+                        <p>{t("adminPanel.stats.totalUsers", "Total Users")}: {users.length}</p>
+                        <p>{t("adminPanel.stats.admins", "Admins")}: {users.filter(u => u.role === "ADMIN").length}</p>
+                        <p>{t("adminPanel.stats.stdUsers", "Standard Users")}: {users.filter(u => u.role === "STDUSER").length}</p>
                     </div>
                 ) : (
                     <div className="szellit-navbar p-6 rounded-2xl shadow-md">
-                        <h2 className="text-xl font-semibold mb-3">Item Statistics</h2>
-                        <p>Total Items: {items.length}</p>
-                        <p>Categories: {Array.from(new Set(items.map(i => i.category_name))).length}</p>
-                        <p>Average Price: {items.length > 0 ? (items.reduce((acc, i) => acc + i.price, 0) / items.length).toFixed(2) : 0}</p>
+                        <h2 className="text-xl font-semibold mb-3">{t("adminPanel.stats.itemStats", "Item Statistics")}</h2>
+                        <p>{t("adminPanel.stats.totalItems", "Total Items")}: {items.length}</p>
+                        <p>{t("adminPanel.stats.categories", "Categories")}: {Array.from(new Set(items.map(i => i.category_name))).length}</p>
+                        <p>{t("adminPanel.stats.avgPrice", "Average Price")}: {items.length > 0 ? (items.reduce((acc, i) => acc + i.price, 0) / items.length).toFixed(2) : 0}</p>
                     </div>
                 )}
 
                 <div className="szellit-navbar p-6 rounded-2xl shadow-md">
-                    <h2 className="text-xl font-semibold mb-3">Admin Notes</h2>
-                    <p className="szellit-text text-sm">
-                        Here you can leave internal notes, or show system alerts/logs.
-                    </p>
+                    <h2 className="text-xl font-semibold mb-3">{t("adminPanel.notes.title", "Admin Notes")}</h2>
+                    <p className="szellit-text text-sm">{t("adminPanel.notes.description", "Here you can leave internal notes, or show system alerts/logs.")}</p>
                 </div>
             </div>
         </div>

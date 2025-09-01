@@ -94,5 +94,79 @@
   },
   "browsing": {
     "noResults": "Keine Ergebnisse."
+  },
+  "adminPanel": {
+    "title": "Admin Panel",
+    "tables": {
+      "users": "Benutzer",
+      "items": "Artikel"
+    },
+    "search": {
+      "users": "Suche nach Name oder E-Mail...",
+      "items": "Suche nach Titel oder Beschreibung..."
+    },
+    "filters": {
+      "allRoles": "Alle Rollen",
+      "admins": "Admins",
+      "stdUsers": "Normale Benutzer"
+    },
+    "tableHeaders": {
+      "id": "ID",
+      "neptun": "Neptun",
+      "name": "Name",
+      "email": "E-Mail",
+      "role": "Rolle",
+      "verified": "Verifiziert",
+      "created": "Erstellt",
+      "actions": "Aktionen",
+      "title": "Titel",
+      "description": "Beschreibung",
+      "price": "Preis",
+      "category": "Kategorie",
+      "seller": "Verkäufer",
+      "city": "Stadt"
+    },
+    "yes": "Ja",
+    "no": "Nein",
+    "ban": "Sperren",
+    "banAlert": "Benutzer sperren (TODO)",
+    "noRecords": "Keine Einträge gefunden.",
+    "stats": {
+      "userStats": "Benutzerstatistiken",
+      "totalUsers": "Gesamtanzahl Benutzer",
+      "admins": "Admins",
+      "stdUsers": "Normale Benutzer",
+      "itemStats": "Artikelstatistiken",
+      "totalItems": "Gesamtanzahl Artikel",
+      "categories": "Kategorien",
+      "avgPrice": "Durchschnittspreis"
+    },
+    "notes": {
+      "title": "Admin-Notizen",
+      "description": "Hier können interne Notizen hinterlassen oder Systemwarnungen/Logs angezeigt werden."
+    }
+  },
+  "settings": {
+    "title": "Kontoeinstellungen",
+    "neptun": "Neptun",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "email": "E-Mail",
+    "saveChanges": "Änderungen speichern",
+    "saving": "Speichern...",
+    "saveSuccess": "Profil erfolgreich aktualisiert!",
+    "saveError": "Profilaktualisierung fehlgeschlagen",
+    "fetchError": "Benutzerdaten konnten nicht geladen werden",
+    "uploadSuccess": "Profilbild erfolgreich aktualisiert!",
+    "uploadError": "Profilbild konnte nicht hochgeladen werden",
+    "userNotFound": "Benutzerdaten nicht gefunden"
+  },
+  "profile": {
+    "contact": "Kontakt",
+    "listings": "'s Anzeigen",
+    "noListings": "Noch keine Anzeigen.",
+    "userNotFound": "Benutzer nicht gefunden",
+    "fetchUserError": "Benutzerdaten konnten nicht geladen werden",
+    "fetchItemsError": "Die Anzeigen des Benutzers konnten nicht geladen werden"
   }
 }

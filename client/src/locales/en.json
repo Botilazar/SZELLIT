@@ -29,7 +29,7 @@
     "remember": "Remember me",
     "forgot": "Forgot your password?",
     "button": "Sign in",
-    "success":"Signed in successfully"
+    "success": "Signed in successfully"
   },
   "register": {
     "title": "Create your account",
@@ -124,5 +124,79 @@
   },
   "browsing": {
     "noResults": "No results."
+  },
+  "adminPanel": {
+    "title": "Admin Panel",
+    "tables": {
+      "users": "Users",
+      "items": "Items"
+    },
+    "search": {
+      "users": "Search by name or email...",
+      "items": "Search by title or description..."
+    },
+    "filters": {
+      "allRoles": "All Roles",
+      "admins": "Admins",
+      "stdUsers": "Standard Users"
+    },
+    "tableHeaders": {
+      "id": "ID",
+      "neptun": "Neptun",
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "verified": "Verified",
+      "created": "Created",
+      "actions": "Actions",
+      "title": "Title",
+      "description": "Description",
+      "price": "Price",
+      "category": "Category",
+      "seller": "Seller",
+      "city": "City"
+    },
+    "yes": "Yes",
+    "no": "No",
+    "ban": "Ban",
+    "banAlert": "Ban user (TODO)",
+    "noRecords": "No records found.",
+    "stats": {
+      "userStats": "User Statistics",
+      "totalUsers": "Total Users",
+      "admins": "Admins",
+      "stdUsers": "Standard Users",
+      "itemStats": "Item Statistics",
+      "totalItems": "Total Items",
+      "categories": "Categories",
+      "avgPrice": "Average Price"
+    },
+    "notes": {
+      "title": "Admin Notes",
+      "description": "Here you can leave internal notes, or show system alerts/logs."
+    }
+  },
+  "settings": {
+    "title": "Account Settings",
+    "neptun": "Neptun",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "saveSuccess": "Profile updated successfully!",
+    "saveError": "Failed to update profile",
+    "fetchError": "Failed to load user data",
+    "uploadSuccess": "Profile picture updated!",
+    "uploadError": "Failed to upload profile picture",
+    "userNotFound": "User data not found"
+  },
+  "profile": {
+    "contact": "Contact",
+    "listings": "'s Listings",
+    "noListings": "No listings yet.",
+    "userNotFound": "User not found",
+    "fetchUserError": "Failed to fetch user data",
+    "fetchItemsError": "Failed to fetch user's items"
   }
 }

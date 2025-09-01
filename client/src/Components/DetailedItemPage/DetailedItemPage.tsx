@@ -15,6 +15,7 @@ interface Item {
   seller_name: string;
   seller_city: string;
   img_urls?: string[];
+  user_id: number;
 }
 
 const DetailedItemPage = () => {
@@ -172,7 +173,7 @@ const DetailedItemPage = () => {
 
           <div className="mt-6 space-y-2">
             <p>
-              <span className="font-semibold">Seller:</span> {item.seller_name}
+              <span className=" font-semibold">Seller:</span> <span onClick={() => navigate(`/${lng}/profiles/${item.user_id}`)} className="hover:text-blue-500 cursor-pointer">{item.seller_name}</span>
             </p>
             <p>
               <span className="font-semibold">City:</span> {item.seller_city}
