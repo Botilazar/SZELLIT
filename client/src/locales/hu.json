@@ -17,7 +17,8 @@
     "profile": "Profil",
     "settings": "Beállítások",
     "favorites": "Kedvencek",
-    "logout": "Kijelentkezés"
+    "logout": "Kijelentkezés",
+    "login": "Bejelentkezés"
   },
   "signin": {
     "title": "Bejelentkezés",
@@ -27,7 +28,8 @@
     "password": "Jelszó",
     "remember": "Emlékezz rám",
     "forgot": "Elfelejtetted a jelszavad?",
-    "button": "Bejelentkezés"
+    "button": "Bejelentkezés",
+    "success": "Sikeres bejelentkezés"
   },
   "register": {
     "title": "Fiók létrehozása",
@@ -83,5 +85,88 @@
     "error": "Hiba az e-mail ellenőrzésekor. A link érvénytelen vagy lejárt.",
     "invalidToken": "A verifikációs token érvénytelen vagy lejárt.",
     "networkError": "Hálózati hiba történt. Kérjük, ellenőrizd az internetkapcsolatodat és próbáld újra."
+  },
+  "favorites": {
+    "title": "Kedvencek",
+    "empty": "Nincs kedvenc hirdetés.",
+    "loading": "Betöltés…",
+    "error": "Hiba"
+  },
+  "browsing": {
+    "noResults": "Nincs találat."
+  },
+  "adminPanel": {
+    "title": "Admin Panel",
+    "tables": {
+      "users": "Felhasználók",
+      "items": "Tételek"
+    },
+    "search": {
+      "users": "Keresés név vagy email alapján...",
+      "items": "Keresés cím vagy leírás alapján..."
+    },
+    "filters": {
+      "allRoles": "Minden szerep",
+      "admins": "Adminok",
+      "stdUsers": "Normál felhasználók"
+    },
+    "tableHeaders": {
+      "id": "ID",
+      "neptun": "Neptun",
+      "name": "Név",
+      "email": "Email",
+      "role": "Szerep",
+      "verified": "Ellenőrizve",
+      "created": "Létrehozva",
+      "actions": "Műveletek",
+      "title": "Cím",
+      "description": "Leírás",
+      "price": "Ár",
+      "category": "Kategória",
+      "seller": "Eladó",
+      "city": "Város"
+    },
+    "yes": "Igen",
+    "no": "Nem",
+    "ban": "Tiltás",
+    "banAlert": "Felhasználó tiltása (TODO)",
+    "noRecords": "Nincs találat.",
+    "stats": {
+      "userStats": "Felhasználói statisztika",
+      "totalUsers": "Összes felhasználó",
+      "admins": "Adminok",
+      "stdUsers": "Normál felhasználók",
+      "itemStats": "Tételek statisztikája",
+      "totalItems": "Összes tétel",
+      "categories": "Kategóriák",
+      "avgPrice": "Átlagár"
+    },
+    "notes": {
+      "title": "Admin megjegyzések",
+      "description": "Itt belső megjegyzéseket hagyhatsz, vagy megjeleníthetsz rendszerüzeneteket/logokat."
+    }
+  },
+  "settings": {
+    "title": "Fiókbeállítások",
+    "neptun": "Neptun",
+    "firstName": "Keresztnév",
+    "lastName": "Vezetéknév",
+    "email": "E-mail",
+    "saveChanges": "Változtatások mentése",
+    "saving": "Mentés...",
+    "saveSuccess": "Profil sikeresen frissítve!",
+    "saveError": "A profil frissítése sikertelen",
+    "fetchError": "Felhasználói adatok betöltése sikertelen",
+    "uploadSuccess": "Profilkép sikeresen frissítve!",
+    "uploadError": "Profilkép feltöltése sikertelen",
+    "userNotFound": "A felhasználói adat nem található"
+  },
+  "profile": {
+    "contact": "Kapcsolat",
+    "listings": " hirdetései",
+    "noListings": "Még nincs hirdetés.",
+    "userNotFound": "A felhasználó nem található",
+    "fetchUserError": "A felhasználói adatok betöltése sikertelen",
+    "fetchItemsError": "A felhasználó hirdetéseinek betöltése sikertelen"
   }
 }

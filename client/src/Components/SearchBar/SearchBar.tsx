@@ -10,7 +10,7 @@ const SearchBar = ({ value, onChange }: SearchBarProps) => {
     const { t } = useTranslation();
 
     return (
-        <div className="szellit-search w-full flex items-center  rounded-xl px-4 py-3 ">
+        <div className="szellit-search-input w-full flex items-center  rounded-xl px-4 py-3 ">
             <Search className="text-gray-500 mr-3 w-5 h-5" />
             <input
                 type="text"

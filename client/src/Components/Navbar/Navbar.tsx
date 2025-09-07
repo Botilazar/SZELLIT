@@ -1,11 +1,12 @@
 import { FaUserCircle, FaWallet } from "react-icons/fa";
 import { MdDarkMode } from "react-icons/md";
 import { LuSun } from "react-icons/lu";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import i18n from "../../i18n";
 import { useTranslation } from "react-i18next";
 import useDarkMode from "../../hooks/useDarkMode";
+import { useAuth } from "../../AuthContext";
 import huFlag from "../../assets/hungary.png";
 import gbFlag from "../../assets/united-kingdom.png";
 import deFlag from "../../assets/germany.png";
@@ -19,8 +20,9 @@ const Navbar = () => {
   const location = useLocation();
   const { lng } = useParams<{ lng: SupportedLang }>();
   const { t } = useTranslation();
-
   const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const { user, logout } = useAuth();
+  const profileRef = useRef<HTMLDivElement>(null);
 
   const supportedLangs: Record<SupportedLang, string> = {
     hu: huFlag,
@@ -43,35 +45,50 @@ const Navbar = () => {
     setProfileOpen(false);
   };
 
+  // Close profile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <nav className="w-full h-[93px] szellit-navbar shadow-md flex items-center justify-between px-6">
       {/* Logo */}
-      <div className="flex items-center h-full">
+      <div className="flex items-center h-full cursor-pointer" onClick={() => goTo("/items")}>
         <Logo />
       </div>
 
       {/* Actions */}
       <div className="flex items-center gap-4">
-        <button className="szellit-button flex items-center gap-2 border-2 rounded-[15px] px-6 py-3 text-[#313944] font-extrabold uppercase ">
-          <FaWallet className="szellit-background text-xl" />
-          <span className="szellit-text">{t("navbar.sell")}</span>
+        {/* Sell Button */}
+        <button
+          className="flex items-center gap-2 px-6 py-3 rounded-full 
+               bg-gradient-to-r from-blue-500 to-blue-600 
+               text-white font-semibold shadow-md 
+               transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95"
+        >
+          <FaWallet className="text-lg" />
+          <span>{t("navbar.sell")}</span>
         </button>
 
         {/* Language Flags */}
-        <div className="szellit-background flex items-center gap-1 border-2 rounded-[15px] px-1 py-1 ">
+        <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-2 py-1 shadow-sm">
           {Object.entries(supportedLangs).map(([code, flag]) => (
             <button
               key={code}
               onClick={() => changeLanguage(code as SupportedLang)}
-              className={`szellit-button p-1 rounded-md  ${lng === code
-                ? "szellit-button "
-                : ""
-                }`}
+              className={`relative p-1 rounded-md transition-all duration-200 hover:scale-110
+        ${lng === code ? "scale-105" : "grayscale opacity-70 hover:grayscale-0 hover:opacity-100"}`}
             >
               <img
                 src={flag}
                 alt={code}
-                className="h-[30px] w-[40px] object-cover"
+                className="h-8 w-12 object-cover rounded-md"
               />
             </button>
           ))}
@@ -80,38 +97,96 @@ const Navbar = () => {
         {/* Dark Mode Toggle */}
         <button
           onClick={toggleDarkMode}
-          className=" szellit-button flex items-center justify-center border-2 rounded-full w-[57px] h-[57px] "
+          className={`relative flex items-center justify-center w-[50px] h-[50px] rounded-full 
+              transition-all duration-300 
+              ${isDarkMode ? "bg-yellow-400/20" : "bg-gray-800/20"} 
+              hover:scale-110 hover:shadow-lg`}
           aria-label="Toggle dark mode"
         >
-          {isDarkMode ? <LuSun className="szellit-button text-2xl" /> : <MdDarkMode className="szellit-button text-2xl" />}
+          {isDarkMode ? (
+            <LuSun className="text-yellow-400 text-2xl transition-transform duration-300 transform" />
+          ) : (
+            <MdDarkMode className="text-gray-900 text-2xl transition-transform duration-300 transform" />
+          )}
         </button>
 
-        {/* Profile */}
-        <div className="relative">
-          <button
-            onClick={() => setProfileOpen(!profileOpen)}
-            className="szellit-buton text-[2.7rem] focus:outline-none"
-          >
-            <FaUserCircle />
-          </button>
+        {/* Profile / Login */}
+        {/* Profile / Login */}
+        <div className="relative" ref={profileRef}>
+          {user ? (
+            // Logged-in view: name + profile icon + dropdown
+            <>
+              <div className="relative" ref={profileRef}>
+                <button
+                  onClick={() => setProfileOpen(!profileOpen)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium shadow-sm transition-all duration-300
+            ${isDarkMode ? "bg-gray-800 text-white hover:bg-gray-700" : "bg-white text-gray-900 hover:bg-gray-100"}`}
+                >
+                  {/* Initials avatar */}
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden text-white">
+                    {user.prof_pic_url ? (
+                      <img
+                        src={`http://localhost:5000${user.prof_pic_url}`}
+                        alt={`${user.fname} ${user.lname}`}
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <span className="font-medium">
+                        {user?.fname?.[0]}
+                        {user?.lname?.[0]}
+                      </span>
+                    )}
+                  </div>
+                  {/* Name */}
+                  <span className="hidden sm:inline">{user?.fname} {user?.lname}</span>
+                </button>
 
-          {profileOpen && (
-            <div className="szellit-background absolute right-0 mt-2 w-48  rounded-lg shadow-lg z-50">
-              <button onClick={() => goTo("/profile")} className="w-full text-left px-4 py-2 szellit-button">
-                {t("navbar.profile")}
-              </button>
-              <button onClick={() => goTo("/settings")} className="w-full text-left px-4 py-2 szellit-button">
-                {t("navbar.settings")}
-              </button>
-              <button onClick={() => goTo("/favorites")} className="w-full text-left px-4 py-2 szellit-button">
-                {t("navbar.favorites")}
-              </button>
-              <button onClick={() => setProfileOpen(false)} className="w-full text-left px-4 py-2 text-red-600 szellit-button">
-                {t("navbar.logout")}
-              </button>
-            </div>
+                {/* Dropdown menu */}
+                {profileOpen && (
+                  <div
+                    className={`absolute right-0 mt-2 w-48 rounded-xl shadow-lg ring-1 overflow-hidden
+              transition-all duration-200 animate-slide-down
+              ${isDarkMode ? "bg-gray-800 text-gray-200 ring-white/20" : "bg-white text-gray-900 ring-black/10"}`}
+                  >
+                    {[
+                      { label: t("navbar.profile"), action: () => goTo(`/profiles/${user.user_id}`) },
+                      { label: t("navbar.settings"), action: () => goTo("/settings") },
+                      { label: t("navbar.favorites"), action: () => goTo("/favorites") },
+                      ...(user?.role === "ADMIN" ? [{ label: "Admin Panel", action: () => goTo("/adminpanel") }] : [])
+                    ].map(({ label, action }) => (
+                      <button
+                        key={label}
+                        onClick={action}
+                        className={`w-full text-left px-4 py-2 transition-colors duration-200
+                  ${isDarkMode ? "hover:bg-gray-700 text-gray-200" : "hover:bg-gray-100 text-gray-900"}`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                    <button
+                      onClick={logout}
+                      className={`w-full text-left px-4 py-2 transition-colors duration-200 text-red-600
+                ${isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"}`}
+                    >
+                      {t("navbar.logout")}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            // Not logged in: styled same as logged-in button
+            <button
+              onClick={() => goTo("/login")}
+              className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium shadow-sm transition-all duration-300
+        ${isDarkMode ? "bg-gray-800 text-white hover:bg-gray-700" : "bg-white text-gray-900 hover:bg-gray-100"}`}
+            >
+              <FaUserCircle className="text-lg" />
+              {t("navbar.login")}
+            </button>
           )}
         </div>
+
       </div>
     </nav>
   );

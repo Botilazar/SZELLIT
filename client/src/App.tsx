@@ -1,4 +1,3 @@
-// src/App.tsx
 import {
   Route,
   Routes,
@@ -20,6 +19,11 @@ import { AuthProvider } from "./AuthContext";
 import ResetPasswordPage from "./Components/ResetPasswordPage/ResetPasswordPage";
 import EmailVerifyPage from "./Components/EmailVerifyPage/EmailVerify";
 import ConfirmResetPasswordPage from "./Components/confirmResetPasswordPage/confirmResetPasswordPage";
+import FavoritesPage from "./Components/FavoritesPage/FavoritesPage";
+import DetailedItemPage from "./Components/DetailedItemPage/DetailedItemPage";
+import AdminPanelPage from "./Components/AdminPanelPage/AdminPanelPage";
+import ProfilePage from "./Components/ProfilePage/ProfilePage";
+import SettingsPage from "./Components/SettingsPage/SettingsPage";
 
 function LocaleWrapper() {
   const { lng } = useParams<{ lng: string }>();
@@ -52,7 +56,12 @@ function App() {
             <Route path="register" element={<RegisterPage />} />
             <Route path="login" element={<SignInPage />} />
             <Route path="items" element={<BrowsingPage />} />
+            <Route path="items/:itemId" element={<DetailedItemPage />} />
+            <Route path="profiles/:userId" element={<ProfilePage />} />
+            <Route path="settings" element={<SettingsPage />} />
+            <Route path="favorites" element={<FavoritesPage />} />
             <Route path="reset-password" element={<ResetPasswordPage />} />
+            <Route path="adminpanel" element={<AdminPanelPage />} />
             <Route
               path="reset-password-confirm"
               element={<ConfirmResetPasswordPage />}

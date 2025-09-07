@@ -1,15 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
+//import { useAuth } from "../../AuthContext";
 
 import SearchBar from "../../Components/SearchBar/SearchBar";
 import CategorySelector from "../../Components/CategorySelector/CategorySelector";
 import FilterDropdown from "../../Components/FilterDropdown/FilterDropdown";
 import ItemCard from "../../Components/ItemCard/ItemCard";
 import Pagination from "../Pagination/Pagination";
-import DetailedItemDialog from "../Dialog/detailedItemDialog"; // <-- updated import
-import DetailedItem from "../Other/DetailedItem";
-
 interface Item {
   item_id: number;
   title: string;
@@ -21,6 +19,7 @@ interface Item {
   seller_city: string;
   img_urls?: string[];
   user_id: number;
+  prof_pic_url?: string
 }
 
 type FilterOptionKey =
@@ -32,53 +31,42 @@ type FilterOptionKey =
 const BrowsingPage = () => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
   const initialLimit = parseInt(searchParams.get("limit") || "8", 10);
 
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedFilter, setSelectedFilter] = useState<FilterOptionKey>("filters.newestUpload");
+  const [selectedFilter, setSelectedFilter] =
+    useState<FilterOptionKey>("filters.newestUpload");
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [filteredItems, setFilteredItems] = useState<Item[]>([]);
-
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
-
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState(initialLimit);
-  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
+  //const { user } = useAuth()
 
-  const handleCardClick = (item: Item) => {
-    setSelectedItem(item);
-  };
-
-  const handleCloseDialog = () => {
-    setSelectedItem(null);
-  };
 
   const isSyncingFromUrl = useRef(false);
 
   // Debounce search input
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setDebouncedQuery(searchQuery);
-    }, 300);
+    const timeout = setTimeout(() => setDebouncedQuery(searchQuery), 300);
     return () => clearTimeout(timeout);
   }, [searchQuery]);
 
-  // Sync state from URL parameters
+  // Sync state from URL
   useEffect(() => {
     const pageParam = parseInt(searchParams.get("page") || "1", 10);
     const limitParam = parseInt(searchParams.get("limit") || "8", 10);
-
     if (pageParam !== currentPage || limitParam !== itemsPerPage) {
       isSyncingFromUrl.current = true;
       setCurrentPage(pageParam);
       setItemsPerPage(limitParam);
     }
-  }, [currentPage, itemsPerPage, searchParams]);
+  }, [searchParams]);
 
   // Sync URL from state
   useEffect(() => {
@@ -86,57 +74,51 @@ const BrowsingPage = () => {
       isSyncingFromUrl.current = false;
       return;
     }
-
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", currentPage.toString());
     params.set("limit", itemsPerPage.toString());
+    setSearchParams(params);
+  }, [currentPage, itemsPerPage]);
 
-    if (
-      params.get("page") !== searchParams.get("page") ||
-      params.get("limit") !== searchParams.get("limit")
-    ) {
-      setSearchParams(params);
-    }
-  }, [currentPage, itemsPerPage, searchParams, setSearchParams]);
-
-  // Reset page to 1 on items per page change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [itemsPerPage]);
+  // Reset page on itemsPerPage change
+  useEffect(() => setCurrentPage(1), [itemsPerPage]);
 
   // Fetch items and favorites
   useEffect(() => {
-    fetch("http://localhost:5000/api/items")
-      .then((res) => {
-        if (!res.ok) throw new Error("Network error");
-        return res.json();
-      })
-      .then((data) => {
-        setAllItems(data);
-      })
-      .catch((err) => console.error("Items fetch error:", err));
+    let alive = true;
+    (async () => {
+      try {
+        const itemsRes = await fetch("http://localhost:5000/api/items");
+        if (!itemsRes.ok) throw new Error(`Items fetch failed (${itemsRes.status})`);
+        const itemsData = await itemsRes.json();
+        if (alive) setAllItems(itemsData as Item[]);
 
-    fetch("http://localhost:5000/api/favorites")
-      .then((res) => res.json())
-      .then((ids) => setFavoriteIds(ids))
-      .catch((err) => console.error("Favorites fetch error:", err));
+        const token = localStorage.getItem("accessToken") || "";
+        const favRes = await fetch("http://localhost:5000/api/favourites", {
+          headers: { Authorization: token ? `Bearer ${token}` : "" },
+        });
+        if (!favRes.ok) throw new Error(`Favorites fetch failed (${favRes.status})`);
+        const favData = await favRes.json();
+        if (alive && Array.isArray(favData)) setFavoriteIds(favData as number[]);
+      } catch (e: any) {
+        console.error("Fetch error:", e?.message ?? e);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
   }, []);
 
   // Apply filters and sorting
   useEffect(() => {
     const q = debouncedQuery.toLowerCase();
-
-    const result = allItems.filter((item) => {
-      const matchesSearch =
-        item.title.toLowerCase().includes(q) ||
-        item.description.toLowerCase().includes(q) ||
-        item.seller_name.toLowerCase().includes(q);
-
-      const matchesCategory =
-        selectedCategory === "all" || item.category_name === selectedCategory;
-
-      return matchesSearch && matchesCategory;
-    });
+    const result = allItems.filter(
+      (item) =>
+        (item.title.toLowerCase().includes(q) ||
+          item.description.toLowerCase().includes(q) ||
+          item.seller_name.toLowerCase().includes(q)) &&
+        (selectedCategory === "all" || item.category_name === selectedCategory)
+    );
 
     switch (selectedFilter) {
       case "filters.newestUpload":
@@ -161,18 +143,22 @@ const BrowsingPage = () => {
   const endIndex = startIndex + itemsPerPage;
   const itemsToDisplay = filteredItems.slice(startIndex, endIndex);
 
-  const handleToggleFavorite = (itemId: number, isNowFavorited: boolean) => {
-    setFavoriteIds((prev) =>
-      isNowFavorited ? [...prev, itemId] : prev.filter((id) => id !== itemId)
-    );
-  };
+
+  const handleCardClick = (item: Item) => navigate(`${item.item_id}`);
 
   return (
     <div className="szellit-background max-w-[1500px] mx-auto px-4 py-8 space-y-6">
       <SearchBar value={searchQuery} onChange={setSearchQuery} />
+
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <CategorySelector selected={selectedCategory} setSelected={setSelectedCategory} />
-        <FilterDropdown selected={selectedFilter} setSelected={setSelectedFilter} />
+        <CategorySelector
+          selected={selectedCategory}
+          setSelected={setSelectedCategory}
+        />
+        <FilterDropdown
+          selected={selectedFilter}
+          setSelected={setSelectedFilter}
+        />
       </div>
 
       <div className="flex flex-wrap justify-center gap-4 p-4 rounded-xl">
@@ -191,22 +177,12 @@ const BrowsingPage = () => {
                 sellerName={item.seller_name}
                 imgUrl={item.img_urls?.[0] ?? undefined}
                 itemId={item.item_id}
-
                 isFavorited={favoriteIds.includes(item.item_id)}
-                onToggleFavorite={handleToggleFavorite}
+                sellerProfilePic={`http://localhost:5000${item.prof_pic_url}`}
+                sellerId={item.user_id}
               />
             </div>
           ))
-        )}
-
-        {selectedItem && (
-          <DetailedItemDialog onClose={handleCloseDialog}>
-            <DetailedItem
-              item={selectedItem}
-              isFavorited={favoriteIds.includes(selectedItem.item_id)}
-              onToggleFavorite={handleToggleFavorite}
-            />
-          </DetailedItemDialog>
         )}
       </div>
 

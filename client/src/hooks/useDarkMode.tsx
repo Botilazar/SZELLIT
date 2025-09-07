@@ -10,23 +10,15 @@ export default function useDarkMode() {
     const toggleDarkMode = useCallback(() => {
         setIsDarkMode((prev) => {
             const next = !prev;
-            const html = document.documentElement;
-            if (next) {
-                html.classList.add("dark");
-                localStorage.setItem("theme", "dark");
-                localStorage.setItem("isDarkMode", "true");
-                localStorage.setItem("dark-mode", "true");
-            } else {
-                html.classList.remove("dark");
-                localStorage.setItem("theme", "light");
-                localStorage.setItem("isDarkMode", "false");
-                localStorage.setItem("dark-mode", "false");
-            }
+            next
+                ? document.documentElement.classList.add("dark")
+                : document.documentElement.classList.remove("dark");
+            localStorage.setItem("theme", next ? "dark" : "light");
             return next;
         });
     }, []);
 
-    // Sync html class when mounting and when state changes
+    // Immediately apply dark class on mount
     useEffect(() => {
         const html = document.documentElement;
         html.classList.toggle("dark", isDarkMode);

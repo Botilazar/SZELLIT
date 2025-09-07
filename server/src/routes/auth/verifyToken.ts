@@ -1,26 +1,33 @@
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret"; // Use env var ideally
-
-export const verifyToken = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "No token provided" });
+// Bővítjük a Request-et, hogy legyen user rajta
+declare global {
+  namespace Express {
+    interface Request {
+      user?: any;
+    }
   }
+}
 
-  const token = authHeader.split(" ")[1];
+export const verifyToken: RequestHandler = (req: Request, res: Response, next: NextFunction) => {
+  const auth = req.headers.authorization;
+  if (!auth || !auth.startsWith("Bearer ")) {
+    res.status(401).json({ error: "Missing or invalid Authorization header" });
+    return;
+  }
+  const token = auth.substring(7);
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    (req as any).user = decoded; // You can type this properly if you want
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      res.status(500).json({ error: "Server misconfigured: JWT_SECRET missing" });
+      return;
+    }
+    const payload = jwt.verify(token, secret);
+    req.user = payload;
     next();
-  } catch (err) {
-    return res.status(403).json({ error: "Invalid token" });
+  } catch (e) {
+    res.status(401).json({ error: "Invalid or expired token" });
   }
 };
