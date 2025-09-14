@@ -36,6 +36,7 @@ const ItemCard = ({
   isFavorited: initialFavorited,
   sellerProfilePic,
   onCardClick,
+
 }: ItemCardProps) => {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();

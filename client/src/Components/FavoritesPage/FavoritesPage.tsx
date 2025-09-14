@@ -18,6 +18,8 @@ type Item = {
   created_at: string;
   category_name: string;
   img_urls?: string[];
+  user_id: number;
+  prof_pic_url?: string;
 };
 
 type FilterOptionKey =
@@ -38,9 +40,9 @@ export default function FavoritesPage() {
   const [selectedFilter, setSelectedFilter] =
     useState<FilterOptionKey>("filters.newestUpload");
 
-  // Lapozás
+  // Lapozás – az Overview sűrűségéhez igazítva
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
 
   // Betöltés/hiba állapot
   const [loading, setLoading] = useState(true);
@@ -50,7 +52,7 @@ export default function FavoritesPage() {
   const locale =
     i18n.language === "hu" ? "hu-HU" : i18n.language === "de" ? "de-DE" : "en-GB";
 
-  // A11y: fókusz cél (skip linkhez)
+  // A11y
   const headingId = "favorites-heading";
   const listId = "favorites-list";
   const mainRef = useRef<HTMLElement | null>(null);
@@ -88,41 +90,7 @@ export default function FavoritesPage() {
     };
   }, []);
 
-  // Kedvenc váltás (optimista frissítés) – DELETE: /api/favorites/:itemId
-  const handleToggleFavorite = async (itemId: number, isNowFavorited: boolean) => {
-    setFavoriteIds((prev) =>
-      isNowFavorited ? [...prev, itemId] : prev.filter((id) => id !== itemId)
-    );
-
-    const token = localStorage.getItem("accessToken") || "";
-    try {
-      if (isNowFavorited) {
-        await fetch("http://localhost:5000/api/favorites", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-          body: JSON.stringify({ item_id: itemId }),
-        });
-      } else {
-        await fetch(`http://localhost:5000/api/favorites/${itemId}`, {
-          method: "DELETE",
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
-        });
-        // azonnal tűnjön el a listából
-        setItems((prev) => prev.filter((x) => x.item_id !== itemId));
-      }
-    } catch (e) {
-      // opcionális rollback
-      setFavoriteIds((prev) =>
-        !isNowFavorited ? [...prev, itemId] : prev.filter((id) => id !== itemId)
-      );
-      console.error("Favorite toggle failed", e);
-    }
-  };
-
-  // Keresés + kategória szűrés + rendezés (memózva)
+  // Keresés + kategória szűrés + rendezés
   const filteredAndSorted = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
 
@@ -133,8 +101,8 @@ export default function FavoritesPage() {
         item.description.toLowerCase().includes(q) ||
         item.seller_name.toLowerCase().includes(q);
 
-      const matchesCategory =
-        selectedCategory === "all" || item.category_name === selectedCategory;
+    const matchesCategory =
+      selectedCategory === "all" || item.category_name === selectedCategory;
 
       return matchesSearch && matchesCategory;
     });
@@ -164,7 +132,7 @@ export default function FavoritesPage() {
   const start = (currentPage - 1) * itemsPerPage;
   const pageItems = filteredAndSorted.slice(start, start + itemsPerPage);
 
-  // Állapot nézetek (ARIA live)
+  // Állapot nézetek
   if (loading)
     return (
       <div className="p-4" role="status" aria-live="polite" aria-busy="true">
@@ -181,7 +149,7 @@ export default function FavoritesPage() {
 
   return (
     <>
-      {/* Skip link a fő tartalomhoz */}
+      {/* Skip link */}
       <a
         href={`#${headingId}`}
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-white focus:text-black focus:px-3 focus:py-2 focus:rounded"
@@ -221,13 +189,9 @@ export default function FavoritesPage() {
           />
         </section>
 
-        {/* Lista */}
+        {/* Lista — az Overview (Browsing) oldal elrendezése */}
         {pageItems.length === 0 ? (
-          <div
-            className="text-sm text-gray-500"
-            role="status"
-            aria-live="polite"
-          >
+          <div className="text-sm text-gray-500" role="status" aria-live="polite">
             {t("browsing.noResults")}
           </div>
         ) : (
@@ -235,7 +199,7 @@ export default function FavoritesPage() {
             id={listId}
             role="list"
             aria-describedby={`${listId}-desc`}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+            className="flex flex-wrap justify-center gap-4 p-2 md:p-4 rounded-xl"
           >
             <span id={`${listId}-desc`} className="sr-only">
               {t("a11y.resultsList", { defaultValue: "Kedvencek listája." })}
@@ -250,7 +214,7 @@ export default function FavoritesPage() {
                 aria-label={`${item.title}, ${item.price} Ft`}
               >
                 <ItemCard
-                  category={item.category_name}
+                  category={t(`categories.${item.category_name}`)}
                   date={new Date(item.created_at).toLocaleDateString(locale)}
                   title={item.title}
                   description={item.description}
@@ -260,7 +224,10 @@ export default function FavoritesPage() {
                   imgUrl={item.img_urls?.[0] ?? undefined}
                   itemId={item.item_id}
                   isFavorited={favoriteIds.includes(item.item_id)}
-                  onToggleFavorite={handleToggleFavorite}
+                  sellerProfilePic={
+                    item.prof_pic_url ? `http://localhost:5000${item.prof_pic_url}` : undefined
+                  }
+                  sellerId={item.user_id}
                 />
               </div>
             ))}
