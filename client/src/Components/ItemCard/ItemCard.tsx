@@ -148,7 +148,7 @@ const ItemCard = ({
               e.stopPropagation();
               console.log(`${lng}/profiles/${sellerId}`)
               navigate(`/${lng}/profiles/${sellerId}`); // <-- navigate to seller profile
-            }} className="text-sm font-medium hover">{sellerName}</span>
+            }} className="text-sm font-medium hover:text-blue-500 cursor-pointer">{sellerName}</span>
           </div>
           <div className="flex gap-3">
             <button
@@ -175,3 +175,4 @@ const ItemCard = ({
 };
 
 export default ItemCard;
+

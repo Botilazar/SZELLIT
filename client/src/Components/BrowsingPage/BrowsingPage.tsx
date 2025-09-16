@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams, useNavigate } from "react-router-dom";
@@ -8,6 +9,8 @@ import CategorySelector from "../../Components/CategorySelector/CategorySelector
 import FilterDropdown from "../../Components/FilterDropdown/FilterDropdown";
 import ItemCard from "../../Components/ItemCard/ItemCard";
 import Pagination from "../Pagination/Pagination";
+import LoadingAnimation from "../LoadingAnimation/LoadingAnimation"; // ✅ import
+
 interface Item {
   item_id: number;
   title: string;
@@ -19,7 +22,7 @@ interface Item {
   seller_city: string;
   img_urls?: string[];
   user_id: number;
-  prof_pic_url?: string
+  prof_pic_url?: string;
 }
 
 type FilterOptionKey =
@@ -46,8 +49,8 @@ const BrowsingPage = () => {
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState(initialLimit);
+  const [loading, setLoading] = useState(true); // ✅ added loading state
   //const { user } = useAuth()
-
 
   const isSyncingFromUrl = useRef(false);
 
@@ -86,12 +89,13 @@ const BrowsingPage = () => {
   // Fetch items and favorites
   useEffect(() => {
     let alive = true;
+    const start = Date.now();
+
     (async () => {
       try {
         const itemsRes = await fetch("http://localhost:5000/api/items");
         if (!itemsRes.ok) throw new Error(`Items fetch failed (${itemsRes.status})`);
         const itemsData = await itemsRes.json();
-        if (alive) setAllItems(itemsData as Item[]);
 
         const token = localStorage.getItem("accessToken") || "";
         const favRes = await fetch("http://localhost:5000/api/favourites", {
@@ -99,11 +103,23 @@ const BrowsingPage = () => {
         });
         if (!favRes.ok) throw new Error(`Favorites fetch failed (${favRes.status})`);
         const favData = await favRes.json();
-        if (alive && Array.isArray(favData)) setFavoriteIds(favData as number[]);
+
+        if (alive) {
+          setAllItems(itemsData as Item[]);
+          if (Array.isArray(favData)) setFavoriteIds(favData as number[]);
+
+          // ensure at least 500ms spinner time
+          const elapsed = Date.now() - start;
+          const remaining = 500 - elapsed;
+          if (remaining > 0) setTimeout(() => setLoading(false), remaining);
+          else setLoading(false);
+        }
       } catch (e: any) {
         console.error("Fetch error:", e?.message ?? e);
+        if (alive) setLoading(false);
       }
     })();
+
     return () => {
       alive = false;
     };
@@ -143,8 +159,10 @@ const BrowsingPage = () => {
   const endIndex = startIndex + itemsPerPage;
   const itemsToDisplay = filteredItems.slice(startIndex, endIndex);
 
-
   const handleCardClick = (item: Item) => navigate(`${item.item_id}`);
+
+  // ✅ show loading animation
+  if (loading) return <LoadingAnimation />;
 
   return (
     <div className="szellit-background max-w-[1500px] mx-auto px-4 py-8 space-y-6">
