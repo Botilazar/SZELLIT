@@ -136,7 +136,7 @@ const ItemCard = ({
             <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shadow-sm">
               {sellerProfilePic ? (
                 <img
-                  src={sellerProfilePic}
+                  src={`http://localhost:5000${sellerProfilePic}`}
                   alt={sellerName}
                   className="w-full h-full object-cover rounded-full"
                 />

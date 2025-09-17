@@ -50,7 +50,7 @@ const getItemsHandler: RequestHandler = async (req: Request, res: Response) => {
         i.created_at,
         c.name AS category_name,
         (COALESCE(NULLIF(TRIM(u.fname), ''), '') ||
-         CASE WHEN TRIM(COALESCE(u.lname, '')) <> '' THEN ' ' || TRIM(u.lname) ELSE '' END) AS seller_name,
+         CASE WHEN TRIM(COALESCE(u.lname, '')) <> '' THEN ' ' || TRIM(u.lname) ELSE '' END) AS seller_name,u.prof_pic_url,
         ''::text AS seller_city,
         (
           SELECT ARRAY_REMOVE(ARRAY_AGG(im.img_url ORDER BY im.place ASC), NULL)

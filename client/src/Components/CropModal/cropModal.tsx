@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Cropper, { Area } from "react-easy-crop";
 import { getCroppedImg } from "../../utils/cropImage";
 
@@ -13,22 +13,42 @@ const CropModal = ({ file, onCancel, onComplete }: CropModalProps) => {
     const [zoom, setZoom] = useState(1);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
+    // Always create a fresh blob URL for the current file
+    const [imageUrl, setImageUrl] = useState<string>(URL.createObjectURL(file));
+
+    useEffect(() => {
+        const newUrl = URL.createObjectURL(file);
+        setImageUrl(newUrl);
+
+        return () => {
+            URL.revokeObjectURL(newUrl);
+        };
+    }, [file]);
+
     const onCropComplete = useCallback((_croppedArea: Area, croppedPixels: Area) => {
         setCroppedAreaPixels(croppedPixels);
     }, []);
 
     const handleDone = async () => {
         if (!croppedAreaPixels) return;
-        const croppedFile = await getCroppedImg(URL.createObjectURL(file), croppedAreaPixels);
-        onComplete(croppedFile);
+
+        try {
+            const croppedFile = await getCroppedImg(imageUrl, croppedAreaPixels, `user-${Date.now()}.png`);
+            onComplete(croppedFile);
+
+            // Revoke URL immediately after use
+            URL.revokeObjectURL(imageUrl);
+        } catch (err) {
+            console.error("Error cropping image:", err);
+        }
     };
 
     return (
-        <div className="szellit-overlay backdrop-blur-sm">
+        <div className="szellit-overlay">
             <div className="szellit-modal p-6 w-[90%] max-w-lg relative">
-                <div className="relative w-full h-96">
+                <div className="relative w-full h-96 bg-gray-200 rounded-md overflow-hidden">
                     <Cropper
-                        image={URL.createObjectURL(file)}
+                        image={imageUrl}
                         crop={crop}
                         zoom={zoom}
                         aspect={1}
@@ -39,11 +59,12 @@ const CropModal = ({ file, onCancel, onComplete }: CropModalProps) => {
                         onCropComplete={onCropComplete}
                     />
                 </div>
+
                 <div className="flex justify-end gap-4 mt-4">
-                    <button onClick={onCancel} className="szellit-button-secondary">
+                    <button className="szellit-button-secondary" onClick={onCancel}>
                         Cancel
                     </button>
-                    <button onClick={handleDone} className="szellit-button-primary">
+                    <button className="szellit-button-primary" onClick={handleDone}>
                         Accept
                     </button>
                 </div>

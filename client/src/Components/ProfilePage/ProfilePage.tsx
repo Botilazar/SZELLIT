@@ -300,7 +300,7 @@ const ProfilePage = () => {
                                 imgUrl={item.image_url}
                                 itemId={item.item_id}
                                 isFavorited={false}
-                                sellerProfilePic={`http://localhost:5000${user.prof_pic_url}`}
+                                sellerProfilePic={user.prof_pic_url}
                                 onCardClick={() => navigate(`/${lng}/items/${item.item_id}`)}
                                 sellerId={item.user_id}
                             />

@@ -3,7 +3,7 @@ import { useAuth } from "../../AuthContext";
 import { toast } from "react-hot-toast";
 import LoadingAnimation from "../../Components/LoadingAnimation/LoadingAnimation";
 import useDarkMode from "../../hooks/useDarkMode";
-import { UserCircle2, UploadCloud } from "lucide-react";
+import { UserCircle2, UploadCloud, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import CropModal from "../CropModal/cropModal";
 
@@ -91,32 +91,26 @@ const SettingsPage = () => {
         }
     };
 
-    // Called when user picks a file
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
-        setCropFile(e.target.files[0]); // open crop modal
+        setCropFile(e.target.files[0]);
     };
 
-    // Called after cropper Accept
     const handleCropComplete = async (croppedFile: File) => {
-        setCropFile(null);
         if (!user) return;
-
         setUploadingPic(true);
-        const startTime = Date.now(); // for enforced 500ms minimum
 
-        const formDataUpload = new FormData();
-        formDataUpload.append("profile_pic", croppedFile);
-
+        const start = Date.now();
         try {
+            const formDataUpload = new FormData();
+            formDataUpload.append("profile_pic", croppedFile);
+
             const token = localStorage.getItem("accessToken") || "";
             const res = await fetch(
                 `http://localhost:5000/api/users/${user.user_id}/upload-profile-pic`,
                 {
                     method: "POST",
-                    headers: {
-                        Authorization: token ? `Bearer ${token}` : "",
-                    },
+                    headers: { Authorization: token ? `Bearer ${token}` : "" },
                     body: formDataUpload,
                 }
             );
@@ -127,13 +121,6 @@ const SettingsPage = () => {
             }
 
             const updatedUser = await res.json();
-
-            // enforce 500ms spinner
-            const elapsed = Date.now() - startTime;
-            if (elapsed < 500) {
-                await new Promise((res) => setTimeout(res, 500 - elapsed));
-            }
-
             setFormData(updatedUser);
             login(updatedUser);
             toast.success(t("settings.uploadSuccess"));
@@ -141,7 +128,41 @@ const SettingsPage = () => {
             console.error(err);
             toast.error(err?.message || t("settings.uploadError"));
         } finally {
-            setUploadingPic(false);
+            const elapsed = Date.now() - start;
+            const wait = elapsed < 500 ? 500 - elapsed : 0;
+            setTimeout(() => setUploadingPic(false), wait);
+            setCropFile(null);
+        }
+    };
+
+    const handleRemoveProfilePic = async () => {
+        if (!user) return;
+        setUploadingPic(true);
+
+        const start = Date.now();
+        try {
+            const token = localStorage.getItem("accessToken") || "";
+            const res = await fetch(
+                `http://localhost:5000/api/users/${user.user_id}/profile-pic`,
+                {
+                    method: "DELETE",
+                    headers: { Authorization: token ? `Bearer ${token}` : "" },
+                }
+            );
+
+            if (!res.ok) throw new Error("Failed to remove profile picture");
+
+            const updatedUser = await res.json();
+            setFormData(updatedUser);
+            login(updatedUser);
+            toast.success("Profile picture removed");
+        } catch (err: any) {
+            console.error(err);
+            toast.error(err?.message || "Failed to remove profile picture");
+        } finally {
+            const elapsed = Date.now() - start;
+            const wait = elapsed < 500 ? 500 - elapsed : 0;
+            setTimeout(() => setUploadingPic(false), wait);
         }
     };
 
@@ -155,29 +176,38 @@ const SettingsPage = () => {
             </h1>
 
             <div className={`szellit-navbar rounded-2xl shadow-md p-8 space-y-8`}>
-                {/* Profile Picture */}
-                <div className="relative w-32 h-32 mx-auto rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden shadow-md group cursor-pointer">
-                    {formData.prof_pic_url ? (
-                        <img
-                            src={`http://localhost:5000${formData.prof_pic_url}`}
-                            alt={`${formData.fname} ${formData.lname}`}
-                            className="w-full h-full object-cover rounded-full"
-                        />
-                    ) : (
-                        <UserCircle2 className="w-20 h-20 text-gray-400 dark:text-gray-300" />
-                    )}
+                {/* Profile Picture Wrapper */}
+                <div className="relative w-32 h-32 mx-auto">
+                    {/* Avatar circle */}
+                    <div className="w-32 h-32 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden shadow-md group cursor-pointer">
+                        {formData.prof_pic_url && !uploadingPic ? (
+                            <img
+                                src={`http://localhost:5000${formData.prof_pic_url}`}
+                                alt={`${formData.fname} ${formData.lname}`}
+                                className="w-full h-full object-cover rounded-full"
+                            />
+                        ) : !formData.prof_pic_url && !uploadingPic ? (
+                            <UserCircle2 className="w-20 h-20 text-gray-400 dark:text-gray-300" />
+                        ) : (
+                            <LoadingAnimation />
+                        )}
 
-                    {/* Spinner overlay */}
-                    {uploadingPic && (
-                        <div className="absolute inset-0 bg-black dark:bg-gray-900 bg-opacity-40 flex items-center justify-center rounded-full z-10">
-                            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                        </div>
-                    )}
+                        {/* Upload overlay */}
+                        <label className="absolute inset-0 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-full bg-black bg-opacity-40 transition-opacity cursor-pointer">
+                            <UploadCloud className="text-white w-6 h-6" />
+                            <input type="file" className="hidden" onChange={handleFileSelect} />
+                        </label>
+                    </div>
 
-                    <label className="absolute inset-0 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer bg-black bg-opacity-40">
-                        <UploadCloud className="text-white w-6 h-6" />
-                        <input type="file" className="hidden" onChange={handleFileSelect} />
-                    </label>
+                    {/* Remove button OUTSIDE the circle */}
+                    {formData.prof_pic_url && !uploadingPic && (
+                        <button
+                            onClick={handleRemoveProfilePic}
+                            className="absolute -bottom-2 -right-2 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition-colors"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </button>
+                    )}
                 </div>
 
                 {/* Other form fields */}
@@ -241,6 +271,6 @@ const SettingsPage = () => {
             )}
         </div>
     );
-};
+}
 
 export default SettingsPage;

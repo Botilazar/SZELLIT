@@ -1,34 +1,36 @@
-export const getCroppedImg = (imageSrc: string, crop: any): Promise<File> => {
-    return new Promise((resolve, reject) => {
-        const image = new Image();
-        image.src = imageSrc;
-        image.crossOrigin = "anonymous";
-
-        image.onload = () => {
-            const canvas = document.createElement("canvas");
-            canvas.width = crop.width;
-            canvas.height = crop.height;
-            const ctx = canvas.getContext("2d");
-            if (!ctx) return reject();
-
-            ctx.drawImage(
-                image,
-                crop.x,
-                crop.y,
-                crop.width,
-                crop.height,
-                0,
-                0,
-                crop.width,
-                crop.height
-            );
-
-            canvas.toBlob((blob) => {
-                if (!blob) return reject();
-                resolve(new File([blob], "cropped.jpg", { type: "image/jpeg" }));
-            }, "image/jpeg");
-        };
-
-        image.onerror = (err) => reject(err);
+import { Area } from "react-easy-crop";
+export async function getCroppedImg(imageSrc: string, pixelCrop: Area, fileName: string): Promise<File> {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image();
+        img.src = imageSrc;
+        img.onload = () => resolve(img);
+        img.onerror = reject;
     });
-};
+
+    const canvas = document.createElement("canvas");
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Cannot get canvas context");
+
+    ctx.drawImage(
+        image,
+        pixelCrop.x,
+        pixelCrop.y,
+        pixelCrop.width,
+        pixelCrop.height,
+        0,
+        0,
+        pixelCrop.width,
+        pixelCrop.height
+    );
+
+    return new Promise<File>((resolve) => {
+        canvas.toBlob((blob) => {
+            if (!blob) throw new Error("Canvas is empty");
+            const file = new File([blob], fileName, { type: blob.type });
+            resolve(file);
+        }, "image/jpeg");
+    });
+}

@@ -196,7 +196,7 @@ const BrowsingPage = () => {
                 imgUrl={item.img_urls?.[0] ?? undefined}
                 itemId={item.item_id}
                 isFavorited={favoriteIds.includes(item.item_id)}
-                sellerProfilePic={`http://localhost:5000${item.prof_pic_url}`}
+                sellerProfilePic={item.prof_pic_url}
                 sellerId={item.user_id}
               />
             </div>
