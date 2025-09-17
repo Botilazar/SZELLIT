@@ -70,7 +70,7 @@ const listUsersHandler: RequestHandler = async (req, res) => {
 };
 
 // =======================
-// GET /api/users/:id -> fetch single user (any logged in user)
+// GET /api/users/:id -> fetch single user
 // =======================
 const getUserHandler: RequestHandler = async (req, res) => {
     try {
@@ -105,7 +105,7 @@ const getUserHandler: RequestHandler = async (req, res) => {
 };
 
 // =======================
-// PUT /api/users/:id -> update user profile (self only)
+// PUT /api/users/:id -> update user profile
 // =======================
 const updateUserHandler: RequestHandler = async (req, res) => {
     try {
@@ -160,6 +160,14 @@ const uploadProfilePicHandler: RequestHandler = async (req, res) => {
             return;
         }
 
+        // Delete old profile pic if exists
+        const userResult = await pool.query(`SELECT prof_pic_url FROM "USER" WHERE user_id = $1`, [id]);
+        const oldUrl = userResult.rows[0]?.prof_pic_url;
+        if (oldUrl) {
+            const oldPath = path.join(__dirname, "../../", oldUrl);
+            if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        }
+
         const fileUrl = `/uploads/profile-pics/${req.file.filename}`;
 
         const result = await pool.query(
@@ -173,6 +181,50 @@ const uploadProfilePicHandler: RequestHandler = async (req, res) => {
         res.status(200).json(result.rows[0]);
     } catch (err) {
         console.error("Error uploading profile picture:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+// =======================
+// DELETE /api/users/:id/profile-pic -> remove profile picture
+// =======================
+const deleteProfilePicHandler: RequestHandler = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const authUser = getUser(req);
+
+        if (authUser.user_id !== Number(id) && authUser.role !== "ADMIN") {
+            res.status(403).json({ error: "Forbidden: cannot delete other users' pics" });
+            return;
+        }
+
+        const userResult = await pool.query(
+            `SELECT prof_pic_url FROM "USER" WHERE user_id = $1`,
+            [id]
+        );
+        const oldUrl = userResult.rows[0]?.prof_pic_url;
+
+        if (!oldUrl) {
+            res.status(400).json({ error: "No profile picture to delete" });
+            return;
+        }
+
+        // Delete file from disk
+        const oldPath = path.join(__dirname, "../../", oldUrl);
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+
+        // Update DB
+        const updatedUserResult = await pool.query(
+            `UPDATE "USER"
+       SET prof_pic_url = NULL
+       WHERE user_id = $1
+       RETURNING user_id, fname, lname, email, prof_pic_url, neptun, role`,
+            [id]
+        );
+
+        res.status(200).json(updatedUserResult.rows[0]);
+    } catch (err) {
+        console.error("Error deleting profile picture:", err);
         res.status(500).json({ error: "Internal server error" });
     }
 };
@@ -223,6 +275,7 @@ router.get("/", listUsersHandler);
 router.get("/:id", getUserHandler);
 router.put("/:id", updateUserHandler);
 router.post("/:id/upload-profile-pic", upload.single("profile_pic"), uploadProfilePicHandler);
+router.delete("/:id/profile-pic", deleteProfilePicHandler);
 router.get("/:id/items", getUserItemsHandler);
 
 export default router;

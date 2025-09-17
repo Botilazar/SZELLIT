@@ -110,7 +110,7 @@ const Navbar = () => {
           )}
         </button>
 
-        {/* Profile / Login */}
+
         {/* Profile / Login */}
         <div className="relative" ref={profileRef}>
           {user ? (
@@ -145,7 +145,7 @@ const Navbar = () => {
                 {profileOpen && (
                   <div
                     className={`absolute right-0 mt-2 w-48 rounded-xl shadow-lg ring-1 overflow-hidden
-              transition-all duration-200 animate-slide-down
+              transition-all duration-200 animate-slide-down z-999
               ${isDarkMode ? "bg-gray-800 text-gray-200 ring-white/20" : "bg-white text-gray-900 ring-black/10"}`}
                   >
                     {[
