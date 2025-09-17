@@ -75,7 +75,7 @@ const BadgesShowcasePage = () => {
     ];
 
     return (
-        <div className="relative w-full min-h-screen bg-gradient-to-b from-gray-50 via-blue-50 to-white text-gray-900 py-6 px-6 overflow-x-hidden">
+        <div className="relative w-full min-h-screen bg-gradient-to-b szellit-background  py-6 px-6 overflow-x-hidden">
 
             {/* Floating background particles */}
             {particles.map((p, i) => (
@@ -96,7 +96,7 @@ const BadgesShowcasePage = () => {
             {/* Minimal Header */}
             <div className="text-center mb-8 z-10 relative">
                 <h1 className="text-3xl font-semibold">Honors & Badges</h1>
-                <p className="text-gray-600 mt-2">
+                <p className="szellit-text mt-2">
                     Explore all achievable badges and your progress.
                 </p>
             </div>
@@ -110,8 +110,7 @@ const BadgesShowcasePage = () => {
                     return (
                         <motion.div
                             key={b.badge_id}
-                            className={`flex flex-col md:flex-row items-center gap-10 p-10 rounded-3xl shadow-lg ${unlocked ? "bg-blue-50" : "bg-gray-200"
-                                }`}
+                            className={"flex flex-col md:flex-row items-center gap-10 p-10 rounded-3xl shadow-lg badge-unlocked"}
                             initial={{ x: slideFrom, opacity: 0 }}
                             whileInView={{ x: 0, opacity: 1 }}
                             viewport={{ once: true, amount: 0.3 }}
@@ -134,15 +133,15 @@ const BadgesShowcasePage = () => {
                             {/* Description */}
                             <div className="flex-1">
                                 <h2 className="text-5xl font-bold mb-6">{b.name}</h2>
-                                <p className="text-xl text-gray-700 leading-relaxed mb-6">
+                                <p className="text-xl szellit-text-dim  leading-relaxed mb-6">
                                     {b.description ||
                                         `Requires ${b.min_honors} honors to unlock this badge. Provide detailed info, tips, fun facts, rewards to make it engaging.`}
                                 </p>
 
                                 {/* Progress bar */}
-                                <div className="w-full bg-gray-300 h-6 rounded-full overflow-hidden">
+                                <div className="w-full szellit-progressbar-remaining h-6 rounded-full overflow-hidden">
                                     <motion.div
-                                        className="h-6 rounded-full bg-blue-400"
+                                        className="h-6 rounded-full szellit-progressbar"
                                         initial={{ width: 0 }}
                                         animate={{
                                             width: `${Math.min(
@@ -153,16 +152,9 @@ const BadgesShowcasePage = () => {
                                         transition={{ duration: 1.5 }}
                                     />
                                 </div>
-                                <p className="text-gray-500 mt-2 text-lg">
+                                <p className="szellit-text mt-2 text-lg">
                                     {Math.min(honors?.totalHonors ?? 0, b.min_honors)} / {b.min_honors} honors
                                 </p>
-
-                                {/* Next badge info */}
-                                {idx < badges.length - 1 && (
-                                    <p className="mt-4 text-gray-500 text-lg">
-                                        Next badge: {badges[idx + 1].name} ({badges[idx + 1].min_honors} honors)
-                                    </p>
-                                )}
                             </div>
                         </motion.div>
                     );

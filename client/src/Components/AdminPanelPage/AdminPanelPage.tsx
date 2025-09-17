@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Ban, Search } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 import hasRight from "../../utils/hasRight";
@@ -41,7 +41,7 @@ const AdminPanelPage = () => {
 
     const { isDarkMode } = useDarkMode();
     const navigate = useNavigate();
-    const lng = "en"; // or get from i18n
+    const { lng } = useParams();
 
     // Fetch users or items
     useEffect(() => {

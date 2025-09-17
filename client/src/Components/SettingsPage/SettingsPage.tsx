@@ -5,6 +5,7 @@ import LoadingAnimation from "../../Components/LoadingAnimation/LoadingAnimation
 import useDarkMode from "../../hooks/useDarkMode";
 import { UserCircle2, UploadCloud } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import CropModal from "../CropModal/cropModal";
 
 interface UserData {
     user_id: number;
@@ -22,6 +23,8 @@ const SettingsPage = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const { isDarkMode } = useDarkMode();
+    const [cropFile, setCropFile] = useState<File | null>(null);
+    const [uploadingPic, setUploadingPic] = useState(false);
 
     useEffect(() => {
         if (!user) return;
@@ -88,11 +91,22 @@ const SettingsPage = () => {
         }
     };
 
-    const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.files || !user) return;
-        const file = e.target.files[0];
+    // Called when user picks a file
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return;
+        setCropFile(e.target.files[0]); // open crop modal
+    };
+
+    // Called after cropper Accept
+    const handleCropComplete = async (croppedFile: File) => {
+        setCropFile(null);
+        if (!user) return;
+
+        setUploadingPic(true);
+        const startTime = Date.now(); // for enforced 500ms minimum
+
         const formDataUpload = new FormData();
-        formDataUpload.append("profile_pic", file);
+        formDataUpload.append("profile_pic", croppedFile);
 
         try {
             const token = localStorage.getItem("accessToken") || "";
@@ -113,12 +127,21 @@ const SettingsPage = () => {
             }
 
             const updatedUser = await res.json();
+
+            // enforce 500ms spinner
+            const elapsed = Date.now() - startTime;
+            if (elapsed < 500) {
+                await new Promise((res) => setTimeout(res, 500 - elapsed));
+            }
+
             setFormData(updatedUser);
             login(updatedUser);
             toast.success(t("settings.uploadSuccess"));
         } catch (err: any) {
             console.error(err);
             toast.error(err?.message || t("settings.uploadError"));
+        } finally {
+            setUploadingPic(false);
         }
     };
 
@@ -127,7 +150,9 @@ const SettingsPage = () => {
 
     return (
         <div className={`max-w-3xl mx-auto p-8 ${isDarkMode ? "text-gray-200" : "text-gray-900"}`}>
-            <h1 className="text-3xl font-bold mb-6 text-center szellit-text">{t("settings.title")}</h1>
+            <h1 className="text-3xl font-bold mb-6 text-center szellit-text">
+                {t("settings.title")}
+            </h1>
 
             <div className={`szellit-navbar rounded-2xl shadow-md p-8 space-y-8`}>
                 {/* Profile Picture */}
@@ -141,13 +166,21 @@ const SettingsPage = () => {
                     ) : (
                         <UserCircle2 className="w-20 h-20 text-gray-400 dark:text-gray-300" />
                     )}
-                    <label className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-full transition-opacity cursor-pointer">
+
+                    {/* Spinner overlay */}
+                    {uploadingPic && (
+                        <div className="absolute inset-0 bg-black dark:bg-gray-900 bg-opacity-40 flex items-center justify-center rounded-full z-10">
+                            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+                    )}
+
+                    <label className="absolute inset-0 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer bg-black bg-opacity-40">
                         <UploadCloud className="text-white w-6 h-6" />
-                        <input type="file" className="hidden" onChange={handleUpload} />
+                        <input type="file" className="hidden" onChange={handleFileSelect} />
                     </label>
                 </div>
 
-                {/* Neptun */}
+                {/* Other form fields */}
                 <div className="flex flex-col">
                     <label className="mb-1 font-medium">{t("settings.neptun")}</label>
                     <input
@@ -158,7 +191,6 @@ const SettingsPage = () => {
                     />
                 </div>
 
-                {/* Name Fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex flex-col">
                         <label className="mb-1 font-medium">{t("settings.firstName")}</label>
@@ -180,7 +212,6 @@ const SettingsPage = () => {
                     </div>
                 </div>
 
-                {/* Email Field */}
                 <div className="flex flex-col">
                     <label className="mb-1 font-medium">{t("settings.email")}</label>
                     <input
@@ -191,7 +222,6 @@ const SettingsPage = () => {
                     />
                 </div>
 
-                {/* Save Button */}
                 <button
                     onClick={handleSave}
                     disabled={saving}
@@ -200,6 +230,15 @@ const SettingsPage = () => {
                     {saving ? t("settings.saving") : t("settings.saveChanges")}
                 </button>
             </div>
+
+            {/* Crop modal */}
+            {cropFile && (
+                <CropModal
+                    file={cropFile}
+                    onCancel={() => setCropFile(null)}
+                    onComplete={handleCropComplete}
+                />
+            )}
         </div>
     );
 };

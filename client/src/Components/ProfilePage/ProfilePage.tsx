@@ -221,7 +221,7 @@ const ProfilePage = () => {
                     {/* Badges row */}
                     {badges.length > 0 && (
                         <div className="flex justify-center mt-4">
-                            <div className="flex gap-4 px-6 py-4 bg-gray-100 rounded-3xl shadow-md">
+                            <div className="flex gap-4 px-6 py-4 szellit-background rounded-3xl shadow-md">
                                 {badges.slice(0, 6).map((b) => (
                                     <motion.div
                                         key={b.badge_id}
@@ -232,7 +232,8 @@ const ProfilePage = () => {
                                         <img
                                             src={b.icon_url}
                                             alt={b.name}
-                                            className="w-16 h-16"  // bigger badges
+                                            className="w-16 h-16 cursor-pointer"  // bigger badges
+                                            onClick={() => { navigate(`/${lng}/badges`) }}
                                         />
                                     </motion.div>
                                 ))}
