@@ -1,12 +1,12 @@
 // client/src/Components/FavoritesPage/FavoritesPage.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import SearchBar from "../SearchBar/SearchBar";
 import CategorySelector from "../CategorySelector/CategorySelector";
 import FilterDropdown from "../FilterDropdown/FilterDropdown";
 import ItemCard from "../ItemCard/ItemCard";
 import Pagination from "../Pagination/Pagination";
+import { useParams, useNavigate } from "react-router-dom";
 
 type Item = {
   item_id: number;
@@ -30,6 +30,8 @@ type FilterOptionKey =
 
 export default function FavoritesPage() {
   const { t, i18n } = useTranslation();
+  const { lng } = useParams<{ lng: string }>();
+  const navigate = useNavigate();
 
   const [items, setItems] = useState<Item[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
@@ -224,10 +226,9 @@ export default function FavoritesPage() {
                   imgUrl={item.img_urls?.[0] ?? undefined}
                   itemId={item.item_id}
                   isFavorited={favoriteIds.includes(item.item_id)}
-                  sellerProfilePic={
-                    item.prof_pic_url ? `http://localhost:5000${item.prof_pic_url}` : undefined
-                  }
+                  sellerProfilePic={item.prof_pic_url}
                   sellerId={item.user_id}
+                  onCardClick={() => navigate(`/${lng}/items/${item.item_id}`)}
                 />
               </div>
             ))}
