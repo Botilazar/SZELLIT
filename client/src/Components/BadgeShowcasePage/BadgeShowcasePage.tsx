@@ -102,21 +102,21 @@ const BadgesShowcasePage = () => {
             </div>
 
             {/* Badges content */}
-            <div className="flex flex-col gap-16 max-w-6xl mx-auto relative z-10">
+            <div className="flex flex-col gap-8 max-w-5xl mx-auto relative z-10">
                 {badges.map((b, idx) => {
                     const unlocked = (honors?.totalHonors ?? 0) >= b.min_honors;
-                    const slideFrom = idx % 2 === 0 ? "-200px" : "200px";
+                    const slideFrom = idx % 2 === 0 ? "-150px" : "150px";
 
                     return (
                         <motion.div
                             key={b.badge_id}
-                            className={"flex flex-col md:flex-row items-center gap-10 p-10 rounded-3xl shadow-lg badge-unlocked"}
+                            className="w-full flex flex-col md:flex-row items-center gap-6 p-6 rounded-2xl shadow-md badge-unlocked"
                             initial={{ x: slideFrom, opacity: 0 }}
                             whileInView={{ x: 0, opacity: 1 }}
                             viewport={{ once: true, amount: 0.3 }}
                             transition={{ duration: 1, delay: idx * 0.1 }}
                         >
-                            {/* Badge Icon with tiny scale on hover */}
+                            {/* Badge Icon */}
                             <motion.div
                                 className="relative"
                                 whileHover={{ scale: 1.05 }}
@@ -125,23 +125,23 @@ const BadgesShowcasePage = () => {
                                 <img
                                     src={b.icon_url}
                                     alt={b.name}
-                                    className={`w-72 h-72 md:w-80 md:h-80 flex-shrink-0 ${unlocked ? "" : "grayscale opacity-50"
+                                    className={`w-48 h-48 md:w-56 md:h-56 flex-shrink-0 ${unlocked ? "" : "grayscale opacity-50"
                                         }`}
                                 />
                             </motion.div>
 
                             {/* Description */}
                             <div className="flex-1">
-                                <h2 className="text-5xl font-bold mb-6">{b.name}</h2>
-                                <p className="text-xl szellit-text-dim  leading-relaxed mb-6">
+                                <h2 className="text-3xl font-bold mb-4">{b.name}</h2>
+                                <p className="text-base szellit-text-dim leading-relaxed mb-4">
                                     {b.description ||
-                                        `Requires ${b.min_honors} honors to unlock this badge. Provide detailed info, tips, fun facts, rewards to make it engaging.`}
+                                        `Requires ${b.min_honors} honors to unlock this badge.`}
                                 </p>
 
                                 {/* Progress bar */}
-                                <div className="w-full szellit-progressbar-remaining h-6 rounded-full overflow-hidden">
+                                <div className="w-full szellit-progressbar-remaining h-4 rounded-full overflow-hidden">
                                     <motion.div
-                                        className="h-6 rounded-full szellit-progressbar"
+                                        className="h-4 rounded-full szellit-progressbar"
                                         initial={{ width: 0 }}
                                         animate={{
                                             width: `${Math.min(
@@ -152,7 +152,7 @@ const BadgesShowcasePage = () => {
                                         transition={{ duration: 1.5 }}
                                     />
                                 </div>
-                                <p className="szellit-text mt-2 text-lg">
+                                <p className="szellit-text mt-2 text-sm">
                                     {Math.min(honors?.totalHonors ?? 0, b.min_honors)} / {b.min_honors} honors
                                 </p>
                             </div>
@@ -160,6 +160,8 @@ const BadgesShowcasePage = () => {
                     );
                 })}
             </div>
+
+
         </div>
     );
 };
