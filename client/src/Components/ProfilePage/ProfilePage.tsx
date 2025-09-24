@@ -53,6 +53,7 @@ const ProfilePage = () => {
     const [totalHonors, setTotalHonors] = useState<number>(0);
     const [honorProgress, setHonorProgress] = useState<{ current: number; needed: number; percent: number } | null>(null);
     const [hasHonored, setHasHonored] = useState(false);
+    const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
 
     const isOwner = currentUser?.user_id.toString() === userId;
 
@@ -101,7 +102,16 @@ const ProfilePage = () => {
                     hasHonoredRes = honors.hasHonored || false;
                 }
 
+                let favData: number[] = [];
+                if (token) {
+                    const favRes = await fetch("http://localhost:5000/api/favourites", {
+                        headers: { Authorization: token ? `Bearer ${token}` : "" },
+                    });
+                    if (favRes.ok) favData = await favRes.json();
+                }
+
                 if (alive) {
+                    if (Array.isArray(favData)) setFavoriteIds(favData as number[]);
                     setUser(userData);
                     setItems(itemData);
                     setTotalHonors(honorsData.totalHonors);
@@ -299,7 +309,7 @@ const ProfilePage = () => {
                                 sellerName={item.seller_name}
                                 imgUrl={item.image_url}
                                 itemId={item.item_id}
-                                isFavorited={false}
+                                isFavorited={favoriteIds.includes(item.item_id)}
                                 sellerProfilePic={user.prof_pic_url}
                                 onCardClick={() => navigate(`/${lng}/items/${item.item_id}`)}
                                 sellerId={item.user_id}
