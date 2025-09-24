@@ -158,6 +158,7 @@ const DetailedItemPage = () => {
 
       {/* Right: Sidebar */}
       <aside className="space-y-6">
+        {/* Price & Seller Card */}
         <div className="szellit-navbar rounded-2xl shadow-md p-6">
           <div className="flex items-center justify-between">
             <span className="text-4xl font-bold text-blue-600">
@@ -173,7 +174,13 @@ const DetailedItemPage = () => {
 
           <div className="mt-6 space-y-2">
             <p>
-              <span className=" font-semibold">Seller:</span> <span onClick={() => navigate(`/${lng}/profiles/${item.user_id}`)} className="hover:text-blue-500 cursor-pointer">{item.seller_name}</span>
+              <span className="font-semibold">Seller:</span>{" "}
+              <span
+                onClick={() => navigate(`/${lng}/profiles/${item.user_id}`)}
+                className="hover:text-blue-500 cursor-pointer"
+              >
+                {item.seller_name}
+              </span>
             </p>
             <p>
               <span className="font-semibold">City:</span> {item.seller_city}
@@ -183,6 +190,40 @@ const DetailedItemPage = () => {
             </p>
             <p className="text-sm text-gray-400">
               Listed on {new Date(item.created_at).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
+
+        {/* Contact Info Card */}
+        <div className="szellit-navbar rounded-2xl shadow-md p-6">
+          <h2 className="text-lg font-bold mb-4">Contact Information</h2>
+          <div className="space-y-2">
+            <p>
+              <span className="font-semibold">Email:</span>{" "}
+              <a
+                href={`mailto:placeholder@email.com`}
+                className="kkm-text hover:text-blue-500"
+              >
+                placeholder@email.com
+              </a>
+            </p>
+            <p>
+              <span className="font-semibold">Facebook:</span>{" "}
+              <a
+                href="#"
+                className="kkm-text hover:text-blue-500"
+              >
+                placeholder
+              </a>
+            </p>
+            <p>
+              <span className="font-semibold">Instagram:</span>{" "}
+              <a
+                href="#"
+                className="kkm-text hover:text-blue-500"
+              >
+                Coming soon
+              </a>
             </p>
           </div>
         </div>
