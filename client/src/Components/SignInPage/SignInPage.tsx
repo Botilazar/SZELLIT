@@ -36,7 +36,7 @@ const SignInPage = () => {
         localStorage.setItem("accessToken", result.token); // Save JWT token
         login(result.user);
         toast.success(t("signin.success"));
-        navigate(from, { replace: true }); // or wherever you want
+        navigate(`/${lng}/items`); // or wherever you want
       } else {
         toast.error(result.error || t("signin.genericError"));
       }

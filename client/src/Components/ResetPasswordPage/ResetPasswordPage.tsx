@@ -59,7 +59,7 @@ const ResetPasswordPage = () => {
         <h1 className="text-2xl font-bold text-center mb-2">
           {t("reset.title")}
         </h1>
-        <p className="text-center text-sm text-gray-600 mb-6">
+        <p className="text-center text-sm szellit-text mb-6">
           {t("reset.subtitle")}
         </p>
         <form onSubmit={handleSubmit}>

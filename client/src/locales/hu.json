@@ -64,7 +64,16 @@
     "emailPlaceholder": "Email-cím",
     "button": "Jelszó visszaállítása",
     "backToLogin": "Vissza a bejelentkezéshez",
-    "success": "Ha az e-mail létezik, elküldtük az utasításokat."
+    "success": "Ha az e-mail létezik, elküldtük az utasításokat.",
+    "error": {
+      "emptyEmail": "Kérjük, adja meg az e-mail címét.",
+      "default": "A visszaállító link küldése nem sikerült. Kérjük, próbálja meg újra.",
+      "network": "Hálózati hiba. Kérjük, próbálja meg később újra."
+    },
+    "setNewPassword": "Új jelszó létrehozása",
+    "newPasswordPlaceholder": "Új jelszó",
+    "confirmPasswordPlaceholder": "Új jelszó ismét",
+    "saveNewPassword": "Új jelszó mentése"
   },
   "categories": {
     "all": "Összes",
@@ -168,5 +177,12 @@
     "userNotFound": "A felhasználó nem található",
     "fetchUserError": "A felhasználói adatok betöltése sikertelen",
     "fetchItemsError": "A felhasználó hirdetéseinek betöltése sikertelen"
+  },
+  "detailedpage": {
+    "seller": "Eladó",
+    "city": "Helyszín",
+    "category": "Kategória",
+    "listeddate": "Feltöltve:",
+    "contactinfo": "Kapcsolat"
   }
 }

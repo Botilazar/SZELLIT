@@ -74,10 +74,14 @@
     "backToLogin": "Back to login",
     "success": "If the email exists, reset instructions have been sent.",
     "error": {
-      "emptyEmail": "Please enter your email address.",
-      "default": "Failed to send reset link. Please try again.",
-      "network": "Network error. Please try again later."
-    }
+      "emptyEmail": "Bitte geben Sie Ihre E-Mail-Adresse ein.",
+      "default": "Fehler beim Senden des Zurücksetzungslinks. Bitte versuchen Sie es erneut.",
+      "network": "Netzwerkfehler. Bitte versuchen Sie es später erneut."
+    },
+    "setNewPassword": "Neues Passwort erstellen",
+    "newPasswordPlaceholder": "Neues Passwort",
+    "confirmPasswordPlaceholder": "Neues Passwort wiederholen",
+    "saveNewPassword": "Neues Passwort speichern"
   },
   "verifyEmail": {
     "verifying": "Verifying your email...",
@@ -198,5 +202,12 @@
     "userNotFound": "User not found",
     "fetchUserError": "Failed to fetch user data",
     "fetchItemsError": "Failed to fetch user's items"
+  },
+  "detailedpage": {
+    "seller": "Seller",
+    "city": "Location",
+    "category": "Category",
+    "listeddate": "Listed on: ",
+    "contactinfo": "Contact"
   }
 }

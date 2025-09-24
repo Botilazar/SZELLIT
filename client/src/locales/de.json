@@ -64,7 +64,16 @@
     "emailPlaceholder": "E-Mail-Adresse",
     "button": "Passwort zurücksetzen",
     "backToLogin": "Zurück zum Login",
-    "success": "Wenn die E-Mail existiert, wurden Anweisungen gesendet."
+    "success": "Wenn die E-Mail existiert, wurden Anweisungen gesendet.",
+    "error": {
+      "emptyEmail": "Please enter your email address.",
+      "default": "Failed to send reset link. Please try again.",
+      "network": "Network error. Please try again later."
+    },
+    "setNewPassword": "Creating New Password",
+    "newPasswordPlaceholder": "New Password",
+    "confirmPasswordPlaceholder": "New Password Again",
+    "saveNewPassword": "Save New Password"
   },
   "verifyEmail": {
     "verifying": "Überprüfe deine E-Mail...",
@@ -168,5 +177,12 @@
     "userNotFound": "Benutzer nicht gefunden",
     "fetchUserError": "Benutzerdaten konnten nicht geladen werden",
     "fetchItemsError": "Die Anzeigen des Benutzers konnten nicht geladen werden"
+  },
+  "detailedpage": {
+    "seller": "Verkäufer",
+    "city": "Lokation",
+    "category": "Kategorie",
+    "listeddate": "Hochgeladen am:",
+    "contactinfo": "Kontakt"
   }
 }

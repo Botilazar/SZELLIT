@@ -95,11 +95,21 @@ const ProfilePage = () => {
 
                 let hasHonoredRes = false;
                 if (!isOwner) {
-                    const resCheck = await fetch(`http://localhost:5000/api/honors/${userId}`, {
-                        headers: { Authorization: token ? `Bearer ${token}` : "" },
-                    });
-                    const honors = await resCheck.json();
-                    hasHonoredRes = honors.hasHonored || false;
+                    try {
+                        const resCheck = await fetch(`http://localhost:5000/api/honors/${userId}/status`, {
+                            headers: { Authorization: token ? `Bearer ${token}` : "" }
+                        });
+                        if (resCheck.ok) {
+                            const honorsStatus = await resCheck.json();
+                            hasHonoredRes = honorsStatus.hasHonored || false;
+                        }
+                    } catch (err) {
+                        console.error("Failed to fetch honor status", err);
+                    }
+                }
+
+                if (alive) {
+                    setHasHonored(hasHonoredRes); // ✅ make sure this is set after fetching
                 }
 
                 let favData: number[] = [];

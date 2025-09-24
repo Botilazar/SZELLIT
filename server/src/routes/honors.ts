@@ -69,18 +69,20 @@ const removeHonorHandler: RequestHandler = async (req, res) => {
     }
 };
 
-// GET /api/honors/:userId -> get honors, current badge, and earned badges
+// GET /api/honors/:userId -> get honors, current badge, earned badges, hasHonored
 const getHonorsHandler: RequestHandler = async (req, res) => {
     try {
         const userId = Number(req.params.userId);
+        const currentUser = getUser(req);
 
+        // total honors
         const countRes = await pool.query(
             `SELECT COUNT(*) AS total FROM "HONORS" WHERE receiver_id = $1`,
             [userId]
         );
         const totalHonors = parseInt(countRes.rows[0].total);
 
-        // Current highest badge
+        // current highest badge
         const badgeRes = await pool.query(
             `SELECT badge_id, name, icon_url, min_honors
              FROM "BADGES"
@@ -91,7 +93,7 @@ const getHonorsHandler: RequestHandler = async (req, res) => {
         );
         const currentBadge = badgeRes.rows[0] || null;
 
-        // All earned badges
+        // all earned badges
         const badgesRes = await pool.query(
             `SELECT badge_id, name, icon_url, min_honors
              FROM "BADGES"
@@ -100,7 +102,14 @@ const getHonorsHandler: RequestHandler = async (req, res) => {
             [totalHonors]
         );
 
-        res.json({ totalHonors, currentBadge, earnedBadges: badgesRes.rows });
+        // check if current user has already honored
+        const honorCheck = await pool.query(
+            `SELECT 1 FROM "HONORS" WHERE receiver_id = $1 AND giver_id = $2`,
+            [userId, currentUser.user_id]
+        );
+        const hasHonored = (honorCheck.rowCount ?? 0) > 0;
+
+        res.json({ totalHonors, currentBadge, earnedBadges: badgesRes.rows, hasHonored });
     } catch (err) {
         console.error("Error fetching honors:", err);
         res.status(500).json({ error: "Internal server error" });
