@@ -11,11 +11,13 @@ import huFlag from "../../assets/hungary.png";
 import gbFlag from "../../assets/united-kingdom.png";
 import deFlag from "../../assets/germany.png";
 import Logo from "../Logo/Logo";
+import NewItemModal from "../NewItemModal/NewItemModal";
 
 type SupportedLang = "hu" | "en" | "de";
 
 const Navbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
+  const [sellOpen, setSellOpen] = useState(false); // ⬅️ ÚJ: modál állapot
   const navigate = useNavigate();
   const location = useLocation();
   const { lng } = useParams<{ lng: SupportedLang }>();
@@ -45,7 +47,7 @@ const Navbar = () => {
     setProfileOpen(false);
   };
 
-  // Close profile menu when clicking outside
+  // Kattintás a profilon kívülre → zárás
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
@@ -56,6 +58,11 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // ⬇️ ÚJ: Sell gomb handler — NEM navigál, csak modált nyit
+  const handleSellClick = () => {
+    setSellOpen(true);
+  };
+
   return (
     <nav className="w-full h-[93px] szellit-navbar shadow-md flex items-center justify-between px-6">
       {/* Logo */}
@@ -65,12 +72,15 @@ const Navbar = () => {
 
       {/* Actions */}
       <div className="flex items-center gap-4">
-        {/* Sell Button */}
+        {/* Sell Button → modált nyit */}
         <button
+          onClick={handleSellClick}
           className="flex items-center gap-2 px-6 py-3 rounded-full 
                bg-gradient-to-r from-blue-500 to-blue-600 
                text-white font-semibold shadow-md 
                transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95"
+          aria-label={t("navbar.sell")}
+          title={t("navbar.sell")}
         >
           <FaWallet className="text-lg" />
           <span>{t("navbar.sell")}</span>
@@ -85,11 +95,7 @@ const Navbar = () => {
               className={`relative p-1 rounded-md transition-all duration-200 hover:scale-110
         ${lng === code ? "scale-105" : "grayscale opacity-70 hover:grayscale-0 hover:opacity-100"}`}
             >
-              <img
-                src={flag}
-                alt={code}
-                className="h-8 w-12 object-cover rounded-md"
-              />
+              <img src={flag} alt={code} className="h-8 w-12 object-cover rounded-md" />
             </button>
           ))}
         </div>
@@ -111,10 +117,8 @@ const Navbar = () => {
         </button>
 
         {/* Profile / Login */}
-        {/* Profile / Login */}
         <div className="relative" ref={profileRef}>
           {user ? (
-            // Logged-in view: name + profile icon + dropdown
             <>
               <div className="relative" ref={profileRef}>
                 <button
@@ -122,7 +126,6 @@ const Navbar = () => {
                   className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium shadow-sm transition-all duration-300
             ${isDarkMode ? "bg-gray-800 text-white hover:bg-gray-700" : "bg-white text-gray-900 hover:bg-gray-100"}`}
                 >
-                  {/* Initials avatar */}
                   <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden text-white">
                     {user.prof_pic_url ? (
                       <img
@@ -137,11 +140,9 @@ const Navbar = () => {
                       </span>
                     )}
                   </div>
-                  {/* Name */}
                   <span className="hidden sm:inline">{user?.fname} {user?.lname}</span>
                 </button>
 
-                {/* Dropdown menu */}
                 {profileOpen && (
                   <div
                     className={`absolute right-0 mt-2 w-48 rounded-xl shadow-lg ring-1 overflow-hidden
@@ -175,7 +176,6 @@ const Navbar = () => {
               </div>
             </>
           ) : (
-            // Not logged in: styled same as logged-in button
             <button
               onClick={() => goTo("/login")}
               className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium shadow-sm transition-all duration-300
@@ -186,8 +186,19 @@ const Navbar = () => {
             </button>
           )}
         </div>
-
       </div>
+
+      {/* ⬇️ ÚJ: a Sell modál megjelenítése */}
+      {sellOpen && (
+        <NewItemModal
+          onClose={() => setSellOpen(false)}
+          onSuccess={() => {
+            setSellOpen(false);
+            // ide tehetsz toastot vagy átirányítást, ha szeretnéd
+            // pl.: if (lng) navigate(`/${lng}/my_ads`);
+          }}
+        />
+      )}
     </nav>
   );
 };

@@ -48,7 +48,6 @@ app.use("/api/auth/request-reset-password", requestResetPasswordRouter);
 app.use("/api/auth/confirm-reset-password", confirmResetPasswordRouter);
 
 
-
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
 });

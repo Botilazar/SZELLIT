@@ -29,3 +29,7 @@ dist-ssr
 #profile-pics
 /server/uploads/profile-pics/*
 !/server/uploads/profile-pics/.gitkeep
+
+#item-pics
+/server/uploads/item-pics/*
+!/server/uploads/item-pics/.gitkeep
