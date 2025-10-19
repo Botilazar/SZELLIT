@@ -3,8 +3,9 @@ import { useAuth } from "../../AuthContext";
 import { toast } from "react-hot-toast";
 import LoadingAnimation from "../../Components/LoadingAnimation/LoadingAnimation";
 import useDarkMode from "../../hooks/useDarkMode";
-import { UserCircle2, UploadCloud } from "lucide-react";
+import { UserCircle2, UploadCloud, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import CropModal from "../CropModal/cropModal";
 
 interface UserData {
     user_id: number;
@@ -22,6 +23,8 @@ const SettingsPage = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const { isDarkMode } = useDarkMode();
+    const [cropFile, setCropFile] = useState<File | null>(null);
+    const [uploadingPic, setUploadingPic] = useState(false);
 
     useEffect(() => {
         if (!user) return;
@@ -88,21 +91,26 @@ const SettingsPage = () => {
         }
     };
 
-    const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.files || !user) return;
-        const file = e.target.files[0];
-        const formDataUpload = new FormData();
-        formDataUpload.append("profile_pic", file);
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return;
+        setCropFile(e.target.files[0]);
+    };
 
+    const handleCropComplete = async (croppedFile: File) => {
+        if (!user) return;
+        setUploadingPic(true);
+
+        const start = Date.now();
         try {
+            const formDataUpload = new FormData();
+            formDataUpload.append("profile_pic", croppedFile);
+
             const token = localStorage.getItem("accessToken") || "";
             const res = await fetch(
                 `http://localhost:5000/api/users/${user.user_id}/upload-profile-pic`,
                 {
                     method: "POST",
-                    headers: {
-                        Authorization: token ? `Bearer ${token}` : "",
-                    },
+                    headers: { Authorization: token ? `Bearer ${token}` : "" },
                     body: formDataUpload,
                 }
             );
@@ -119,6 +127,42 @@ const SettingsPage = () => {
         } catch (err: any) {
             console.error(err);
             toast.error(err?.message || t("settings.uploadError"));
+        } finally {
+            const elapsed = Date.now() - start;
+            const wait = elapsed < 500 ? 500 - elapsed : 0;
+            setTimeout(() => setUploadingPic(false), wait);
+            setCropFile(null);
+        }
+    };
+
+    const handleRemoveProfilePic = async () => {
+        if (!user) return;
+        setUploadingPic(true);
+
+        const start = Date.now();
+        try {
+            const token = localStorage.getItem("accessToken") || "";
+            const res = await fetch(
+                `http://localhost:5000/api/users/${user.user_id}/profile-pic`,
+                {
+                    method: "DELETE",
+                    headers: { Authorization: token ? `Bearer ${token}` : "" },
+                }
+            );
+
+            if (!res.ok) throw new Error("Failed to remove profile picture");
+
+            const updatedUser = await res.json();
+            setFormData(updatedUser);
+            login(updatedUser);
+            toast.success("Profile picture removed");
+        } catch (err: any) {
+            console.error(err);
+            toast.error(err?.message || "Failed to remove profile picture");
+        } finally {
+            const elapsed = Date.now() - start;
+            const wait = elapsed < 500 ? 500 - elapsed : 0;
+            setTimeout(() => setUploadingPic(false), wait);
         }
     };
 
@@ -127,27 +171,46 @@ const SettingsPage = () => {
 
     return (
         <div className={`max-w-3xl mx-auto p-8 ${isDarkMode ? "text-gray-200" : "text-gray-900"}`}>
-            <h1 className="text-3xl font-bold mb-6 text-center szellit-text">{t("settings.title")}</h1>
+            <h1 className="text-3xl font-bold mb-6 text-center szellit-text">
+                {t("settings.title")}
+            </h1>
 
             <div className={`szellit-navbar rounded-2xl shadow-md p-8 space-y-8`}>
-                {/* Profile Picture */}
-                <div className="relative w-32 h-32 mx-auto rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden shadow-md group cursor-pointer">
-                    {formData.prof_pic_url ? (
-                        <img
-                            src={`http://localhost:5000${formData.prof_pic_url}`}
-                            alt={`${formData.fname} ${formData.lname}`}
-                            className="w-full h-full object-cover rounded-full"
-                        />
-                    ) : (
-                        <UserCircle2 className="w-20 h-20 text-gray-400 dark:text-gray-300" />
+                {/* Profile Picture Wrapper */}
+                <div className="relative w-32 h-32 mx-auto">
+                    {/* Avatar circle */}
+                    <div className="w-32 h-32 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden shadow-md group cursor-pointer">
+                        {formData.prof_pic_url && !uploadingPic ? (
+                            <img
+                                src={`http://localhost:5000${formData.prof_pic_url}`}
+                                alt={`${formData.fname} ${formData.lname}`}
+                                className="w-full h-full object-cover rounded-full"
+                            />
+                        ) : !formData.prof_pic_url && !uploadingPic ? (
+                            <UserCircle2 className="w-20 h-20 text-gray-400 dark:text-gray-300" />
+                        ) : (
+                            <LoadingAnimation />
+                        )}
+
+                        {/* Upload overlay */}
+                        <label className="absolute inset-0 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-full bg-black bg-opacity-40 transition-opacity cursor-pointer">
+                            <UploadCloud className="text-white w-6 h-6" />
+                            <input type="file" className="hidden" onChange={handleFileSelect} />
+                        </label>
+                    </div>
+
+                    {/* Remove button OUTSIDE the circle */}
+                    {formData.prof_pic_url && !uploadingPic && (
+                        <button
+                            onClick={handleRemoveProfilePic}
+                            className="absolute -bottom-2 -right-2 bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition-colors"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                        </button>
                     )}
-                    <label className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-full transition-opacity cursor-pointer">
-                        <UploadCloud className="text-white w-6 h-6" />
-                        <input type="file" className="hidden" onChange={handleUpload} />
-                    </label>
                 </div>
 
-                {/* Neptun */}
+                {/* Other form fields */}
                 <div className="flex flex-col">
                     <label className="mb-1 font-medium">{t("settings.neptun")}</label>
                     <input
@@ -158,7 +221,6 @@ const SettingsPage = () => {
                     />
                 </div>
 
-                {/* Name Fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex flex-col">
                         <label className="mb-1 font-medium">{t("settings.firstName")}</label>
@@ -180,7 +242,6 @@ const SettingsPage = () => {
                     </div>
                 </div>
 
-                {/* Email Field */}
                 <div className="flex flex-col">
                     <label className="mb-1 font-medium">{t("settings.email")}</label>
                     <input
@@ -191,7 +252,6 @@ const SettingsPage = () => {
                     />
                 </div>
 
-                {/* Save Button */}
                 <button
                     onClick={handleSave}
                     disabled={saving}
@@ -200,8 +260,17 @@ const SettingsPage = () => {
                     {saving ? t("settings.saving") : t("settings.saveChanges")}
                 </button>
             </div>
+
+            {/* Crop modal */}
+            {cropFile && (
+                <CropModal
+                    file={cropFile}
+                    onCancel={() => setCropFile(null)}
+                    onComplete={handleCropComplete}
+                />
+            )}
         </div>
     );
-};
+}
 
 export default SettingsPage;

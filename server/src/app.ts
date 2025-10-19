@@ -15,6 +15,8 @@ import requestResetPasswordRouter from "./routes/auth/requestResetPassword";
 import confirmResetPasswordRouter from "./routes/auth/confirmResetPassword";
 import categoriesRouter from "./routes/categories";
 import usersRouter from "./routes/users"
+import honorsRouter from "./routes/honors"
+import badgesRouter from "./routes/badges"
 
 const app = express();
 
@@ -46,6 +48,8 @@ app.use("/api/auth/verify-email", verifyEmailRouter);
 app.use("/api/auth/resend-verification", resendVerificationEmailRouter);
 app.use("/api/auth/request-reset-password", requestResetPasswordRouter);
 app.use("/api/auth/confirm-reset-password", confirmResetPasswordRouter);
+app.use("/api/honors", honorsRouter)
+app.use("/api/badges", badgesRouter)
 
 
 

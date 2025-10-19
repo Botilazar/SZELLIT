@@ -36,6 +36,7 @@ const ItemCard = ({
   isFavorited: initialFavorited,
   sellerProfilePic,
   onCardClick,
+
 }: ItemCardProps) => {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
@@ -136,7 +137,7 @@ const ItemCard = ({
             <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shadow-sm">
               {sellerProfilePic ? (
                 <img
-                  src={sellerProfilePic}
+                  src={`http://localhost:5000${sellerProfilePic}`}
                   alt={sellerName}
                   className="w-full h-full object-cover rounded-full"
                 />
@@ -148,7 +149,7 @@ const ItemCard = ({
               e.stopPropagation();
               console.log(`${lng}/profiles/${sellerId}`)
               navigate(`/${lng}/profiles/${sellerId}`); // <-- navigate to seller profile
-            }} className="text-sm font-medium hover">{sellerName}</span>
+            }} className="text-sm font-medium hover:text-blue-500 cursor-pointer">{sellerName}</span>
           </div>
           <div className="flex gap-3">
             <button
@@ -175,3 +176,4 @@ const ItemCard = ({
 };
 
 export default ItemCard;
+
