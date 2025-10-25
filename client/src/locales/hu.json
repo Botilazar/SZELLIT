@@ -56,7 +56,8 @@
     "passwordMismatch": "A jelszavak nem egyeznek!",
     "acceptTermsAlert": "Kérjük, fogadd el a Felhasználási feltételeket",
     "successEmailSent": "Egy ellenőrző e-mailt küldtünk. Kérjük, ellenőrizd a bejövő leveleidet.",
-    "loading": "Regisztrálás folyamatban..."
+    "loading": "Regisztrálás folyamatban...",
+    "neptun": "Neptun kód"
   },
   "reset": {
     "title": "Jelszó visszaállítása",
@@ -184,5 +185,66 @@
     "category": "Kategória",
     "listeddate": "Feltöltve:",
     "contactinfo": "Kapcsolat"
+  },
+
+  "terms": {
+    "title": "Felhasználási feltételek",
+    "intro": "Üdvözlünk a Szelliten! Ezek a feltételek határozzák meg az oldal használatának szabályait.",
+
+    "section1": {
+      "title": "Szolgáltatásaink használata",
+      "text": "A fiók létrehozásával vagy a szolgáltatás használatával elfogadod ezeket a feltételeket."
+    },
+    "section2": {
+      "title": "Felhasználói tartalom",
+      "text": "Te felelsz az általad feltöltött tartalmakért. Ne tölts fel jogsértő vagy sértő anyagokat."
+    },
+    "section3": {
+      "title": "Felelősség",
+      "text": "Igyekszünk biztonságos és megbízható platformot biztosítani, de nem vállalunk felelősséget a felhasználói tartalmakért."
+    },
+    "section4": {
+      "title": "Feltételek módosítása",
+      "text": "A feltételek időről időre frissülhetnek. A fontosabb változásokat itt jelezzük."
+    },
+
+    "lastUpdated": "Utoljára frissítve: {{year}}"
+  },
+  "privacy": {
+    "title": "Adatvédelmi irányelvek",
+    "intro": "Fontos számunkra az adatvédelem, ezért szeretnénk elmagyarázni, hogyan kezeljük az adataidat.",
+
+    "dataCollection": "Adatgyűjtés",
+    "dataUse": "Alapvető adatokat gyűjtünk, mint például e-mail cím, név és hirdetések, hogy a platform megfelelően működjön.",
+
+    "dataStorage": "Adattárolás",
+    "section3": {
+      "list": {
+        "accountInfo": "Fiókadatok (pl. név, e-mail cím)",
+        "usageData": "Használati adatok (hogyan használod az oldalt)",
+        "deviceData": "Eszköz- és böngészőadatok (biztonsági és elemzési célokra)"
+      }
+    },
+
+    "section4": {
+      "title": "Jogaid és kapcsolatfelvétel",
+      "text": "Bármikor kérheted adataid törlését vagy módosítását. Kérdés esetén keresd fel a kapcsolat oldalt."
+    },
+
+    "lastUpdated": "Utoljára frissítve: {{year}}"
+  },
+  "contact": {
+    "title": "Kapcsolat",
+    "thanks": "Köszönjük! Az üzenetét elküldtük.",
+    "yourName": "Neved",
+    "yourEmail": "Email címed",
+    "yourMessage": "Üzeneted",
+    "namePlaceholder": "Írd be a neved",
+    "emailPlaceholder": "Írd be az email címed",
+    "messagePlaceholder": "Írd ide az üzeneted...",
+    "send": "Üzenet küldése",
+    "sending": "Küldés...",
+    "messageTooShort": "Az üzenetnek legalább 5 karakter hosszúnak kell lennie.",
+    "otherContact": "Vagy lépj velünk kapcsolatba közvetlenül e-mailben: "
   }
 }

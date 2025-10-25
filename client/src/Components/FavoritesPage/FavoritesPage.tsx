@@ -39,8 +39,9 @@ export default function FavoritesPage() {
   // Kereső + szűrők + rendezés
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [selectedFilter, setSelectedFilter] =
-    useState<FilterOptionKey>("filters.newestUpload");
+  const [selectedFilter, setSelectedFilter] = useState<FilterOptionKey>(
+    "filters.newestUpload"
+  );
 
   // Lapozás – az Overview sűrűségéhez igazítva
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,7 +53,11 @@ export default function FavoritesPage() {
 
   // locale a dátumhoz
   const locale =
-    i18n.language === "hu" ? "hu-HU" : i18n.language === "de" ? "de-DE" : "en-GB";
+    i18n.language === "hu"
+      ? "hu-HU"
+      : i18n.language === "de"
+        ? "de-DE"
+        : "en-GB";
 
   // A11y
   const headingId = "favorites-heading";
@@ -67,9 +72,10 @@ export default function FavoritesPage() {
         setLoading(true);
         setError(null);
 
-        const token = localStorage.getItem("accessToken") || "";
+        //const token = localStorage.getItem("accessToken") || "";
         const res = await fetch("http://localhost:5000/api/favourites/items", {
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
+          method: "GET",
+          credentials: "include",
         });
         if (!res.ok) throw new Error(`Favorites items failed (${res.status})`);
 
@@ -103,8 +109,8 @@ export default function FavoritesPage() {
         item.description.toLowerCase().includes(q) ||
         item.seller_name.toLowerCase().includes(q);
 
-    const matchesCategory =
-      selectedCategory === "all" || item.category_name === selectedCategory;
+      const matchesCategory =
+        selectedCategory === "all" || item.category_name === selectedCategory;
 
       return matchesSearch && matchesCategory;
     });
@@ -112,13 +118,17 @@ export default function FavoritesPage() {
     const sorted = [...filtered].sort((a, b) => {
       switch (selectedFilter) {
         case "filters.oldestUpload":
-          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          return (
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          );
         case "filters.priceAsc":
           return a.price - b.price;
         case "filters.priceDesc":
           return b.price - a.price;
         default: // "filters.newestUpload"
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          return (
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
       }
     });
 
@@ -172,14 +182,20 @@ export default function FavoritesPage() {
         </h1>
 
         {/* Kereső */}
-        <section aria-label={t("filters.placeholder", { defaultValue: "Mit keresel?" })}>
+        <section
+          aria-label={t("filters.placeholder", {
+            defaultValue: "Mit keresel?",
+          })}
+        >
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
         </section>
 
         {/* Szűrők és rendezés */}
         <section
           className="flex flex-col md:flex-row justify-between items-start gap-4"
-          aria-label={t("filters.section", { defaultValue: "Szűrők és rendezés" })}
+          aria-label={t("filters.section", {
+            defaultValue: "Szűrők és rendezés",
+          })}
         >
           <CategorySelector
             selected={selectedCategory}
@@ -193,7 +209,11 @@ export default function FavoritesPage() {
 
         {/* Lista — az Overview (Browsing) oldal elrendezése */}
         {pageItems.length === 0 ? (
-          <div className="text-sm text-gray-500" role="status" aria-live="polite">
+          <div
+            className="text-sm text-gray-500"
+            role="status"
+            aria-live="polite"
+          >
             {t("browsing.noResults")}
           </div>
         ) : (
@@ -239,7 +259,10 @@ export default function FavoritesPage() {
         <nav aria-label={t("a11y.pagination", { defaultValue: "Lapozás" })}>
           <Pagination
             currentPage={currentPage}
-            totalPages={Math.max(1, Math.ceil(filteredAndSorted.length / itemsPerPage))}
+            totalPages={Math.max(
+              1,
+              Math.ceil(filteredAndSorted.length / itemsPerPage)
+            )}
             onPageChange={(p) => {
               setCurrentPage(p);
               // a11y: fókusz vissza a main-re lapozás után

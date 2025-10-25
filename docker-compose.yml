@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:17
+    restart: always
+    env_file:
+      - ./server/.env
+
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  server:
+    build: ./server
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./server/.env # load your server environment variables
+    depends_on:
+      - db
+
+  client:
+    build: ./client
+    ports:
+      - "5173:80"
+    env_file:
+      - ./client/.env # load your client environment variables
+
+volumes:
+  db_data:

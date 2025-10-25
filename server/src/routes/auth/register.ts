@@ -2,10 +2,8 @@ import { Router } from "express";
 import bcrypt from "bcrypt";
 import pool from "../../db";
 import Joi from "joi";
-//import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-//import { emailTemplates } from "../../utils/emailTemplates";
 import { sendVerificationEmail } from "../../services/email.service";
 
 const router = Router();
@@ -22,6 +20,7 @@ const registerSchema = Joi.object({
     .pattern(/[\W_]/)
     .required(),
   lng: Joi.string().valid("en", "hu", "de").optional(),
+  neptun: Joi.string().alphanum().length(6).optional(),
 });
 
 // Register new user
@@ -31,7 +30,7 @@ router.post("/", async (req: any, res: any) => {
     return res.status(400).json({ error: error.details[0].message });
   }
 
-  const { fullName, email, password } = req.body;
+  const { fullName, email, password, neptun } = req.body;
   const lng = req.body.lng || "en";
 
   try {
@@ -52,8 +51,6 @@ router.post("/", async (req: any, res: any) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const neptun = ""; // Placeholder for neptun code, if needed
-
     // Insert new user
     const result = await pool.query(
       `INSERT INTO "USER" (email, pw_hashed, is_verified, created_at, fname, lname, neptun, role) 
@@ -65,7 +62,7 @@ router.post("/", async (req: any, res: any) => {
     const newUser = result.rows[0];
 
     const jwtSecret = process.env.JWT_SECRET!;
-    const frontendURL = process.env.FRONTEND_URL || "http://localhost:5173";
+    const frontendURL = process.env.FRONTEND_URL!;
 
     const token = jwt.sign({ email }, jwtSecret, { expiresIn: "1d" });
     const verificationLink = `${frontendURL}/${lng}/verify-email?token=${token}`;

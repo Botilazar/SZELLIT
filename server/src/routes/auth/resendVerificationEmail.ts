@@ -28,7 +28,6 @@ router.post("/", async (req: any, res: any) => {
       return res.status(400).json({ error: "Email already verified." });
     }
 
-    // You may want to regenerate the token or reuse the old one
     const token = user.verification_token;
 
     await sendVerificationEmail(email, token, lng);

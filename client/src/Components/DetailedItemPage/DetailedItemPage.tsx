@@ -65,9 +65,9 @@ const DetailedItemPage = () => {
         const data: Item = await res.json();
 
         let favData: number[] = [];
-        const token = localStorage.getItem("accessToken") || "";
+
         const favRes = await fetch("http://localhost:5000/api/favourites", {
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
+          credentials: "include",
         });
         if (favRes.ok) favData = await favRes.json();
 
@@ -92,21 +92,23 @@ const DetailedItemPage = () => {
     };
   }, [itemId]);
 
-  const handleFavoriteClick = async (e: MouseEvent<HTMLButtonElement>, itemId: number) => {
+  const handleFavoriteClick = async (
+    e: MouseEvent<HTMLButtonElement>,
+    itemId: number
+  ) => {
     e.stopPropagation();
 
     const isFavorited = favoriteIds.includes(itemId);
     const url = "http://localhost:5000/api/favourites";
     const method = isFavorited ? "DELETE" : "POST";
-    const token = localStorage.getItem("accessToken") || "";
 
     try {
       const res = await fetch(url, {
         method,
         headers: {
           "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
         },
+        credentials: "include",
         body: JSON.stringify({ item_id: itemId }),
       });
 
@@ -121,7 +123,10 @@ const DetailedItemPage = () => {
   };
 
   if (loading) return <LoadingAnimation />;
-  if (!item) return <p className="text-center mt-20 text-gray-500">Failed to load item.</p>;
+  if (!item)
+    return (
+      <p className="text-center mt-20 text-gray-500">Failed to load item.</p>
+    );
 
   const isFavorite = favoriteIds.includes(item.item_id);
 
@@ -131,7 +136,11 @@ const DetailedItemPage = () => {
       <div className="lg:col-span-2 space-y-6">
         {selectedImg && (
           <div className="szellit-navbar rounded-2xl overflow-hidden shadow-lg w-full h-[550px] flex items-center justify-center">
-            <img src={selectedImg} alt={item.title} className="w-full h-full object-contain" />
+            <img
+              src={selectedImg}
+              alt={item.title}
+              className="w-full h-full object-contain"
+            />
           </div>
         )}
 
@@ -141,10 +150,17 @@ const DetailedItemPage = () => {
               <button
                 key={idx}
                 onClick={() => setSelectedImg(url)}
-                className={`rounded-lg overflow-hidden shadow-sm border-2 transition ${selectedImg === url ? "border-blue-500" : "border-transparent hover:border-gray-300"
-                  }`}
+                className={`rounded-lg overflow-hidden shadow-sm border-2 transition ${
+                  selectedImg === url
+                    ? "border-blue-500"
+                    : "border-transparent hover:border-gray-300"
+                }`}
               >
-                <img src={url} alt={`Thumbnail ${idx + 1}`} className="h-20 w-28 object-cover" />
+                <img
+                  src={url}
+                  alt={`Thumbnail ${idx + 1}`}
+                  className="h-20 w-28 object-cover"
+                />
               </button>
             ))}
           </div>
@@ -152,7 +168,9 @@ const DetailedItemPage = () => {
 
         <div>
           <h1 className="text-3xl font-bold mb-4">{item.title}</h1>
-          <p className="szellit-text leading-relaxed text-justify">{item.description}</p>
+          <p className="szellit-text leading-relaxed text-justify">
+            {item.description}
+          </p>
         </div>
       </div>
 
@@ -168,7 +186,9 @@ const DetailedItemPage = () => {
               onClick={(e) => handleFavoriteClick(e, item.item_id)}
               className={`text-gray-500 hover:text-red-500 ${isFavorite ? "text-red-500" : ""}`}
             >
-              <Heart className={`w-6 h-6 ${isFavorite ? "fill-red-500" : ""}`} />
+              <Heart
+                className={`w-6 h-6 ${isFavorite ? "fill-red-500" : ""}`}
+              />
             </button>
           </div>
 
@@ -186,7 +206,8 @@ const DetailedItemPage = () => {
               <span className="font-semibold">City:</span> {item.seller_city}
             </p>
             <p>
-              <span className="font-semibold">Category:</span> {item.category_name}
+              <span className="font-semibold">Category:</span>{" "}
+              {item.category_name}
             </p>
             <p className="text-sm text-gray-400">
               Listed on {new Date(item.created_at).toLocaleDateString()}
@@ -209,19 +230,13 @@ const DetailedItemPage = () => {
             </p>
             <p>
               <span className="font-semibold">Facebook:</span>{" "}
-              <a
-                href="#"
-                className="kkm-text hover:text-blue-500"
-              >
+              <a href="#" className="kkm-text hover:text-blue-500">
                 placeholder
               </a>
             </p>
             <p>
               <span className="font-semibold">Instagram:</span>{" "}
-              <a
-                href="#"
-                className="kkm-text hover:text-blue-500"
-              >
+              <a href="#" className="kkm-text hover:text-blue-500">
                 Coming soon
               </a>
             </p>

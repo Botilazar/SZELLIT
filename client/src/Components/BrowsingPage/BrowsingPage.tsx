@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams, useNavigate } from "react-router-dom";
@@ -40,8 +39,9 @@ const BrowsingPage = () => {
   const initialLimit = parseInt(searchParams.get("limit") || "8", 10);
 
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedFilter, setSelectedFilter] =
-    useState<FilterOptionKey>("filters.newestUpload");
+  const [selectedFilter, setSelectedFilter] = useState<FilterOptionKey>(
+    "filters.newestUpload"
+  );
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [filteredItems, setFilteredItems] = useState<Item[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
@@ -93,15 +93,18 @@ const BrowsingPage = () => {
 
     (async () => {
       try {
-        const itemsRes = await fetch("http://localhost:5000/api/items");
-        if (!itemsRes.ok) throw new Error(`Items fetch failed (${itemsRes.status})`);
+        const itemsRes = await fetch("http://localhost:5000/api/items", {
+          credentials: "include",
+        });
+        if (!itemsRes.ok)
+          throw new Error(`Items fetch failed (${itemsRes.status})`);
         const itemsData = await itemsRes.json();
 
-        const token = localStorage.getItem("accessToken") || "";
         const favRes = await fetch("http://localhost:5000/api/favourites", {
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
+          credentials: "include",
         });
-        if (!favRes.ok) throw new Error(`Favorites fetch failed (${favRes.status})`);
+        if (!favRes.ok)
+          throw new Error(`Favorites fetch failed (${favRes.status})`);
         const favData = await favRes.json();
 
         if (alive) {
@@ -138,10 +141,16 @@ const BrowsingPage = () => {
 
     switch (selectedFilter) {
       case "filters.newestUpload":
-        result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        result.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
         break;
       case "filters.oldestUpload":
-        result.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        result.sort(
+          (a, b) =>
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
         break;
       case "filters.priceAsc":
         result.sort((a, b) => a.price - b.price);
@@ -181,7 +190,9 @@ const BrowsingPage = () => {
 
       <div className="flex flex-wrap justify-center gap-4 p-4 rounded-xl">
         {itemsToDisplay.length === 0 ? (
-          <p className="text-gray-500 text-center w-full">{t("browsing.noResults")}</p>
+          <p className="text-gray-500 text-center w-full">
+            {t("browsing.noResults")}
+          </p>
         ) : (
           itemsToDisplay.map((item) => (
             <div key={item.item_id} onClick={() => handleCardClick(item)}>
