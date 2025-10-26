@@ -11,8 +11,8 @@ Szellit is a community-based buy-and-sell platform. Users can:
 
 ## 🛠️ Tech Stack
 - Frontend: [React](https://reactjs.org/) / [Express.js](https://expressjs.com/) / HTML / CSS / [Tailwind](https://tailwindcss.com/docs/installation/using-vite)
-- Backend: (To be added - Node.js / Express )
-- Auth: (Mention provider if used – Firebase Auth, NextAuth, etc.)
+- Backend: Node.js, Express
+- Data Storage: PostgreSQL
 - Hosting: (e.g., Vercel, Netlify, Local only for now)
 
 
@@ -21,8 +21,8 @@ Szellit is a community-based buy-and-sell platform. Users can:
 ### 1. Clone the Repository (need a revisit/modify to the exact url)
 
 ```bash
-git clone https://github.com/your-username/szellit-marketplace.git
-cd szellit-marketplace
+git clone https://github.com/Botilazar/SZELLIT.git
+cd szellit
 ```
 
 ### 2. Install Dependencies
@@ -42,6 +42,61 @@ Then open your browser to:
 - http://localhost:3000 
 - or whatever port is shown in the terminal output (e.g.: `:5173`, `:5432` depending on your Vite setup)
 
+## 📁 Project Structure (High-Level)
+/szellit
+  └── /client
+          ├── node_modules 
+          ├── public/images/
+          ├── src/
+          |   ├── assets/
+          |   ├── Components/
+          |   ├── hooks/
+          |   ├── locales/
+          |   ├── utils/
+          |   App.tsx
+          |   AuthContext.tsx
+          |   i18n.ts
+          |   main.tsx
+          |   vite-env.d.ts
+          ├── .env
+          ├── .env.docker
+          ├── Dockerfile
+          ├── index.html
+          ├── package-lock.json
+          ├── package.json
+          ├── tailwind.config.js
+          ├── tsconfig.app.json
+          ├── tsconfig.json
+          ├── tsconfig.node.json
+          ├── vite.config.ts
+  
+  └── /server
+          ├── node_modules
+          ├── src/
+          |   ├── middleware/
+          |   ├── routes/
+          |   |   ├── auth/
+          |   |       ├── login, register, logout, verifyEmail, verifyToken, ...
+          |   |   ├── badges, honors, favourites, items, users, ...
+          |   ├── servives/
+          |   |   ├── emailing services
+          |   ├── utils/
+          |   |   ├── emailTemplates
+          |   ├── app.ts
+          |   ├── db.ts
+          |   ├── index.ts
+          ├── uploads/
+          |   ├── profile-pics
+          |       ├── .gitkeep
+          ├── .env
+          ├── .env.docker
+          ├── Dockerfile
+          ├── package-lock.json
+          ├── package.json
+          ├── tsconfig.json
+  ├── .gitignore
+  ├── docker-compose.yml
+  ├── README.md
 
 ## 👨‍💻 Contribution Guide
 1. Fork the repo and create your branch:
@@ -59,64 +114,13 @@ git push origin feature/your-feature
 ## ✅ To-Do / Roadmap
  - [x] Landing Page
  - [x] Sign In Page
- - [ ] User Auth
- - [ ] Item Listing Creation
- - [ ] Search and Filters
+ - [x] User Auth
+ - [x] Item Listing Creation
+ - [x] Search and Filters
+ - [ ] Add sale item
+ - [x] Register Page
+ - [x] Password change
+ - [x] Email verification
+ - [x] Footer content: Terms, Privacy, Contact us
 
 
- # _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_ - also resz delete?
-
-# React + TypeScript + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
