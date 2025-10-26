@@ -35,15 +35,14 @@ const SettingsPage = () => {
     }
 
     const fetchUser = async () => {
+      const API_URL = import.meta.env.VITE_API_BASE_URL;
+
       setLoading(true);
       try {
-        const res = await fetch(
-          `http://localhost:5000/api/users/${user.user_id}`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
+        const res = await fetch(`${API_URL}/api/users/${user.user_id}`, {
+          method: "GET",
+          credentials: "include",
+        });
         if (!res.ok) throw new Error(t("settings.fetchError"));
         const data = await res.json();
         setFormData(data);
@@ -64,25 +63,24 @@ const SettingsPage = () => {
   };
 
   const handleSave = async () => {
+    const API_URL = import.meta.env.VITE_API_BASE_URL;
+
     if (!formData) return;
     setSaving(true);
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/users/${user?.user_id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            fname: formData.fname,
-            lname: formData.lname,
-            email: formData.email,
-            prof_pic_url: formData.prof_pic_url,
-          }),
-        }
-      );
+      const res = await fetch(`${API_URL}/api/users/${user?.user_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          fname: formData.fname,
+          lname: formData.lname,
+          email: formData.email,
+          prof_pic_url: formData.prof_pic_url,
+        }),
+      });
 
       if (!res.ok) {
         const errData = await res.json();
@@ -111,12 +109,14 @@ const SettingsPage = () => {
     setUploadingPic(true);
 
     const start = Date.now();
+    const API_URL = import.meta.env.VITE_API_BASE_URL;
+
     try {
       const formDataUpload = new FormData();
       formDataUpload.append("profile_pic", croppedFile);
 
       const res = await fetch(
-        `http://localhost:5000/api/users/${user.user_id}/upload-profile-pic`,
+        `${API_URL}/api/users/${user.user_id}/upload-profile-pic`,
         {
           method: "POST",
           credentials: "include",
@@ -149,9 +149,11 @@ const SettingsPage = () => {
     setUploadingPic(true);
 
     const start = Date.now();
+    const API_URL = import.meta.env.VITE_API_BASE_URL;
+
     try {
       const res = await fetch(
-        `http://localhost:5000/api/users/${user.user_id}/profile-pic`,
+        `${API_URL}/api/users/${user.user_id}/profile-pic`,
         {
           method: "DELETE",
           credentials: "include",

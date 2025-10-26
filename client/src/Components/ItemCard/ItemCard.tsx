@@ -56,11 +56,11 @@ const ItemCard = ({
     }
 
     const newState = !isFavorited;
-    const url = "http://localhost:5000/api/favourites";
+    const API_URL = import.meta.env.VITE_API_BASE_URL;
     const method = newState ? "POST" : "DELETE";
 
     try {
-      const res = await fetch(url, {
+      const res = await fetch(`${API_URL}/api/favourites`, {
         method,
         credentials: "include",
         headers: { "Content-Type": "application/json" },

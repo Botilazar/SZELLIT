@@ -49,8 +49,7 @@ const BrowsingPage = () => {
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState(initialLimit);
-  const [loading, setLoading] = useState(true); // ✅ added loading state
-  //const { user } = useAuth()
+  const [loading, setLoading] = useState(true);
 
   const isSyncingFromUrl = useRef(false);
 
@@ -92,15 +91,17 @@ const BrowsingPage = () => {
     const start = Date.now();
 
     (async () => {
+      const API_URL = import.meta.env.VITE_API_BASE_URL;
+
       try {
-        const itemsRes = await fetch("http://localhost:5000/api/items", {
+        const itemsRes = await fetch(`${API_URL}/api/items`, {
           credentials: "include",
         });
         if (!itemsRes.ok)
           throw new Error(`Items fetch failed (${itemsRes.status})`);
         const itemsData = await itemsRes.json();
 
-        const favRes = await fetch("http://localhost:5000/api/favourites", {
+        const favRes = await fetch(`${API_URL}/api/favourites`, {
           credentials: "include",
         });
         if (!favRes.ok)

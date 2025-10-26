@@ -29,15 +29,22 @@ export const sendVerificationEmail = async (
 export const sendResetPWEmail = async (
   email: string,
   fullName: string,
-  resetLink: string
+  resetLink: string,
+  lng: string = "en"
 ) => {
-  const subject = "Reset your password";
+  const subject =
+    lng === "hu"
+      ? "Jelszó visszaállítása 🔑"
+      : lng === "de"
+      ? "Passwort zurücksetzen 🔑"
+      : "Reset your password 🔑";
+
   const html = `
     <h2>Password Reset</h2>
     <p>Hello ${fullName || "there"},</p>
     <p>You requested to reset your password.</p>
-    <p>Click the link below to choose a new one:</p>
     <a href="${resetLink}" target="_blank">Reset your password with this link.</a>
+    <p>This link will <strong>expire in 1 hour</strong>.</p>
     <p>If you didn’t request this, you can safely ignore this email.</p>
   `;
 

@@ -30,9 +30,9 @@ const BadgesShowcasePage = () => {
     (async () => {
       try {
         setLoading(true);
-        const baseURL = "http://localhost:5000";
+        const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-        const resBadges = await fetch(`${baseURL}/api/badges`, {
+        const resBadges = await fetch(`${API_URL}/api/badges`, {
           method: "GET",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
@@ -42,7 +42,7 @@ const BadgesShowcasePage = () => {
 
         let dataHonors: HonorsPayload | null = null;
         if (userId) {
-          const resHonors = await fetch(`${baseURL}/api/honors/${userId}`, {
+          const resHonors = await fetch(`${API_URL}/api/honors/${userId}`, {
             method: "GET",
             credentials: "include",
             headers: { "Content-Type": "application/json" },

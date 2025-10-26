@@ -68,12 +68,13 @@ export default function FavoritesPage() {
   useEffect(() => {
     let alive = true;
     (async () => {
+      const API_URL = import.meta.env.VITE_API_BASE_URL;
+
       try {
         setLoading(true);
         setError(null);
 
-        //const token = localStorage.getItem("accessToken") || "";
-        const res = await fetch("http://localhost:5000/api/favourites/items", {
+        const res = await fetch(`${API_URL}/api/favourites/items`, {
           method: "GET",
           credentials: "include",
         });

@@ -11,7 +11,6 @@ const router = Router();
 const registerSchema = Joi.object({
   fullName: Joi.string().min(2).required(),
   email: Joi.string().email().required(),
-  username: Joi.string().alphanum().min(3).required(),
   password: Joi.string()
     .min(8)
     .pattern(/[a-z]/)

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Mail, Facebook, Instagram, UserCircle2, Star } from "lucide-react";
-import { motion, number } from "framer-motion";
+import { motion } from "framer-motion";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 import ItemCard from "../ItemCard/ItemCard";
 import useDarkMode from "../../hooks/useDarkMode";
@@ -49,6 +49,7 @@ const ProfilePage = () => {
   const { user: currentUser } = useAuth();
 
   const [badges, setBadges] = useState<Badge[]>([]);
+  // @ts-expect-error TS2345
   const [currentBadge, setCurrentBadge] = useState<Badge | null>(null);
   const [totalHonors, setTotalHonors] = useState<number>(0);
   const [honorProgress, setHonorProgress] = useState<{
@@ -74,34 +75,27 @@ const ProfilePage = () => {
     };
 
     const fetchData = async () => {
+      const API_URL = import.meta.env.VITE_API_BASE_URL;
+
       try {
         setLoading(true);
-        const resUser = await fetch(
-          `http://localhost:5000/api/users/${userId}`,
-          {
-            credentials: "include",
-          }
-        );
+        const resUser = await fetch(`${API_URL}/api/users/${userId}`, {
+          credentials: "include",
+        });
         if (check401(resUser)) return;
         if (!resUser.ok) throw new Error(t("profile.fetchUserError"));
         const userData = await resUser.json();
 
-        const resItems = await fetch(
-          `http://localhost:5000/api/users/${userId}/items`,
-          {
-            credentials: "include",
-          }
-        );
+        const resItems = await fetch(`${API_URL}/api/users/${userId}/items`, {
+          credentials: "include",
+        });
         if (check401(resItems)) return;
         if (!resItems.ok) throw new Error(t("profile.fetchItemsError"));
         const itemData = await resItems.json();
 
-        const resHonors = await fetch(
-          `http://localhost:5000/api/honors/${userId}`,
-          {
-            credentials: "include",
-          }
-        );
+        const resHonors = await fetch(`${API_URL}/api/honors/${userId}`, {
+          credentials: "include",
+        });
         if (check401(resHonors)) return;
         const honorsData = await resHonors.json();
 
@@ -109,7 +103,7 @@ const ProfilePage = () => {
         if (!isOwner) {
           try {
             const resCheck = await fetch(
-              `http://localhost:5000/api/honors/${userId}`, ///status`,
+              `${API_URL}/api/honors/${userId}`, ///status`,
               {
                 credentials: "include",
               }
@@ -129,7 +123,7 @@ const ProfilePage = () => {
 
         let favData: number[] = [];
         if (currentUser) {
-          const favRes = await fetch("http://localhost:5000/api/favourites", {
+          const favRes = await fetch(`${API_URL}/api/favourites`, {
             credentials: "include",
           });
           if (favRes.ok) favData = await favRes.json();
@@ -145,7 +139,7 @@ const ProfilePage = () => {
 
           if (isOwner) {
             const nextBadgeRes = await fetch(
-              `http://localhost:5000/api/badges/next/${userId}`,
+              `${API_URL}/api/badges/next/${userId}`,
               {
                 credentials: "include",
               }
@@ -179,10 +173,12 @@ const ProfilePage = () => {
   }, [userId, t, isOwner]);
 
   const handleHonorClick = async () => {
+    const API_URL = import.meta.env.VITE_API_BASE_URL;
+
     if (!currentUser) return;
     try {
       const method = hasHonored ? "DELETE" : "POST";
-      const res = await fetch(`http://localhost:5000/api/honors/${userId}`, {
+      const res = await fetch(`${API_URL}/api/honors/${userId}`, {
         method,
         headers: { "Content-Type": "application/json", credentials: "include" },
       });
@@ -193,12 +189,9 @@ const ProfilePage = () => {
 
       setHasHonored(!hasHonored);
 
-      const badgeRes = await fetch(
-        `http://localhost:5000/api/honors/${userId}`,
-        {
-          credentials: "include",
-        }
-      );
+      const badgeRes = await fetch(`${API_URL}/api/honors/${userId}`, {
+        credentials: "include",
+      });
       const honorsData = await badgeRes.json();
       setCurrentBadge(honorsData.currentBadge);
       setBadges(honorsData.earnedBadges);

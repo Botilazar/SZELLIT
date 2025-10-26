@@ -2,29 +2,38 @@ services:
   db:
     image: postgres:17
     restart: always
-    env_file:
-      - ./server/.env
-
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: szellit
     ports:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   server:
     build: ./server
     ports:
       - "5000:5000"
     env_file:
-      - ./server/.env # load your server environment variables
+      - ./server/.env.docker
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   client:
     build: ./client
     ports:
       - "5173:80"
     env_file:
-      - ./client/.env # load your client environment variables
+      - ./client/.env.docker
+    depends_on:
+      - server
 
 volumes:
   db_data:

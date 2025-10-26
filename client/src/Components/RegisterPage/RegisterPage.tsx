@@ -13,10 +13,12 @@ const RegisterPage = () => {
   //const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
+  // @ts-expect-error TS2322
   const [emailSent, setEmailSent] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [showModal, setShowModal] = useState(false); // add this
 
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -72,7 +74,7 @@ const RegisterPage = () => {
 
     setLoading(true);
     try {
-      const response = await fetch("/api/auth/register", {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -109,7 +111,7 @@ const RegisterPage = () => {
       return;
     }
     try {
-      const res = await fetch("/api/auth/resend-verification", {
+      const res = await fetch(`${API_URL}/api/auth/resend-verification`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: userEmail, lng }),

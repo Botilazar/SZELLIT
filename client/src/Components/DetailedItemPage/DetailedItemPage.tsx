@@ -20,7 +20,6 @@ interface Item {
 
 const DetailedItemPage = () => {
   const navigate = useNavigate();
-  //const { isDarkMode } = useDarkMode();
   const { user } = useAuth();
 
   const [item, setItem] = useState<Item | null>(null);
@@ -59,14 +58,16 @@ const DetailedItemPage = () => {
     const start = Date.now();
 
     (async () => {
+      const API_URL = import.meta.env.VITE_API_BASE_URL;
+
       try {
-        const res = await fetch(`http://localhost:5000/api/items/${itemId}`);
+        const res = await fetch(`${API_URL}/api/items/${itemId}`);
         if (!res.ok) throw new Error("Item fetch failed");
         const data: Item = await res.json();
 
         let favData: number[] = [];
 
-        const favRes = await fetch("http://localhost:5000/api/favourites", {
+        const favRes = await fetch(`${API_URL}/api/favourites`, {
           credentials: "include",
         });
         if (favRes.ok) favData = await favRes.json();
@@ -98,12 +99,12 @@ const DetailedItemPage = () => {
   ) => {
     e.stopPropagation();
 
+    const API_URL = import.meta.env.VITE_API_BASE_URL;
     const isFavorited = favoriteIds.includes(itemId);
-    const url = "http://localhost:5000/api/favourites";
     const method = isFavorited ? "DELETE" : "POST";
 
     try {
-      const res = await fetch(url, {
+      const res = await fetch(`${API_URL}/api/favourites`, {
         method,
         headers: {
           "Content-Type": "application/json",

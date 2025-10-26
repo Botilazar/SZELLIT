@@ -50,12 +50,13 @@ const AdminPanelPage = () => {
     let alive = true;
     setLoading(true);
 
+    const API_URL = import.meta.env.VITE_API_BASE_URL;
     const fetchData = async () => {
       try {
         let res, data;
 
         if (tableType === "users") {
-          res = await fetch("http://localhost:5000/api/users", {
+          res = await fetch(`${API_URL}/api/users`, {
             method: "GET",
             credentials: "include",
           });
@@ -63,7 +64,7 @@ const AdminPanelPage = () => {
           data = await res.json();
           if (alive) setUsers(data);
         } else {
-          res = await fetch("http://localhost:5000/api/items", {
+          res = await fetch(`${API_URL}/api/items`, {
             method: "GET",
             credentials: "include",
           });
