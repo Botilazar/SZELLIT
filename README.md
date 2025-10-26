@@ -43,8 +43,8 @@ Then open your browser to:
 - or whatever port is shown in the terminal output (e.g.: `:5173`, `:5432` depending on your Vite setup)
 
 ## 📁 Project Structure (High-Level)
-/szellit
-  └── /client
+```/szellit
+    └── /client
           ├── node_modules 
           ├── public/images/
           ├── src/
@@ -97,7 +97,7 @@ Then open your browser to:
   ├── .gitignore
   ├── docker-compose.yml
   ├── README.md
-
+```
 ## 👨‍💻 Contribution Guide
 1. Fork the repo and create your branch:
 ```bash
