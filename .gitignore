@@ -25,7 +25,11 @@ dist-ssr
 
 # environment variables
 *.env
-
+.env.docker
+Dockerfile 
+docker-compose.yml
 #profile-pics
 /server/uploads/profile-pics/*
 !/server/uploads/profile-pics/.gitkeep
+/server/.env.docker
+/server/Dockerfile
