@@ -13,14 +13,16 @@ const RegisterPage = () => {
   //const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
-  const [, /*emailSent*/ setEmailSent] = useState(false);
+  // @ts-expect-error TS2322
+  const [emailSent, setEmailSent] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [showModal, setShowModal] = useState(false); // add this
 
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    username: "",
+    neptun: "",
     password: "",
     confirmPassword: "",
   });
@@ -39,7 +41,7 @@ const RegisterPage = () => {
     if (
       !formData.fullName ||
       !formData.email ||
-      !formData.username ||
+      !formData.neptun ||
       !formData.password
     ) {
       toast.error(t("register.requiredFields"));
@@ -48,6 +50,11 @@ const RegisterPage = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       toast.error(t("register.invalidEmail"));
+      return;
+    }
+    const neptunRegex = /^[A-Za-z0-9]+$/;
+    if (!neptunRegex.test(formData.neptun) || formData.neptun.length !== 6) {
+      toast.error(t("register.invalidNeptun"));
       return;
     }
     if (formData.password !== formData.confirmPassword) {
@@ -67,13 +74,13 @@ const RegisterPage = () => {
 
     setLoading(true);
     try {
-      const response = await fetch("/api/auth/register", {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           fullName: formData.fullName,
           email: formData.email,
-          username: formData.username,
+          neptun: formData.neptun.toUpperCase(),
           password: formData.password,
           lng: lng, // Pass the language for email templates
         }),
@@ -88,7 +95,6 @@ const RegisterPage = () => {
         setEmailSent(true);
         setShowModal(true);
         toast.success(t("register.success"));
-        //navigate(`/${lng}/login`);
       } else {
         toast.error(result.error || t("register.genericError"));
       }
@@ -105,7 +111,7 @@ const RegisterPage = () => {
       return;
     }
     try {
-      const res = await fetch("/api/auth/resend-verification", {
+      const res = await fetch(`${API_URL}/api/auth/resend-verification`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: userEmail, lng }),
@@ -155,11 +161,16 @@ const RegisterPage = () => {
           />
           <input
             type="text"
-            name="username"
-            placeholder={t("register.username")}
-            className="w-full px-4 py-2 szellit-forminput"
-            value={formData.username}
-            onChange={handleChange}
+            name="neptun"
+            placeholder={t("register.neptun")}
+            className="w-full px-4 py-2 szellit-forminput uppercase"
+            value={formData.neptun}
+            onChange={(e) => {
+              setFormData({
+                ...formData,
+                neptun: e.target.value.toUpperCase(),
+              });
+            }}
             disabled={loading}
           />
           <input
@@ -223,10 +234,11 @@ const RegisterPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-2 rounded transition-colors flex items-center justify-center gap-2 ${loading
-              ? "bg-gray-500 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-500 text-white "
-              }`}
+            className={`w-full py-2 rounded transition-colors flex items-center justify-center gap-2 ${
+              loading
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-500 text-white "
+            }`}
           >
             {loading && (
               <svg

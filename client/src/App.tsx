@@ -25,6 +25,9 @@ import AdminPanelPage from "./Components/AdminPanelPage/AdminPanelPage";
 import ProfilePage from "./Components/ProfilePage/ProfilePage";
 import SettingsPage from "./Components/SettingsPage/SettingsPage";
 import BadgesShowcasePage from "./Components/BadgeShowcasePage/BadgeShowcasePage";
+import TermsAndConditions from "./Components/TermsCond-PrivPol-Contact/TermsAndCond";
+import PrivacyPolicy from "./Components/TermsCond-PrivPol-Contact/PrivacyPolicy";
+import ContactPage from "./Components/TermsCond-PrivPol-Contact/Contact";
 
 function LocaleWrapper() {
   const { lng } = useParams<{ lng: string }>();
@@ -69,6 +72,9 @@ function App() {
               element={<ConfirmResetPasswordPage />}
             />
             <Route path="verify-email" element={<EmailVerifyPage />} />
+            <Route path="terms" element={<TermsAndConditions />} />
+            <Route path="privacy" element={<PrivacyPolicy />} />
+            <Route path="contact" element={<ContactPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/en" replace />} />
         </Routes>

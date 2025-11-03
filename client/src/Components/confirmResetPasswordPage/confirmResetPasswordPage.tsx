@@ -13,6 +13,8 @@ const ConfirmResetPasswordPage = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
   useEffect(() => {
     if (!token) {
       toast.error(t("reset.error.invalidToken"));
@@ -32,11 +34,16 @@ const ConfirmResetPasswordPage = () => {
       toast.error(t("reset.error.tooShort"));
       return;
     }
+    if (!passwordRegex.test(newPassword)) {
+      toast.error(t("reset.error.weakPassword"));
+      return;
+    }
 
     try {
       const response = await fetch("/api/auth/confirm-reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ token, newPassword }),
       });
 

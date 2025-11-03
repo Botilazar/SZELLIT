@@ -1,5 +1,5 @@
 import { Router } from "express";
-import crypto from "crypto";
+import jwt from "jsonwebtoken";
 import pool from "../../db";
 import { sendResetPWEmail } from "../../services/email.service";
 
@@ -25,17 +25,17 @@ router.post("/", async (req: any, res: any) => {
     }
 
     const user = result.rows[0];
-    const token = crypto.randomBytes(32).toString("hex");
-    const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    const secret = process.env.JWT_SECRET!;
 
-    await pool.query(
-      `UPDATE "USER" SET reset_token = $1, reset_token_expiry = $2 WHERE email = $3`,
-      [token, expiry, email]
-    );
+    if (!secret) {
+      throw new Error("JWT_SECRET is not defined in environment variables");
+    }
+    const token = jwt.sign({ userId: user.user_id }, secret, {
+      expiresIn: "1h",
+    });
 
     const fullName =
       user.username || user.name || `${user.fname} ${user.lname}`;
-
     const langPath = lng || "en";
     const resetLink = `${
       process.env.FRONTEND_URL
