@@ -1,10 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, MouseEvent, useRef } from "react";
-import { Heart, MoreHorizontal, MoreVertical, Pencil } from "lucide-react";
+import { Heart, MoreHorizontal } from "lucide-react";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 //import useDarkMode from "../../hooks/useDarkMode";
 import { useAuth } from "../../AuthContext";
-import useDarkMode from "../../hooks/useDarkMode";
+import PleaseLogin from "../Other/pleaseLogin";
+
 
 interface Item {
   item_id: number;
@@ -22,7 +23,7 @@ interface Item {
 const DetailedItemPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { isDarkMode } = useDarkMode();
+
 
   const [item, setItem] = useState<Item | null>(null);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
@@ -36,26 +37,7 @@ const DetailedItemPage = () => {
   // 🚨 Guard route: if not logged in, block access
   if (!user) {
     return (
-      <div className="max-w-3xl mx-auto p-8 flex flex-col items-center justify-center space-y-6 text-center">
-        <p className="text-xl font-semibold text-gray-600 dark:text-gray-300">
-          You need to log in or create an account to view this page.
-        </p>
-        <div className="flex gap-4">
-          <button
-            onClick={() => navigate(`/${lng}/login`)}
-            className="px-6 py-3 rounded-full bg-blue-600 text-white font-semibold shadow-md hover:scale-105 transition-transform"
-          >
-            Login
-          </button>
-          <button
-            onClick={() => navigate(`/${lng}/register`)}
-            className="px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold shadow-md hover:scale-105 transition-transform"
-          >
-            Register
-          </button>
-        </div>
-      </div>
-    );
+      <PleaseLogin />)
   }
 
   useEffect(() => {
@@ -166,11 +148,10 @@ const DetailedItemPage = () => {
               <button
                 key={idx}
                 onClick={() => setSelectedImg(url)}
-                className={`rounded-lg overflow-hidden shadow-sm border-2 transition ${
-                  selectedImg === url
-                    ? "border-blue-500"
-                    : "border-transparent hover:border-gray-300"
-                }`}
+                className={`rounded-lg overflow-hidden shadow-sm border-2 transition ${selectedImg === url
+                  ? "border-blue-500"
+                  : "border-transparent hover:border-gray-300"
+                  }`}
               >
                 <img
                   src={url}

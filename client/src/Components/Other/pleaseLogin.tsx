@@ -1,9 +1,10 @@
 // src/Components/PleaseLogin/PleaseLogin.tsx
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FaUserLock } from "react-icons/fa";
 
 const PleaseLogin = () => {
     const navigate = useNavigate();
+    const { lng } = useParams()
 
     return (
         <div className="flex flex-col items-center justify-center h-[80vh] text-center px-4">
@@ -13,7 +14,7 @@ const PleaseLogin = () => {
                 This page requires an account. Please log in to continue.
             </p>
             <button
-                onClick={() => navigate("/login")}
+                onClick={() => navigate(`/${lng}/login`)}
                 className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition-colors"
             >
                 Go to Login
