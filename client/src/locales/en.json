@@ -63,7 +63,8 @@
       "instruction": "Click the link in your email to verify your account and get started.",
       "goToLogin": "Go to Login",
       "tryAgain": "Register Again"
-    }
+    },
+    "neptun": "Neptun Code"
   },
   "reset": {
     "title": "Reset Password",
@@ -209,5 +210,65 @@
     "category": "Category",
     "listeddate": "Listed on: ",
     "contactinfo": "Contact"
+  },
+  "terms": {
+    "title": "Terms and Conditions",
+    "intro": "Welcome to Szellit! These terms outline the rules and guidelines for using our website.",
+
+    "section1": {
+      "title": "Use of Our Services",
+      "text": "By creating an account or using our services, you agree to follow these terms."
+    },
+    "section2": {
+      "title": "User Content",
+      "text": "You are responsible for the content you post. Do not upload anything illegal, harmful, or offensive."
+    },
+    "section3": {
+      "title": "Liability",
+      "text": "We do our best to keep the platform safe and reliable, but we are not liable for user actions or content."
+    },
+    "section4": {
+      "title": "Changes to Terms",
+      "text": "We may update these terms occasionally. Major updates will be announced here."
+    },
+
+    "lastUpdated": "Last updated: {{year}}"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "intro": "We value your privacy and want you to understand how we handle your information.",
+
+    "dataCollection": "Data Collection",
+    "dataUse": "We collect basic information such as your email, name, and listings to make the platform work properly.",
+
+    "dataStorage": "Data Storage",
+    "section3": {
+      "list": {
+        "accountInfo": "Account information (e.g., name, email address)",
+        "usageData": "Usage data (how you interact with the website)",
+        "deviceData": "Device and browser data (for security and analytics)"
+      }
+    },
+
+    "section4": {
+      "title": "Your Rights and Contact",
+      "text": "You can request deletion or correction of your data at any time. If you have questions, reach out to us via the contact page."
+    },
+
+    "lastUpdated": "Last updated: {{year}}"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "thanks": "Thank you! Your message has been sent.",
+    "yourName": "Your Name",
+    "yourEmail": "Your Email",
+    "yourMessage": "Your Message",
+    "namePlaceholder": "Enter your name",
+    "emailPlaceholder": "Enter your email",
+    "messagePlaceholder": "Type your message here...",
+    "send": "Send Message",
+    "sending": "Sending...",
+    "messageTooShort": "Message must be at least 5 characters.",
+    "otherContact": "Or reach us directly via email: "
   }
 }

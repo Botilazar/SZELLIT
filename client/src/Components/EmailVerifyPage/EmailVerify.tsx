@@ -39,6 +39,7 @@ const EmailVerifyPage = () => {
         const res = await fetch("/api/auth/verify-email", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({ token }),
         });
 
@@ -48,11 +49,7 @@ const EmailVerifyPage = () => {
           setVerificationState("success");
           setUserData(result.user);
 
-          // Auto-login the user
-          if (result.token) {
-            localStorage.setItem("accessToken", result.token);
-            login(result.user);
-          }
+          login(result.user);
 
           // Show success modal
           setShowSuccessModal(true);

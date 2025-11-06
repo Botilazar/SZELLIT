@@ -21,7 +21,7 @@ const Navbar = () => {
   const { lng } = useParams<{ lng: SupportedLang }>();
   const { t } = useTranslation();
   const { isDarkMode, toggleDarkMode } = useDarkMode();
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const profileRef = useRef<HTMLDivElement>(null);
 
   const supportedLangs: Record<SupportedLang, string> = {
@@ -48,7 +48,10 @@ const Navbar = () => {
   // Close profile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(e.target as Node)
+      ) {
         setProfileOpen(false);
       }
     };
@@ -56,10 +59,24 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  if (loading) {
+    return (
+      <nav className="w-full h-[93px] szellit-navbar shadow-md flex items-center justify-between px-6">
+        <div className="flex items-center h-full cursor-pointer">
+          <Logo />
+        </div>
+        <div className="animate-pulse h-10 w-32 bg-gray-200 dark:bg-gray-700 rounded-full" />
+      </nav>
+    );
+  }
+
   return (
     <nav className="w-full h-[93px] szellit-navbar shadow-md flex items-center justify-between px-6">
       {/* Logo */}
-      <div className="flex items-center h-full cursor-pointer" onClick={() => goTo("/items")}>
+      <div
+        className="flex items-center h-full cursor-pointer"
+        onClick={() => goTo("/items")}
+      >
         <Logo />
       </div>
 
@@ -110,7 +127,6 @@ const Navbar = () => {
           )}
         </button>
 
-
         {/* Profile / Login */}
         <div className="relative" ref={profileRef}>
           {user ? (
@@ -138,7 +154,9 @@ const Navbar = () => {
                     )}
                   </div>
                   {/* Name */}
-                  <span className="hidden sm:inline">{user?.fname} {user?.lname}</span>
+                  <span className="hidden sm:inline">
+                    {user?.fname} {user?.lname}
+                  </span>
                 </button>
 
                 {/* Dropdown menu */}
@@ -149,10 +167,26 @@ const Navbar = () => {
               ${isDarkMode ? "bg-gray-800 text-gray-200 ring-white/20" : "bg-white text-gray-900 ring-black/10"}`}
                   >
                     {[
-                      { label: t("navbar.profile"), action: () => goTo(`/profiles/${user.user_id}`) },
-                      { label: t("navbar.settings"), action: () => goTo("/settings") },
-                      { label: t("navbar.favorites"), action: () => goTo("/favorites") },
-                      ...(user?.role === "ADMIN" ? [{ label: "Admin Panel", action: () => goTo("/adminpanel") }] : [])
+                      {
+                        label: t("navbar.profile"),
+                        action: () => goTo(`/profiles/${user.user_id}`),
+                      },
+                      {
+                        label: t("navbar.settings"),
+                        action: () => goTo("/settings"),
+                      },
+                      {
+                        label: t("navbar.favorites"),
+                        action: () => goTo("/favorites"),
+                      },
+                      ...(user?.role === "ADMIN"
+                        ? [
+                            {
+                              label: "Admin Panel",
+                              action: () => goTo("/adminpanel"),
+                            },
+                          ]
+                        : []),
                     ].map(({ label, action }) => (
                       <button
                         key={label}
@@ -164,7 +198,16 @@ const Navbar = () => {
                       </button>
                     ))}
                     <button
-                      onClick={logout}
+                      onClick={async () => {
+                        try {
+                          await logout();
+                          navigate(`/${lng}/welcome`);
+                        } catch (err) {
+                          console.error("Logout error:", err);
+                        } finally {
+                          setProfileOpen(false);
+                        }
+                      }}
                       className={`w-full text-left px-4 py-2 transition-colors duration-200 text-red-600
                 ${isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"}`}
                     >
@@ -186,7 +229,6 @@ const Navbar = () => {
             </button>
           )}
         </div>
-
       </div>
     </nav>
   );

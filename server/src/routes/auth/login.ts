@@ -5,14 +5,14 @@ import pool from "../../db";
 import jwt from "jsonwebtoken";
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 router.post("/", async (req: any, res: any) => {
   const { email, password } = req.body;
 
   try {
     const userResult = await pool.query(
-      `SELECT user_id, email, pw_hashed, fname, lname, is_verified, role, prof_pic_url FROM "USER" WHERE email = $1`,
+      `SELECT user_id, email, pw_hashed, fname, lname, is_verified, neptun, role, prof_pic_url FROM "USER" WHERE email = $1`,
       [email]
     );
 
@@ -21,13 +21,10 @@ router.post("/", async (req: any, res: any) => {
     }
 
     const user = userResult.rows[0];
-
     const isMatch = await bcrypt.compare(password, user.pw_hashed);
-
     if (!isMatch) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
-
     if (!user.is_verified) {
       return res.status(401).json({ error: "Email not verified" });
     }
@@ -40,12 +37,21 @@ router.post("/", async (req: any, res: any) => {
       fname: user.fname,
       lname: user.lname,
       role: user.role,
-      prof_pic_url: user.prof_pic_url
+      neptun: user.neptun,
+      prof_pic_url: user.prof_pic_url,
     };
 
     const token = jwt.sign(safeUser, JWT_SECRET, { expiresIn: "1h" });
 
-    res.status(200).json({ user: safeUser, token });
+    // Set HttpOnly cookie
+    res.cookie("accessToken", token, {
+      httpOnly: true,
+      secure: process.env.DEV_SECURE_COOKIE === "true",
+      sameSite: process.env.DEV_SAMESITE as "lax" | "strict" | "none",
+      maxAge: 60 * 60 * 1000, // 1 hour
+    });
+
+    res.status(200).json({ user: safeUser });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ error: "Internal server error" });

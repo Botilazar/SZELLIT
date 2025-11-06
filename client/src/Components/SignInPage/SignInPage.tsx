@@ -20,7 +20,7 @@ const SignInPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(from)
+    console.log(from);
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
@@ -29,15 +29,13 @@ const SignInPage = () => {
         body: JSON.stringify({ email, password }),
       });
 
-      const text = await response.text();
-      const result = text ? JSON.parse(text) : {};
-
       if (response.ok) {
-        localStorage.setItem("accessToken", result.token); // Save JWT token
-        login(result.user);
+        const { user } = await response.json();
+        login(user);
         toast.success(t("signin.success"));
         navigate(`/${lng}/items`); // or wherever you want
       } else {
+        const result = await response.json();
         toast.error(result.error || t("signin.genericError"));
       }
     } catch (err) {

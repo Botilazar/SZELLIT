@@ -56,7 +56,8 @@
     "passwordMismatch": "Passwörter stimmen nicht überein!",
     "acceptTermsAlert": "Bitte akzeptiere die Allgemeinen Geschäftsbedingungen",
     "successEmailSent": "Eine Bestätigungs-E-Mail wurde gesendet. Bitte überprüfe deinen Posteingang.",
-    "loading": "Registrierung läuft..."
+    "loading": "Registrierung läuft...",
+    "neptun": "Neptun-ID"
   },
   "reset": {
     "title": "Passwort zurücksetzen",
@@ -184,5 +185,65 @@
     "category": "Kategorie",
     "listeddate": "Hochgeladen am:",
     "contactinfo": "Kontakt"
+  },
+  "terms": {
+    "title": "Allgemeine Geschäftsbedingungen",
+    "intro": "Willkommen bei Szellit! Diese Bedingungen beschreiben die Regeln für die Nutzung unserer Website.",
+
+    "section1": {
+      "title": "Nutzung unserer Dienste",
+      "text": "Durch das Erstellen eines Kontos oder die Nutzung unserer Dienste stimmst du diesen Bedingungen zu."
+    },
+    "section2": {
+      "title": "Benutzerinhalte",
+      "text": "Du bist für die Inhalte verantwortlich, die du veröffentlichst. Bitte lade keine illegalen oder anstößigen Inhalte hoch."
+    },
+    "section3": {
+      "title": "Haftung",
+      "text": "Wir bemühen uns, die Plattform sicher und zuverlässig zu halten, übernehmen aber keine Haftung für Benutzerinhalte."
+    },
+    "section4": {
+      "title": "Änderungen der Bedingungen",
+      "text": "Diese Bedingungen können gelegentlich aktualisiert werden. Größere Änderungen werden hier bekannt gegeben."
+    },
+
+    "lastUpdated": "Zuletzt aktualisiert: {{year}}"
+  },
+  "privacy": {
+    "title": "Datenschutzrichtlinie",
+    "intro": "Wir respektieren deine Privatsphäre und möchten erklären, wie wir mit deinen Daten umgehen.",
+
+    "dataCollection": "Datenerhebung",
+    "dataUse": "Wir erheben grundlegende Daten wie E-Mail, Name und Anzeigen, um die Plattform funktionsfähig zu machen.",
+
+    "dataStorage": "Datenspeicherung",
+    "section3": {
+      "list": {
+        "accountInfo": "Kontoinformationen (z. B. Name, E-Mail-Adresse)",
+        "usageData": "Nutzungsdaten (wie du mit der Website interagierst)",
+        "deviceData": "Geräte- und Browserdaten (zur Sicherheit und Analyse)"
+      }
+    },
+
+    "section4": {
+      "title": "Deine Rechte und Kontakt",
+      "text": "Du kannst jederzeit die Löschung oder Korrektur deiner Daten anfordern. Bei Fragen erreichst du uns über die Kontaktseite."
+    },
+
+    "lastUpdated": "Zuletzt aktualisiert: {{year}}"
+  },
+  "contact": {
+    "title": "Kontakt",
+    "thanks": "Danke! Ihre Nachricht wurde gesendet.",
+    "yourName": "Ihr Name",
+    "yourEmail": "Ihre E-Mail",
+    "yourMessage": "Ihre Nachricht",
+    "namePlaceholder": "Geben Sie Ihren Namen ein",
+    "emailPlaceholder": "Geben Sie Ihre E-Mail ein",
+    "messagePlaceholder": "Schreiben Sie Ihre Nachricht hier...",
+    "send": "Nachricht senden",
+    "sending": "Senden...",
+    "messageTooShort": "Die Nachricht muss mindestens 5 Zeichen lang sein.",
+    "otherContact": "Oder kontaktieren Sie uns direkt per E-Mail: "
   }
 }

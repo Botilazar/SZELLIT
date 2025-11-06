@@ -1,11 +1,12 @@
 // src/AuthContext.tsx
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface User {
   user_id: number;
   email: string;
   fname: string;
   lname: string;
+  neptun: string;
   role: "STDUSER" | "ADMIN";
   prof_pic_url?: string;
 }
@@ -13,17 +14,43 @@ interface User {
 interface AuthContextType {
   user: User | null;
   login: (userData: User) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   isAuthenticated: boolean;
+  refreshUser: () => Promise<void>;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem("user");
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  //check cookie or session once on mount
+  const refreshUser = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/me", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.id && !data.user_id) data.user_id = data.id;
+        setUser(data);
+        localStorage.setItem("user", JSON.stringify(data));
+      } else {
+        setUser(null);
+        localStorage.removeItem("user");
+      }
+    } catch {
+      setUser(null);
+      localStorage.removeItem("user");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const login = (userData: User) => {
     setUser(userData);
@@ -36,18 +63,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         method: "POST",
         credentials: "include",
       });
-    } catch (e) {
-      console.error("Logout error:", e);
+    } finally {
+      setUser(null);
+      localStorage.removeItem("user");
     }
-
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("user");
-    setUser(null);
   };
 
-  const value = { user, login, logout, isAuthenticated: !!user };
+  //On mount, restore cached user immediately
+  useEffect(() => {
+    const cashedUser = localStorage.getItem("user");
+    if (cashedUser) {
+      setUser(JSON.parse(cashedUser));
+    }
+    refreshUser();
+  }, []);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <>
+      <AuthContext.Provider
+        value={{
+          user,
+          isAuthenticated: !!user,
+          login,
+          logout,
+          refreshUser,
+          loading,
+        }}
+      >
+        {children}
+      </AuthContext.Provider>
+    </>
+  );
 };
 
 export const useAuth = (): AuthContextType => {
