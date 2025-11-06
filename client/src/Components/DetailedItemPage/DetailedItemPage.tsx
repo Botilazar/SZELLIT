@@ -1,9 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState, MouseEvent } from "react";
-import { Heart } from "lucide-react";
+import { useEffect, useState, MouseEvent, useRef } from "react";
+import { Heart, MoreHorizontal } from "lucide-react";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 //import useDarkMode from "../../hooks/useDarkMode";
 import { useAuth } from "../../AuthContext";
+import PleaseLogin from "../Other/pleaseLogin";
+
 
 interface Item {
   item_id: number;
@@ -22,35 +24,20 @@ const DetailedItemPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+
   const [item, setItem] = useState<Item | null>(null);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const { itemId, lng } = useParams<{ itemId: string; lng: string }>();
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
 
   // 🚨 Guard route: if not logged in, block access
   if (!user) {
     return (
-      <div className="max-w-3xl mx-auto p-8 flex flex-col items-center justify-center space-y-6 text-center">
-        <p className="text-xl font-semibold text-gray-600 dark:text-gray-300">
-          You need to log in or create an account to view this page.
-        </p>
-        <div className="flex gap-4">
-          <button
-            onClick={() => navigate(`/${lng}/login`)}
-            className="px-6 py-3 rounded-full bg-blue-600 text-white font-semibold shadow-md hover:scale-105 transition-transform"
-          >
-            Login
-          </button>
-          <button
-            onClick={() => navigate(`/${lng}/register`)}
-            className="px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold shadow-md hover:scale-105 transition-transform"
-          >
-            Register
-          </button>
-        </div>
-      </div>
-    );
+      <PleaseLogin />)
   }
 
   useEffect(() => {
@@ -93,10 +80,20 @@ const DetailedItemPage = () => {
     };
   }, [itemId]);
 
-  const handleFavoriteClick = async (
-    e: MouseEvent<HTMLButtonElement>,
-    itemId: number
-  ) => {
+
+
+  // Detect click outside dropdown
+  useEffect(() => {
+    const handleClickOutside = (e: globalThis.MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleFavoriteClick = async (e: MouseEvent<HTMLButtonElement>, itemId: number) => {
     e.stopPropagation();
 
     const API_URL = import.meta.env.VITE_API_BASE_URL;
@@ -133,7 +130,7 @@ const DetailedItemPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-8 grid grid-cols-1 lg:grid-cols-3 gap-10">
-      {/* Left: Images & Description */}
+      {/* Left side: images & description */}
       <div className="lg:col-span-2 space-y-6">
         {selectedImg && (
           <div className="szellit-navbar rounded-2xl overflow-hidden shadow-lg w-full h-[550px] flex items-center justify-center">
@@ -151,11 +148,10 @@ const DetailedItemPage = () => {
               <button
                 key={idx}
                 onClick={() => setSelectedImg(url)}
-                className={`rounded-lg overflow-hidden shadow-sm border-2 transition ${
-                  selectedImg === url
-                    ? "border-blue-500"
-                    : "border-transparent hover:border-gray-300"
-                }`}
+                className={`rounded-lg overflow-hidden shadow-sm border-2 transition ${selectedImg === url
+                  ? "border-blue-500"
+                  : "border-transparent hover:border-gray-300"
+                  }`}
               >
                 <img
                   src={url}
@@ -175,29 +171,63 @@ const DetailedItemPage = () => {
         </div>
       </div>
 
-      {/* Right: Sidebar */}
+      {/* Right side: price, seller, contact */}
       <aside className="space-y-6">
-        {/* Price & Seller Card */}
-        <div className="szellit-navbar rounded-2xl shadow-md p-6">
+        {/* Price & seller info card */}
+        <div className="szellit-navbar rounded-2xl shadow-md p-6 relative">
           <div className="flex items-center justify-between">
             <span className="text-4xl font-bold text-blue-600">
               {item.price.toLocaleString("hu-HU")} Ft
             </span>
-            <button
-              onClick={(e) => handleFavoriteClick(e, item.item_id)}
-              className={`text-gray-500 hover:text-red-500 ${isFavorite ? "text-red-500" : ""}`}
-            >
-              <Heart
-                className={`w-6 h-6 ${isFavorite ? "fill-red-500" : ""}`}
-              />
-            </button>
+
+            <div className="flex items-center gap-3 relative">
+              {/* Heart icon */}
+              <button
+                onClick={(e) => handleFavoriteClick(e, item.item_id)}
+                className={`text-gray-500 hover:text-red-500 ${isFavorite ? "text-red-500" : ""
+                  }`}
+                title="Add to favorites"
+              >
+                <Heart className={`w-6 h-6 ${isFavorite ? "fill-red-500" : ""}`} />
+              </button>
+
+              {/* Three dots dropdown */}
+              {user && user.user_id === item.user_id && (
+                <div className="relative" ref={menuRef}>
+                  <button
+                    className="text-gray-500 hover:text-blue-500"
+                    onClick={() => setShowMenu((prev) => !prev)}
+                    title="More options"
+                  >
+                    <MoreHorizontal className="w-6 h-6" />
+                  </button>
+
+                  {showMenu && (
+                    <div
+                      className="absolute right-0 mt-2 w-48 rounded-xl shadow-lg overflow-hidden transition-all duration-200 animate-slide-down z-50 szellit-navbar ring-1 ring-gray-300 dark:ring-gray-700"
+                    >
+                      <button
+                        className="w-full text-left px-4 py-2 szellit-text hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="mt-6 space-y-2">
             <p>
               <span className="font-semibold">Seller:</span>{" "}
               <span
-                onClick={() => navigate(`/${lng}/profiles/${item.user_id}`)}
+                onClick={() => { navigate(`/${lng}/profiles/${item.user_id}`); console.log(`${lng}/profiles/${item.user_id}`) }}
                 className="hover:text-blue-500 cursor-pointer"
               >
                 {item.seller_name}
@@ -216,16 +246,13 @@ const DetailedItemPage = () => {
           </div>
         </div>
 
-        {/* Contact Info Card */}
+        {/* Contact card */}
         <div className="szellit-navbar rounded-2xl shadow-md p-6">
           <h2 className="text-lg font-bold mb-4">Contact Information</h2>
           <div className="space-y-2">
             <p>
               <span className="font-semibold">Email:</span>{" "}
-              <a
-                href={`mailto:placeholder@email.com`}
-                className="kkm-text hover:text-blue-500"
-              >
+              <a href="mailto:placeholder@email.com" className="kkm-text hover:text-blue-500">
                 placeholder@email.com
               </a>
             </p>
@@ -246,6 +273,10 @@ const DetailedItemPage = () => {
       </aside>
     </div>
   );
+
+
+
+
 };
 
 export default DetailedItemPage;
