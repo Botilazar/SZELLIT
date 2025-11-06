@@ -25,6 +25,7 @@ const EmailVerifyPage = () => {
   const [userData, setUserData] = useState<userData | null>(null);
 
   const toastShownRef = useRef(false);
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     const token = searchParams.get("token");
@@ -36,7 +37,7 @@ const EmailVerifyPage = () => {
 
     const verifyEmail = async (token: string) => {
       try {
-        const res = await fetch("/api/auth/verify-email", {
+        const res = await fetch(`${API_URL}/api/auth/verify-email`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -78,7 +79,7 @@ const EmailVerifyPage = () => {
     };
 
     verifyEmail(token);
-  }, [searchParams, navigate, t, lng, login]);
+  }, [searchParams, navigate, t, lng, login, API_URL]);
 
   const handleContinue = () => {
     navigate(`/${lng}/items`, { replace: true });

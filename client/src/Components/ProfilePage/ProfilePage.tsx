@@ -170,7 +170,7 @@ const ProfilePage = () => {
     return () => {
       alive = false;
     };
-  }, [userId, t, isOwner]);
+  }, [userId, t, isOwner, currentUser]);
 
   const handleHonorClick = async () => {
     const API_URL = import.meta.env.VITE_API_BASE_URL;

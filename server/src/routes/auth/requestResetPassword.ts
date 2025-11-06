@@ -38,7 +38,7 @@ router.post("/", async (req: any, res: any) => {
       user.username || user.name || `${user.fname} ${user.lname}`;
     const langPath = lng || "en";
     const resetLink = `${
-      process.env.FRONTEND_URL
+      process.env.CLIENT_URL
     }/${langPath}/reset-password-confirm?token=${token}&email=${encodeURIComponent(
       email
     )}&lng=${langPath}`;
