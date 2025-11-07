@@ -62,6 +62,7 @@ const ProfilePage = () => {
 
   //const numUserId = Number(userId);
   const isOwner = currentUser?.user_id.toString() === userId;
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     let alive = true;
@@ -75,8 +76,6 @@ const ProfilePage = () => {
     };
 
     const fetchData = async () => {
-      const API_URL = import.meta.env.VITE_API_BASE_URL;
-
       try {
         setLoading(true);
         const resUser = await fetch(`${API_URL}/api/users/${userId}`, {
@@ -170,11 +169,9 @@ const ProfilePage = () => {
     return () => {
       alive = false;
     };
-  }, [userId, t, isOwner, currentUser]);
+  }, [userId, t, isOwner, currentUser, API_URL]);
 
   const handleHonorClick = async () => {
-    const API_URL = import.meta.env.VITE_API_BASE_URL;
-
     if (!currentUser) return;
     try {
       const method = hasHonored ? "DELETE" : "POST";
