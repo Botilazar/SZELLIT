@@ -89,7 +89,7 @@ const ItemCard = ({
       <div className="relative h-[225px] w-full overflow-hidden rounded-t-2xl">
         {imgUrl ? (
           <>
-            <img src={imgUrl} alt={title} className="w-full h-full object-cover" />
+            <img src={`http://localhost:5000${imgUrl}`} alt={title} className="w-full h-full object-cover" />
             <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/50 to-transparent" />
           </>
         ) : (
