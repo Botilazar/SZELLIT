@@ -26,8 +26,6 @@ dist-ssr
 # environment variables
 *.env
 .env.docker
-Dockerfile.client
-Dockerfile.server 
 docker-compose.yml
 #profile-pics
 /server/uploads/profile-pics/*
@@ -37,3 +35,4 @@ docker-compose.yml
 /server/.env
 /client/.env
 .env.docker
+supervisord.pid

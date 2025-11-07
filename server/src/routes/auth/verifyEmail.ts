@@ -60,18 +60,6 @@ router.post("/", async (req: any, res: any) => {
       { expiresIn: "7d" }
     );
 
-    // Determine cookie settings based on environment
-    /*const isProduction = process.env.NODE_ENV === "production";
-    const secureCookie = isProduction
-      ? process.env.PROD_SECURE_COOKIE === "true"
-      : process.env.DEV_SECURE_COOKIE === "true";
-    const sameSite = isProduction
-      ? (process.env.PROD_SAMESITE as "lax" | "strict" | "none")
-      : (process.env.DEV_SAMESITE as "lax" | "strict" | "none");
-
-    console.log(
-      `Setting cookie with secure=${secureCookie}, sameSite=${sameSite}`
-    );*/
     // Set refresh token in httpOnly cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
