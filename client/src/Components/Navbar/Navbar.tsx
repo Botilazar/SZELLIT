@@ -17,7 +17,7 @@ type SupportedLang = "hu" | "en" | "de";
 
 const Navbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
-  const [sellOpen, setSellOpen] = useState(false); // ⬅️ ÚJ: modál állapot
+  const [sellOpen, setSellOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { lng } = useParams<{ lng: SupportedLang }>();
@@ -47,7 +47,6 @@ const Navbar = () => {
     setProfileOpen(false);
   };
 
-  // Kattintás a profilon kívülre → zárás
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -72,6 +71,11 @@ const Navbar = () => {
     );
   }
 
+  // Sell modal open
+  const handleSellClick = () => {
+    setSellOpen(true);
+  };
+
   return (
     <nav className="w-full h-[93px] szellit-navbar shadow-md flex items-center justify-between px-6">
       {/* Logo */}
@@ -84,19 +88,22 @@ const Navbar = () => {
 
       {/* Actions */}
       <div className="flex items-center gap-4">
-        {/* Sell Button → modált nyit */}
-        <button
-          onClick={handleSellClick}
-          className="flex items-center gap-2 px-6 py-3 rounded-full 
+
+        {/* Sell Button – ONLY visible when logged in */}
+        {user && (
+          <button
+            onClick={handleSellClick}
+            className="flex items-center gap-2 px-6 py-3 rounded-full 
                bg-gradient-to-r from-blue-500 to-blue-600 
                text-white font-semibold shadow-md 
                transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95"
-          aria-label={t("navbar.sell")}
-          title={t("navbar.sell")}
-        >
-          <FaWallet className="text-lg" />
-          <span>{t("navbar.sell")}</span>
-        </button>
+            aria-label={t("navbar.sell")}
+            title={t("navbar.sell")}
+          >
+            <FaWallet className="text-lg" />
+            <span>{t("navbar.sell")}</span>
+          </button>
+        )}
 
         {/* Language Flags */}
         <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-2 py-1 shadow-sm">
@@ -105,7 +112,7 @@ const Navbar = () => {
               key={code}
               onClick={() => changeLanguage(code as SupportedLang)}
               className={`relative p-1 rounded-md transition-all duration-200 hover:scale-110
-        ${lng === code ? "scale-105" : "grayscale opacity-70 hover:grayscale-0 hover:opacity-100"}`}
+                ${lng === code ? "scale-105" : "grayscale opacity-70 hover:grayscale-0 hover:opacity-100"}`}
             >
               <img src={flag} alt={code} className="h-8 w-12 object-cover rounded-md" />
             </button>
@@ -136,7 +143,7 @@ const Navbar = () => {
                 <button
                   onClick={() => setProfileOpen(!profileOpen)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium shadow-sm transition-all duration-300
-            ${isDarkMode ? "bg-gray-800 text-white hover:bg-gray-700" : "bg-white text-gray-900 hover:bg-gray-100"}`}
+                    ${isDarkMode ? "bg-gray-800 text-white hover:bg-gray-700" : "bg-white text-gray-900 hover:bg-gray-100"}`}
                 >
                   <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden text-white">
                     {user.prof_pic_url ? (
@@ -152,7 +159,6 @@ const Navbar = () => {
                       </span>
                     )}
                   </div>
-                  {/* Name */}
                   <span className="hidden sm:inline">
                     {user?.fname} {user?.lname}
                   </span>
@@ -161,8 +167,8 @@ const Navbar = () => {
                 {profileOpen && (
                   <div
                     className={`absolute right-0 mt-2 w-48 rounded-xl shadow-lg ring-1 overflow-hidden
-              transition-all duration-200 animate-slide-down z-999
-              ${isDarkMode ? "bg-gray-800 text-gray-200 ring-white/20" : "bg-white text-gray-900 ring-black/10"}`}
+                      transition-all duration-200 animate-slide-down z-999
+                      ${isDarkMode ? "bg-gray-800 text-gray-200 ring-white/20" : "bg-white text-gray-900 ring-black/10"}`}
                   >
                     {[
                       {
@@ -190,7 +196,7 @@ const Navbar = () => {
                         key={label}
                         onClick={action}
                         className={`w-full text-left px-4 py-2 transition-colors duration-200
-                  ${isDarkMode ? "hover:bg-gray-700 text-gray-200" : "hover:bg-gray-100 text-gray-900"}`}
+                          ${isDarkMode ? "hover:bg-gray-700 text-gray-200" : "hover:bg-gray-100 text-gray-900"}`}
                       >
                         {label}
                       </button>
@@ -207,7 +213,7 @@ const Navbar = () => {
                         }
                       }}
                       className={`w-full text-left px-4 py-2 transition-colors duration-200 text-red-600
-                ${isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"}`}
+                        ${isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"}`}
                     >
                       {t("navbar.logout")}
                     </button>
@@ -219,7 +225,7 @@ const Navbar = () => {
             <button
               onClick={() => goTo("/login")}
               className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium shadow-sm transition-all duration-300
-        ${isDarkMode ? "bg-gray-800 text-white hover:bg-gray-700" : "bg-white text-gray-900 hover:bg-gray-100"}`}
+                ${isDarkMode ? "bg-gray-800 text-white hover:bg-gray-700" : "bg-white text-gray-900 hover:bg-gray-100"}`}
             >
               <FaUserCircle className="text-lg" />
               {t("navbar.login")}
@@ -228,14 +234,12 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* ⬇️ ÚJ: a Sell modál megjelenítése */}
+      {/* Sell Modal */}
       {sellOpen && (
         <NewItemModal
           onClose={() => setSellOpen(false)}
           onSuccess={() => {
             setSellOpen(false);
-            // ide tehetsz toastot vagy átirányítást, ha szeretnéd
-            // pl.: if (lng) navigate(`/${lng}/my_ads`);
           }}
         />
       )}

@@ -54,6 +54,10 @@ const DetailedItemPage = () => {
   }
 
   useEffect(() => {
+    console.log(selectedImg)
+  }, [selectedImg]);
+
+  useEffect(() => {
     let alive = true;
     const start = Date.now();
 
@@ -93,13 +97,14 @@ const DetailedItemPage = () => {
     };
   }, [itemId]);
 
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
+
   const handleFavoriteClick = async (
     e: MouseEvent<HTMLButtonElement>,
     itemId: number
   ) => {
     e.stopPropagation();
 
-    const API_URL = import.meta.env.VITE_API_BASE_URL;
     const isFavorited = favoriteIds.includes(itemId);
     const method = isFavorited ? "DELETE" : "POST";
 
@@ -138,7 +143,7 @@ const DetailedItemPage = () => {
         {selectedImg && (
           <div className="szellit-navbar rounded-2xl overflow-hidden shadow-lg w-full h-[550px] flex items-center justify-center">
             <img
-              src={selectedImg}
+              src={`${API_URL}${selectedImg}`}
               alt={item.title}
               className="w-full h-full object-contain"
             />

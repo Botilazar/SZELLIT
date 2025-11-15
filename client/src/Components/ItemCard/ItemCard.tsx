@@ -47,6 +47,8 @@ const ItemCard = ({
     setIsFavorited(initialFavorited);
   }, [initialFavorited]);
 
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
+
   const handleFavoriteClick = async (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
 
@@ -56,7 +58,6 @@ const ItemCard = ({
     }
 
     const newState = !isFavorited;
-    const API_URL = import.meta.env.VITE_API_BASE_URL;
     const method = newState ? "POST" : "DELETE";
 
     try {
@@ -87,7 +88,7 @@ const ItemCard = ({
         {imgUrl ? (
           <>
             <img
-              src={imgUrl}
+              src={`${API_URL}${imgUrl}` }
               alt={title}
               className="w-full h-full object-cover"
             />
