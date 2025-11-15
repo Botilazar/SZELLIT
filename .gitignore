@@ -24,12 +24,12 @@ dist-ssr
 *.sw?
 
 # environment variables
-.env
-
+*.env
+.env.docker
+Dockerfile 
+docker-compose.yml
 #profile-pics
 /server/uploads/profile-pics/*
 !/server/uploads/profile-pics/.gitkeep
-
-#item-pics
-/server/uploads/item-pics/*
-!/server/uploads/item-pics/.gitkeep
+/server/.env.docker
+/server/Dockerfile

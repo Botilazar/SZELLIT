@@ -8,6 +8,8 @@ import CategorySelector from "../../Components/CategorySelector/CategorySelector
 import FilterDropdown from "../../Components/FilterDropdown/FilterDropdown";
 import ItemCard from "../../Components/ItemCard/ItemCard";
 import Pagination from "../Pagination/Pagination";
+import LoadingAnimation from "../LoadingAnimation/LoadingAnimation"; // ✅ import
+
 interface Item {
   item_id: number;
   title: string;
@@ -19,7 +21,7 @@ interface Item {
   seller_city: string;
   img_urls?: string[];
   user_id: number;
-  prof_pic_url?: string
+  prof_pic_url?: string;
 }
 
 type FilterOptionKey =
@@ -37,8 +39,9 @@ const BrowsingPage = () => {
   const initialLimit = parseInt(searchParams.get("limit") || "8", 10);
 
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedFilter, setSelectedFilter] =
-    useState<FilterOptionKey>("filters.newestUpload");
+  const [selectedFilter, setSelectedFilter] = useState<FilterOptionKey>(
+    "filters.newestUpload"
+  );
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [filteredItems, setFilteredItems] = useState<Item[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
@@ -46,8 +49,7 @@ const BrowsingPage = () => {
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [itemsPerPage, setItemsPerPage] = useState(initialLimit);
-  //const { user } = useAuth()
-
+  const [loading, setLoading] = useState(true);
 
   const isSyncingFromUrl = useRef(false);
 
@@ -86,24 +88,42 @@ const BrowsingPage = () => {
   // Fetch items and favorites
   useEffect(() => {
     let alive = true;
-    (async () => {
-      try {
-        const itemsRes = await fetch("http://localhost:5000/api/items");
-        if (!itemsRes.ok) throw new Error(`Items fetch failed (${itemsRes.status})`);
-        const itemsData = await itemsRes.json();
-        if (alive) setAllItems(itemsData as Item[]);
+    const start = Date.now();
 
-        const token = localStorage.getItem("accessToken") || "";
-        const favRes = await fetch("http://localhost:5000/api/favourites", {
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
+    (async () => {
+      const API_URL = import.meta.env.VITE_API_BASE_URL;
+
+      try {
+        const itemsRes = await fetch(`${API_URL}/api/items`, {
+          credentials: "include",
         });
-        if (!favRes.ok) throw new Error(`Favorites fetch failed (${favRes.status})`);
+        if (!itemsRes.ok)
+          throw new Error(`Items fetch failed (${itemsRes.status})`);
+        const itemsData = await itemsRes.json();
+
+        const favRes = await fetch(`${API_URL}/api/favourites`, {
+          credentials: "include",
+        });
+        if (!favRes.ok)
+          throw new Error(`Favorites fetch failed (${favRes.status})`);
         const favData = await favRes.json();
-        if (alive && Array.isArray(favData)) setFavoriteIds(favData as number[]);
+
+        if (alive) {
+          setAllItems(itemsData as Item[]);
+          if (Array.isArray(favData)) setFavoriteIds(favData as number[]);
+
+          // ensure at least 500ms spinner time
+          const elapsed = Date.now() - start;
+          const remaining = 500 - elapsed;
+          if (remaining > 0) setTimeout(() => setLoading(false), remaining);
+          else setLoading(false);
+        }
       } catch (e: any) {
         console.error("Fetch error:", e?.message ?? e);
+        if (alive) setLoading(false);
       }
     })();
+
     return () => {
       alive = false;
     };
@@ -122,10 +142,16 @@ const BrowsingPage = () => {
 
     switch (selectedFilter) {
       case "filters.newestUpload":
-        result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        result.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
         break;
       case "filters.oldestUpload":
-        result.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        result.sort(
+          (a, b) =>
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
         break;
       case "filters.priceAsc":
         result.sort((a, b) => a.price - b.price);
@@ -143,8 +169,10 @@ const BrowsingPage = () => {
   const endIndex = startIndex + itemsPerPage;
   const itemsToDisplay = filteredItems.slice(startIndex, endIndex);
 
-
   const handleCardClick = (item: Item) => navigate(`${item.item_id}`);
+
+  // ✅ show loading animation
+  if (loading) return <LoadingAnimation />;
 
   return (
     <div className="szellit-background max-w-[1500px] mx-auto px-4 py-8 space-y-6">
@@ -163,7 +191,9 @@ const BrowsingPage = () => {
 
       <div className="flex flex-wrap justify-center gap-4 p-4 rounded-xl">
         {itemsToDisplay.length === 0 ? (
-          <p className="text-gray-500 text-center w-full">{t("browsing.noResults")}</p>
+          <p className="text-gray-500 text-center w-full">
+            {t("browsing.noResults")}
+          </p>
         ) : (
           itemsToDisplay.map((item) => (
             <div key={item.item_id} onClick={() => handleCardClick(item)}>
@@ -178,7 +208,7 @@ const BrowsingPage = () => {
                 imgUrl={item.img_urls?.[0] ?? undefined}
                 itemId={item.item_id}
                 isFavorited={favoriteIds.includes(item.item_id)}
-                sellerProfilePic={`http://localhost:5000${item.prof_pic_url}`}
+                sellerProfilePic={item.prof_pic_url}
                 sellerId={item.user_id}
               />
             </div>

@@ -23,7 +23,7 @@ const Navbar = () => {
   const { lng } = useParams<{ lng: SupportedLang }>();
   const { t } = useTranslation();
   const { isDarkMode, toggleDarkMode } = useDarkMode();
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const profileRef = useRef<HTMLDivElement>(null);
 
   const supportedLangs: Record<SupportedLang, string> = {
@@ -50,7 +50,10 @@ const Navbar = () => {
   // Kattintás a profilon kívülre → zárás
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(e.target as Node)
+      ) {
         setProfileOpen(false);
       }
     };
@@ -58,15 +61,24 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ⬇️ ÚJ: Sell gomb handler — NEM navigál, csak modált nyit
-  const handleSellClick = () => {
-    setSellOpen(true);
-  };
+  if (loading) {
+    return (
+      <nav className="w-full h-[93px] szellit-navbar shadow-md flex items-center justify-between px-6">
+        <div className="flex items-center h-full cursor-pointer">
+          <Logo />
+        </div>
+        <div className="animate-pulse h-10 w-32 bg-gray-200 dark:bg-gray-700 rounded-full" />
+      </nav>
+    );
+  }
 
   return (
     <nav className="w-full h-[93px] szellit-navbar shadow-md flex items-center justify-between px-6">
       {/* Logo */}
-      <div className="flex items-center h-full cursor-pointer" onClick={() => goTo("/items")}>
+      <div
+        className="flex items-center h-full cursor-pointer"
+        onClick={() => goTo("/items")}
+      >
         <Logo />
       </div>
 
@@ -140,20 +152,39 @@ const Navbar = () => {
                       </span>
                     )}
                   </div>
-                  <span className="hidden sm:inline">{user?.fname} {user?.lname}</span>
+                  {/* Name */}
+                  <span className="hidden sm:inline">
+                    {user?.fname} {user?.lname}
+                  </span>
                 </button>
 
                 {profileOpen && (
                   <div
                     className={`absolute right-0 mt-2 w-48 rounded-xl shadow-lg ring-1 overflow-hidden
-              transition-all duration-200 animate-slide-down
+              transition-all duration-200 animate-slide-down z-999
               ${isDarkMode ? "bg-gray-800 text-gray-200 ring-white/20" : "bg-white text-gray-900 ring-black/10"}`}
                   >
                     {[
-                      { label: t("navbar.profile"), action: () => goTo(`/profiles/${user.user_id}`) },
-                      { label: t("navbar.settings"), action: () => goTo("/settings") },
-                      { label: t("navbar.favorites"), action: () => goTo("/favorites") },
-                      ...(user?.role === "ADMIN" ? [{ label: "Admin Panel", action: () => goTo("/adminpanel") }] : [])
+                      {
+                        label: t("navbar.profile"),
+                        action: () => goTo(`/profiles/${user.user_id}`),
+                      },
+                      {
+                        label: t("navbar.settings"),
+                        action: () => goTo("/settings"),
+                      },
+                      {
+                        label: t("navbar.favorites"),
+                        action: () => goTo("/favorites"),
+                      },
+                      ...(user?.role === "ADMIN"
+                        ? [
+                            {
+                              label: "Admin Panel",
+                              action: () => goTo("/adminpanel"),
+                            },
+                          ]
+                        : []),
                     ].map(({ label, action }) => (
                       <button
                         key={label}
@@ -165,7 +196,16 @@ const Navbar = () => {
                       </button>
                     ))}
                     <button
-                      onClick={logout}
+                      onClick={async () => {
+                        try {
+                          await logout();
+                          navigate(`/${lng}/welcome`);
+                        } catch (err) {
+                          console.error("Logout error:", err);
+                        } finally {
+                          setProfileOpen(false);
+                        }
+                      }}
                       className={`w-full text-left px-4 py-2 transition-colors duration-200 text-red-600
                 ${isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"}`}
                     >

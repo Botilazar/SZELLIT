@@ -23,6 +23,7 @@ const ResetPasswordPage = () => {
       const response = await fetch("/api/auth/request-reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", //not required here but for consistency
         body: JSON.stringify({ email, lng }),
       });
 
@@ -59,7 +60,7 @@ const ResetPasswordPage = () => {
         <h1 className="text-2xl font-bold text-center mb-2">
           {t("reset.title")}
         </h1>
-        <p className="text-center text-sm text-gray-600 mb-6">
+        <p className="text-center text-sm szellit-text mb-6">
           {t("reset.subtitle")}
         </p>
         <form onSubmit={handleSubmit}>
@@ -75,10 +76,11 @@ const ResetPasswordPage = () => {
           <button
             type="submit"
             disabled={isCooldown}
-            className={`w-full py-2 font-semibold rounded transition ${isCooldown
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-500 text-white"
-              }`}
+            className={`w-full py-2 font-semibold rounded transition ${
+              isCooldown
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-500 text-white"
+            }`}
           >
             {isCooldown
               ? `${t("reset.cooldownMessage")} (${secondsLeft}s)`

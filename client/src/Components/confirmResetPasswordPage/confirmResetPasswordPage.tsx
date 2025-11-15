@@ -13,6 +13,8 @@ const ConfirmResetPasswordPage = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+
   useEffect(() => {
     if (!token) {
       toast.error(t("reset.error.invalidToken"));
@@ -32,11 +34,16 @@ const ConfirmResetPasswordPage = () => {
       toast.error(t("reset.error.tooShort"));
       return;
     }
+    if (!passwordRegex.test(newPassword)) {
+      toast.error(t("reset.error.weakPassword"));
+      return;
+    }
 
     try {
       const response = await fetch("/api/auth/confirm-reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ token, newPassword }),
       });
 
@@ -55,8 +62,8 @@ const ConfirmResetPasswordPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white px-4">
-      <div className="max-w-md w-full bg-white text-gray-900 p-8 rounded-md shadow-md">
+    <div className="min-h-screen flex items-center justify-center szellit-background szellit-text px-4">
+      <div className="max-w-md w-full szellit-form szellit-text p-8 rounded-md shadow-md">
         <h1 className="text-2xl font-bold text-center mb-2">
           {t("reset.setNewPassword")}
         </h1>
@@ -67,7 +74,7 @@ const ConfirmResetPasswordPage = () => {
             onChange={(e) => setNewPassword(e.target.value)}
             required
             placeholder={t("reset.newPasswordPlaceholder")}
-            className="w-full p-3 mb-4 border rounded bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 mb-4 border rounded szellit-forminput focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
             type="password"
@@ -75,7 +82,7 @@ const ConfirmResetPasswordPage = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             placeholder={t("reset.confirmPasswordPlaceholder")}
-            className="w-full p-3 mb-4 border rounded bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 mb-4 border rounded  szellit-forminput focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             type="submit"

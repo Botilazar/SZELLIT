@@ -1,7 +1,7 @@
 // src/Components/CategorySelector/CategorySelector.tsx
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import useDarkMode from "../../hooks/useDarkMode";
+
 
 type CategorySelectorProps = {
     selected: string;
@@ -12,7 +12,7 @@ type CategorySelectorProps = {
 const CategorySelector = ({ selected, setSelected }: CategorySelectorProps) => {
     const { t } = useTranslation();
     const [categories, setCategories] = useState<string[]>([]);
-    const { isDarkMode } = useDarkMode()
+
 
     // Fetch categories from backend on mount
     useEffect(() => {
@@ -28,9 +28,8 @@ const CategorySelector = ({ selected, setSelected }: CategorySelectorProps) => {
                 const isSelected = selected === key;
                 const bgColor = isSelected
                     ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg scale-105"
-                    : isDarkMode
-                        ? "bg-gray-700 text-gray-200 hover:scale-105 hover:shadow-md"
-                        : "bg-gray-200 text-gray-800 hover:scale-105 hover:shadow-md";
+                    : "szellit-search szellit-text  hover:scale-105 hover:shadow-md";
+
 
                 return (
                     <button

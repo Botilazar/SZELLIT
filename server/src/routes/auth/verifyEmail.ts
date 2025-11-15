@@ -63,8 +63,8 @@ router.post("/", async (req: any, res: any) => {
     // Set refresh token in httpOnly cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: process.env.DEV_SECURE_COOKIE === "true",
+      sameSite: process.env.DEV_SAMESITE as "lax" | "strict" | "none",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 

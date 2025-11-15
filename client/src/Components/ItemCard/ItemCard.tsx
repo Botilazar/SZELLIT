@@ -56,17 +56,14 @@ const ItemCard = ({
     }
 
     const newState = !isFavorited;
-    const url = "http://localhost:5000/api/favourites";
+    const API_URL = import.meta.env.VITE_API_BASE_URL;
     const method = newState ? "POST" : "DELETE";
-    const token = localStorage.getItem("accessToken") || "";
 
     try {
-      const res = await fetch(url, {
+      const res = await fetch(`${API_URL}/api/favourites`, {
         method,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ item_id: itemId }),
       });
 
@@ -89,7 +86,11 @@ const ItemCard = ({
       <div className="relative h-[225px] w-full overflow-hidden rounded-t-2xl">
         {imgUrl ? (
           <>
-            <img src={`http://localhost:5000${imgUrl}`} alt={title} className="w-full h-full object-cover" />
+            <img
+              src={imgUrl}
+              alt={title}
+              className="w-full h-full object-cover"
+            />
             <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black/50 to-transparent" />
           </>
         ) : (
@@ -112,7 +113,11 @@ const ItemCard = ({
           <h3 className="text-lg font-semibold szellit-text">{title}</h3>
           <div
             className="text-sm szellit-text overflow-hidden"
-            style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}
+            style={{
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+            }}
           >
             {description}
           </div>
@@ -136,7 +141,7 @@ const ItemCard = ({
             <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shadow-sm">
               {sellerProfilePic ? (
                 <img
-                  src={sellerProfilePic}
+                  src={`http://localhost:5000${sellerProfilePic}`}
                   alt={sellerName}
                   className="w-full h-full object-cover rounded-full"
                 />
@@ -144,11 +149,16 @@ const ItemCard = ({
                 <UserCircle2 className="w-6 h-6 text-gray-400" />
               )}
             </div>
-            <span onClick={(e) => {
-              e.stopPropagation();
-              console.log(`${lng}/profiles/${sellerId}`)
-              navigate(`/${lng}/profiles/${sellerId}`); // <-- navigate to seller profile
-            }} className="text-sm font-medium hover">{sellerName}</span>
+            <span
+              onClick={(e) => {
+                e.stopPropagation();
+                console.log(`${lng}/profiles/${sellerId}`);
+                navigate(`/${lng}/profiles/${sellerId}`); // <-- navigate to seller profile
+              }}
+              className="text-sm font-medium hover:text-blue-500 cursor-pointer"
+            >
+              {sellerName}
+            </span>
           </div>
           <div className="flex gap-3">
             <button
@@ -157,9 +167,13 @@ const ItemCard = ({
                 "transition-transform duration-200 hover:scale-110 hover:text-red-500",
                 isFavorited && "text-red-500"
               )}
-              aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+              aria-label={
+                isFavorited ? "Remove from favorites" : "Add to favorites"
+              }
             >
-              <Heart className={clsx("w-5 h-5", isFavorited && "fill-red-500")} />
+              <Heart
+                className={clsx("w-5 h-5", isFavorited && "fill-red-500")}
+              />
             </button>
             <button
               className="text-gray-500 hover:text-blue-500 transition-transform duration-200 hover:scale-110"

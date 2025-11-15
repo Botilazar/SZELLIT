@@ -1,12 +1,12 @@
 // client/src/Components/FavoritesPage/FavoritesPage.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-
 import SearchBar from "../SearchBar/SearchBar";
 import CategorySelector from "../CategorySelector/CategorySelector";
 import FilterDropdown from "../FilterDropdown/FilterDropdown";
 import ItemCard from "../ItemCard/ItemCard";
 import Pagination from "../Pagination/Pagination";
+import { useParams, useNavigate } from "react-router-dom";
 
 type Item = {
   item_id: number;
@@ -18,6 +18,8 @@ type Item = {
   created_at: string;
   category_name: string;
   img_urls?: string[];
+  user_id: number;
+  prof_pic_url?: string;
 };
 
 type FilterOptionKey =
@@ -28,6 +30,8 @@ type FilterOptionKey =
 
 export default function FavoritesPage() {
   const { t, i18n } = useTranslation();
+  const { lng } = useParams<{ lng: string }>();
+  const navigate = useNavigate();
 
   const [items, setItems] = useState<Item[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
@@ -35,12 +39,13 @@ export default function FavoritesPage() {
   // Kereső + szűrők + rendezés
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [selectedFilter, setSelectedFilter] =
-    useState<FilterOptionKey>("filters.newestUpload");
+  const [selectedFilter, setSelectedFilter] = useState<FilterOptionKey>(
+    "filters.newestUpload"
+  );
 
-  // Lapozás
+  // Lapozás – az Overview sűrűségéhez igazítva
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
 
   // Betöltés/hiba állapot
   const [loading, setLoading] = useState(true);
@@ -48,9 +53,13 @@ export default function FavoritesPage() {
 
   // locale a dátumhoz
   const locale =
-    i18n.language === "hu" ? "hu-HU" : i18n.language === "de" ? "de-DE" : "en-GB";
+    i18n.language === "hu"
+      ? "hu-HU"
+      : i18n.language === "de"
+        ? "de-DE"
+        : "en-GB";
 
-  // A11y: fókusz cél (skip linkhez)
+  // A11y
   const headingId = "favorites-heading";
   const listId = "favorites-list";
   const mainRef = useRef<HTMLElement | null>(null);
@@ -59,13 +68,15 @@ export default function FavoritesPage() {
   useEffect(() => {
     let alive = true;
     (async () => {
+      const API_URL = import.meta.env.VITE_API_BASE_URL;
+
       try {
         setLoading(true);
         setError(null);
 
-        const token = localStorage.getItem("accessToken") || "";
-        const res = await fetch("http://localhost:5000/api/favourites/items", {
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
+        const res = await fetch(`${API_URL}/api/favourites/items`, {
+          method: "GET",
+          credentials: "include",
         });
         if (!res.ok) throw new Error(`Favorites items failed (${res.status})`);
 
@@ -88,41 +99,7 @@ export default function FavoritesPage() {
     };
   }, []);
 
-  // Kedvenc váltás (optimista frissítés) – DELETE: /api/favorites/:itemId
-  const handleToggleFavorite = async (itemId: number, isNowFavorited: boolean) => {
-    setFavoriteIds((prev) =>
-      isNowFavorited ? [...prev, itemId] : prev.filter((id) => id !== itemId)
-    );
-
-    const token = localStorage.getItem("accessToken") || "";
-    try {
-      if (isNowFavorited) {
-        await fetch("http://localhost:5000/api/favorites", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-          body: JSON.stringify({ item_id: itemId }),
-        });
-      } else {
-        await fetch(`http://localhost:5000/api/favorites/${itemId}`, {
-          method: "DELETE",
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
-        });
-        // azonnal tűnjön el a listából
-        setItems((prev) => prev.filter((x) => x.item_id !== itemId));
-      }
-    } catch (e) {
-      // opcionális rollback
-      setFavoriteIds((prev) =>
-        !isNowFavorited ? [...prev, itemId] : prev.filter((id) => id !== itemId)
-      );
-      console.error("Favorite toggle failed", e);
-    }
-  };
-
-  // Keresés + kategória szűrés + rendezés (memózva)
+  // Keresés + kategória szűrés + rendezés
   const filteredAndSorted = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
 
@@ -142,13 +119,17 @@ export default function FavoritesPage() {
     const sorted = [...filtered].sort((a, b) => {
       switch (selectedFilter) {
         case "filters.oldestUpload":
-          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          return (
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          );
         case "filters.priceAsc":
           return a.price - b.price;
         case "filters.priceDesc":
           return b.price - a.price;
         default: // "filters.newestUpload"
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          return (
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
       }
     });
 
@@ -164,7 +145,7 @@ export default function FavoritesPage() {
   const start = (currentPage - 1) * itemsPerPage;
   const pageItems = filteredAndSorted.slice(start, start + itemsPerPage);
 
-  // Állapot nézetek (ARIA live)
+  // Állapot nézetek
   if (loading)
     return (
       <div className="p-4" role="status" aria-live="polite" aria-busy="true">
@@ -181,7 +162,7 @@ export default function FavoritesPage() {
 
   return (
     <>
-      {/* Skip link a fő tartalomhoz */}
+      {/* Skip link */}
       <a
         href={`#${headingId}`}
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-white focus:text-black focus:px-3 focus:py-2 focus:rounded"
@@ -202,14 +183,20 @@ export default function FavoritesPage() {
         </h1>
 
         {/* Kereső */}
-        <section aria-label={t("filters.placeholder", { defaultValue: "Mit keresel?" })}>
+        <section
+          aria-label={t("filters.placeholder", {
+            defaultValue: "Mit keresel?",
+          })}
+        >
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
         </section>
 
         {/* Szűrők és rendezés */}
         <section
           className="flex flex-col md:flex-row justify-between items-start gap-4"
-          aria-label={t("filters.section", { defaultValue: "Szűrők és rendezés" })}
+          aria-label={t("filters.section", {
+            defaultValue: "Szűrők és rendezés",
+          })}
         >
           <CategorySelector
             selected={selectedCategory}
@@ -221,7 +208,7 @@ export default function FavoritesPage() {
           />
         </section>
 
-        {/* Lista */}
+        {/* Lista — az Overview (Browsing) oldal elrendezése */}
         {pageItems.length === 0 ? (
           <div
             className="text-sm text-gray-500"
@@ -235,7 +222,7 @@ export default function FavoritesPage() {
             id={listId}
             role="list"
             aria-describedby={`${listId}-desc`}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+            className="flex flex-wrap justify-center gap-4 p-2 md:p-4 rounded-xl"
           >
             <span id={`${listId}-desc`} className="sr-only">
               {t("a11y.resultsList", { defaultValue: "Kedvencek listája." })}
@@ -250,7 +237,7 @@ export default function FavoritesPage() {
                 aria-label={`${item.title}, ${item.price} Ft`}
               >
                 <ItemCard
-                  category={item.category_name}
+                  category={t(`categories.${item.category_name}`)}
                   date={new Date(item.created_at).toLocaleDateString(locale)}
                   title={item.title}
                   description={item.description}
@@ -260,7 +247,9 @@ export default function FavoritesPage() {
                   imgUrl={item.img_urls?.[0] ?? undefined}
                   itemId={item.item_id}
                   isFavorited={favoriteIds.includes(item.item_id)}
-                  onToggleFavorite={handleToggleFavorite}
+                  sellerProfilePic={item.prof_pic_url}
+                  sellerId={item.user_id}
+                  onCardClick={() => navigate(`/${lng}/items/${item.item_id}`)}
                 />
               </div>
             ))}
@@ -271,7 +260,10 @@ export default function FavoritesPage() {
         <nav aria-label={t("a11y.pagination", { defaultValue: "Lapozás" })}>
           <Pagination
             currentPage={currentPage}
-            totalPages={Math.max(1, Math.ceil(filteredAndSorted.length / itemsPerPage))}
+            totalPages={Math.max(
+              1,
+              Math.ceil(filteredAndSorted.length / itemsPerPage)
+            )}
             onPageChange={(p) => {
               setCurrentPage(p);
               // a11y: fókusz vissza a main-re lapozás után

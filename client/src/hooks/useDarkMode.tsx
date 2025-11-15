@@ -14,6 +14,7 @@ export default function useDarkMode() {
                 ? document.documentElement.classList.add("dark")
                 : document.documentElement.classList.remove("dark");
             localStorage.setItem("theme", next ? "dark" : "light");
+
             return next;
         });
     }, []);

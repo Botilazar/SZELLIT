@@ -3,10 +3,10 @@ import { Router } from "express";
 const router = Router();
 
 router.post("/", (req, res) => {
-  res.clearCookie("refreshToken", {
+  res.clearCookie("accessToken", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: process.env.DEV_SECURE_COOKIE === "true",
+    sameSite: process.env.DEV_SAMESITE as "lax" | "strict" | "none",
   });
 
   res.status(200).json({ message: "Logged out" });

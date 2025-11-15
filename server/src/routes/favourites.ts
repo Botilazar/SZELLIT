@@ -6,7 +6,7 @@ import { verifyToken } from "./auth/verifyToken";
 const router = Router();
 
 // Minden végpont védett
-router.use(verifyToken);
+router.use(verifyToken as RequestHandler);
 
 // user_id a JWT payloadból
 function getUserId(req: Request): number {
@@ -50,7 +50,7 @@ const getItemsHandler: RequestHandler = async (req: Request, res: Response) => {
         i.created_at,
         c.name AS category_name,
         (COALESCE(NULLIF(TRIM(u.fname), ''), '') ||
-         CASE WHEN TRIM(COALESCE(u.lname, '')) <> '' THEN ' ' || TRIM(u.lname) ELSE '' END) AS seller_name,
+         CASE WHEN TRIM(COALESCE(u.lname, '')) <> '' THEN ' ' || TRIM(u.lname) ELSE '' END) AS seller_name,u.prof_pic_url,
         ''::text AS seller_city,
         (
           SELECT ARRAY_REMOVE(ARRAY_AGG(im.img_url ORDER BY im.place ASC), NULL)
@@ -102,7 +102,10 @@ const addHandler: RequestHandler = async (req: Request, res: Response) => {
 router.post("/", addHandler);
 
 // DELETE /api/favorites/:item_id  -> path param (ticket szerint)
-const deleteParamHandler: RequestHandler = async (req: Request, res: Response) => {
+const deleteParamHandler: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
   const item_id = Number(req.params.item_id);
   if (!item_id) {
     res.status(400).json({ error: "item_id param required" });
@@ -123,7 +126,10 @@ const deleteParamHandler: RequestHandler = async (req: Request, res: Response) =
 router.delete("/:item_id", deleteParamHandler);
 
 // (Opciós, visszafelé kompatibilitás) DELETE { item_id } body-ban – deprecált
-const deleteBodyHandler: RequestHandler = async (req: Request, res: Response) => {
+const deleteBodyHandler: RequestHandler = async (
+  req: Request,
+  res: Response
+) => {
   const { item_id } = req.body;
   if (!item_id) {
     res.status(400).json({ error: "item_id required" });
