@@ -35,3 +35,7 @@ dist-ssr
 /client/.env
 .env.docker
 supervisord.pid
+/server/uploads/item-pics/*
+!/server/uploads/item-pics/.gitkeep
+/server/uploads/items/*
+!/server/uploads/items/.gitkeep

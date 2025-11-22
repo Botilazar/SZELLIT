@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../../AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
+import { resolveImgUrl } from "../../utils/imageHelpers";
 
 interface ItemCardProps {
   category: string;
@@ -76,6 +77,11 @@ const ItemCard = ({
     }
   };
 
+  const avatarSrc = sellerProfilePic
+  ? resolveImgUrl(sellerProfilePic)
+  : "/default-avatar.png";
+
+
   return (
     <div
       className="szellit-navbar relative w-[340px] h-[480px] shadow-md rounded-2xl overflow-hidden
@@ -141,9 +147,9 @@ const ItemCard = ({
             <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shadow-sm">
               {sellerProfilePic ? (
                 <img
-                  src={`http://localhost:5000${sellerProfilePic}`}
+                  src={avatarSrc}
                   alt={sellerName}
-                  className="w-full h-full object-cover rounded-full"
+                  className="w-8 h-8 rounded-full object-cover"
                 />
               ) : (
                 <UserCircle2 className="w-6 h-6 text-gray-400" />
