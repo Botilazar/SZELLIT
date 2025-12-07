@@ -245,5 +245,37 @@
     "sending": "Senden...",
     "messageTooShort": "Die Nachricht muss mindestens 5 Zeichen lang sein.",
     "otherContact": "Oder kontaktieren Sie uns direkt per E-Mail: "
+  },
+  "newitemmodal": {
+  "popup": "Neue Anzeige",
+  "photolabel": "Bilder der Anzeige",
+  "drag": "Ziehen Sie Ihre Dateien hierher",
+  "dragarea": "Drag-Bereich",
+  "choosefiles": "Wählen Sie Ihre Dateien",
+  "rules": "Sie können maximal 10 Bilder hochladen",
+  "advertisementname": "Titel Ihrer Anzeige",
+  "titleplaceholder": "Radiergummi",
+  "category": "Kategorie",
+  "categoryplaceholder": "Buch",
+  "loadingcategories": "",
+  "price": "Preis",
+  "priceplaceholder": "999",
+  "description": "Beschreibung",
+  "optional": "Optional",
+  "descriptionplaceholder": "Kaum benutzt, guter Zustand",
+  "maxcharacter": "Maximale Zeichenanzahl",
+  "cancel": "Abbrechen",
+  "upload": "Hochladen",
+  "errors": {
+    "titleRequired": "Ein Titel ist erforderlich!",
+    "titleTooLong": "Der Titel ist zu lang!",
+    "categoryRequired": "Sie müssen eine Kategorie auswählen!",
+    "priceRequired": "Sie müssen einen Preis festlegen!",
+    "priceInvalid": "Ungültiger Preis!",
+    "descriptionTooLong": "Die Beschreibung ist zu lang, bitte kürzen!",
+    "tooManyImages": "Sie haben zu viele Bilder hinzugefügt!",
+    "imageType": "Ihr Bild hat ein falsches Format!",
+    "imageSize": "Ihr Bild hat die falsche Größe!"
   }
+}
 }

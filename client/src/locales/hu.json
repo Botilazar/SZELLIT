@@ -246,5 +246,37 @@
     "sending": "Küldés...",
     "messageTooShort": "Az üzenetnek legalább 5 karakter hosszúnak kell lennie.",
     "otherContact": "Vagy lépj velünk kapcsolatba közvetlenül e-mailben: "
+  },
+  "newitemmodal":{
+    "popup": "Új hirdetés létrehozása",
+    "photolabel": "Hirdetés fotói",
+    "drag": "Húzd ide kiválasztott fájlaidat",
+    "dragarea": "Behúzási mező",
+    "choosefiles": "Válaszd ki a fájlaid",
+    "rules": "Maximum 10 képet tölthetsz fel",
+    "advertisementname" : "A hirdetés címe",
+    "titleplaceholder": "Radír",
+    "category" : "Kategória",
+    "categoryplaceholder": "Könyv",
+    "loadingcategories" : "",
+    "price" : "Ár",
+    "priceplaceholder" : "999",
+    "description" : "Leírás",
+    "optional" : "Opcionális",
+    "descriptionplaceholder" : "Alig használt, jó állapotú.",
+    "maxcharacter" : "Maximális karakterszám",
+    "cancel" : "Mégse",
+    "upload" : "Feltöltés",
+    "errors" : {
+      "titleRequired" : "Kötelező címet megadni!",
+      "titleTooLong" : "Túl hosszú címet adtál meg!",
+      "categoryRequired" : "Szükséges kategóriát választanod!",
+      "priceRequired" : "Szükséges árat megadnod!",
+      "priceInvalid" : "Helytelen ár!",
+      "descriptionTooLong" : "Túl hosszú a leírás, kérlek rövidíts!",
+      "tooManyImages" : "Túl sok képet raktál a hirdetésedbe!",
+      "imageType" : "Rossz formátumú a képed!",
+      "imageSize" : "Nem jó a képed mérete!"
+    }
   }
 }

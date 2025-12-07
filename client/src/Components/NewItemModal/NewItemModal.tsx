@@ -88,21 +88,21 @@ const NewItemModal = ({ onClose, onSuccess }: Props) => {
   // ===== Validáció =====
   useEffect(() => {
     const next: typeof errors = {};
-    if (!title.trim()) next.title = t("errors.titleRequired");
-    else if (title.trim().length > 100) next.title = t("errors.titleTooLong");
+    if (!title.trim()) next.title = t("newitemmodal.errors.titleRequired");
+    else if (title.trim().length > 100) next.title = t("newitemmodal.errors.titleTooLong");
 
-    if (!category) next.category = t("errors.categoryRequired");
+    if (!category) next.category = t("newitemmodal.errors.categoryRequired");
 
     const priceNumber = Number(price);
-    if (price.trim() === "") next.price = t("errors.priceRequired");
+    if (price.trim() === "") next.price = t("newitemmodal.errors.priceRequired");
     else if (Number.isNaN(priceNumber) || priceNumber < 0)
-      next.price = t("errors.priceInvalid");
+      next.price = t("newitemmodal.errors.priceInvalid");
 
     if (description.trim().length > 1000)
-      next.description = t("errors.descriptionTooLong");
+      next.description = t("newitemmodal.errors.descriptionTooLong");
 
     if (images.length > MAX_IMAGES)
-      next.images = t("errors.tooManyImages", { count: MAX_IMAGES });
+      next.images = t("newitemmodal.errors.tooManyImages", { count: MAX_IMAGES });
 
     setErrors(next);
   }, [title, category, price, description, images, t]);
@@ -132,8 +132,8 @@ const NewItemModal = ({ onClose, onSuccess }: Props) => {
       if (current.length + next.length >= MAX_IMAGES) break;
 
       let error: string | undefined;
-      if (!ALLOWED_TYPES.includes(file.type)) error = t("errors.imageType");
-      else if (file.size > MAX_SIZE_BYTES) error = t("errors.imageSize");
+      if (!ALLOWED_TYPES.includes(file.type)) error = t("newitemmodal.errors.imageType");
+      else if (file.size > MAX_SIZE_BYTES) error = t("newitemmodal.errors.imageSize");
 
       const id = crypto.randomUUID();
       const previewUrl = URL.createObjectURL(file);
@@ -247,7 +247,7 @@ const NewItemModal = ({ onClose, onSuccess }: Props) => {
       const priceInt = Math.round(Number(price));
 
       const idx = categories.indexOf(category);
-      if (idx < 0) throw new Error(t("errors.categoryRequired") as string);
+      if (idx < 0) throw new Error(t("newitemmodal.errors.categoryRequired") as string);
       const category_id = idx + 1;
 
       const createRes = await fetch(`${API_URL}/api/items`, {
@@ -322,7 +322,7 @@ const NewItemModal = ({ onClose, onSuccess }: Props) => {
         aria-modal="true"
       >
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">{t("newItem.titlePage")}</h2>
+          <h2 className="text-xl font-semibold">{t("newitemmodal.popup")}</h2>
           <button
             onClick={onClose}
             className="new-item-close-btn"
@@ -336,16 +336,16 @@ const NewItemModal = ({ onClose, onSuccess }: Props) => {
           {/* Képek (előnézet/drag&drop) */}
           <div>
             <label className="block font-medium mb-2">
-              {t("newItem.photosLabel")}
+              {t("newitemmodal.photolabel")}
             </label>
             <div
               onDragOver={onDragOver}
               onDragLeave={onDragLeave}
               onDrop={onDrop}
               className={`new-item-dropzone ${dragOver ? "drag-over" : ""}`}
-              aria-label={t("newItem.dragArea")}
+              aria-label={t("newitemmodal.dragarea")}
             >
-              <p className="mb-3">{t("newItem.dragHelp")}</p>
+              <p className="mb-3">{t("newitemmodal.drag")}</p>
               <input
                 id="file-input"
                 type="file"
@@ -355,10 +355,10 @@ const NewItemModal = ({ onClose, onSuccess }: Props) => {
                 className="hidden"
               />
               <label htmlFor="file-input" className="new-item-file-button">
-                {t("newItem.chooseFiles")}
+                {t("newitemmodal.choosefiles")}
               </label>
               <p className="new-item-helper-text">
-                {t("newItem.fileRules", { max: MAX_IMAGES })}
+                {t("newitemmodal.rules", { max: MAX_IMAGES })}
               </p>
             </div>
             {errors.images && (
@@ -404,7 +404,7 @@ const NewItemModal = ({ onClose, onSuccess }: Props) => {
 
           <div>
             <label htmlFor="title" className="block font-medium mb-1">
-              {t("labels.title")} *
+              {t("newitemmodal.advertisementname")} *
             </label>
             <input
               id="title"
@@ -413,7 +413,7 @@ const NewItemModal = ({ onClose, onSuccess }: Props) => {
               maxLength={100}
               onChange={(e) => setTitle(e.target.value)}
               className="new-item-input"
-              placeholder={t("placeholders.title") ?? ""}
+              placeholder={t("newitemmodal.titleplaceholder") ?? ""}
               aria-invalid={!!errors.title}
             />
             {errors.title && (
@@ -423,7 +423,7 @@ const NewItemModal = ({ onClose, onSuccess }: Props) => {
 
           <div>
             <label htmlFor="category" className="block font-medium mb-1">
-              {t("labels.category")} *
+              {t("newitemmodal.category")} *
             </label>
             <select
               id="category"
@@ -435,11 +435,11 @@ const NewItemModal = ({ onClose, onSuccess }: Props) => {
             >
               {!loadingCategories && categories.length === 0 && (
                 <option value="">
-                  {t("placeholders.selectCategory")}
+                  {t("newitemmodal.categoryplaceholder")}
                 </option>
               )}
               {loadingCategories && (
-                <option value="">{t("labels.loading")}</option>
+                <option value="">{t("newitemmodal.loadingcategories")}</option>
               )}
               {!loadingCategories &&
                 categories.map((c) => (
@@ -455,7 +455,7 @@ const NewItemModal = ({ onClose, onSuccess }: Props) => {
 
           <div>
             <label htmlFor="price" className="block font-medium mb-1">
-              {t("labels.price")} *
+              {t("newitemmodal.price")} *
             </label>
             <input
               id="price"
@@ -466,7 +466,7 @@ const NewItemModal = ({ onClose, onSuccess }: Props) => {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               className="new-item-input"
-              placeholder={t("placeholders.price") ?? ""}
+              placeholder={t("newitemmodal.priceplaceholder") ?? ""}
               aria-invalid={!!errors.price}
             />
             {errors.price && (
@@ -476,7 +476,7 @@ const NewItemModal = ({ onClose, onSuccess }: Props) => {
 
           <div>
             <label htmlFor="description" className="block font-medium mb-1">
-              {t("labels.description")} ({t("labels.optional")})
+              {t("newitemmodal.description")} ({t("newitemmodal.optional")})
             </label>
             <textarea
               id="description"
@@ -484,11 +484,11 @@ const NewItemModal = ({ onClose, onSuccess }: Props) => {
               maxLength={1000}
               onChange={(e) => setDescription(e.target.value)}
               className="new-item-textarea"
-              placeholder={t("placeholders.description") ?? ""}
+              placeholder={t("newitemmodal.descriptionplaceholder") ?? ""}
               aria-invalid={!!errors.description}
             />
             <div className="flex justify-between text-xs mt-1">
-              <span>{t("labels.maxChars", { n: 1000 })}</span>
+              <span>{t("newitemmodal.maxcharacter", { n: 1000 })}</span>
               <span>{description.length}/1000</span>
             </div>
             {errors.description && (
@@ -502,14 +502,14 @@ const NewItemModal = ({ onClose, onSuccess }: Props) => {
               onClick={onClose}
               className="new-item-btn-cancel"
             >
-              {t("actions.cancel")}
+              {t("newitemmodal.cancel")}
             </button>
             <button
               type="submit"
               disabled={!isFormValid}
               className="new-item-btn-submit"
             >
-              {submitting ? t("actions.uploading") : t("actions.upload")}
+              {submitting ? t("newitemmodal.upload") : t("newitemmodal.upload")}
             </button>
           </div>
 
