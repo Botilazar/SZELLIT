@@ -186,11 +186,9 @@
     "listeddate": "Feltöltve:",
     "contactinfo": "Kapcsolat"
   },
-
   "terms": {
     "title": "Felhasználási feltételek",
     "intro": "Üdvözlünk a Szelliten! Ezek a feltételek határozzák meg az oldal használatának szabályait.",
-
     "section1": {
       "title": "Szolgáltatásaink használata",
       "text": "A fiók létrehozásával vagy a szolgáltatás használatával elfogadod ezeket a feltételeket."
@@ -207,16 +205,13 @@
       "title": "Feltételek módosítása",
       "text": "A feltételek időről időre frissülhetnek. A fontosabb változásokat itt jelezzük."
     },
-
     "lastUpdated": "Utoljára frissítve: {{year}}"
   },
   "privacy": {
     "title": "Adatvédelmi irányelvek",
     "intro": "Fontos számunkra az adatvédelem, ezért szeretnénk elmagyarázni, hogyan kezeljük az adataidat.",
-
     "dataCollection": "Adatgyűjtés",
     "dataUse": "Alapvető adatokat gyűjtünk, mint például e-mail cím, név és hirdetések, hogy a platform megfelelően működjön.",
-
     "dataStorage": "Adattárolás",
     "section3": {
       "list": {
@@ -225,12 +220,10 @@
         "deviceData": "Eszköz- és böngészőadatok (biztonsági és elemzési célokra)"
       }
     },
-
     "section4": {
       "title": "Jogaid és kapcsolatfelvétel",
       "text": "Bármikor kérheted adataid törlését vagy módosítását. Kérdés esetén keresd fel a kapcsolat oldalt."
     },
-
     "lastUpdated": "Utoljára frissítve: {{year}}"
   },
   "contact": {
@@ -246,5 +239,11 @@
     "sending": "Küldés...",
     "messageTooShort": "Az üzenetnek legalább 5 karakter hosszúnak kell lennie.",
     "otherContact": "Vagy lépj velünk kapcsolatba közvetlenül e-mailben: "
+  },
+  "deleteModal": {
+    "title": "Biztosan törlöd?",
+    "subtitle": "Ez a művelet nem visszavonható.",
+    "cancel": "Mégse",
+    "confirm": "Törlés"
   }
 }

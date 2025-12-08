@@ -2,6 +2,7 @@
 import { Router } from "express";
 import type { Request, Response, RequestHandler } from "express";
 import pool from "../db";
+import { verifyToken } from "./auth/verifyToken";
 
 const router = Router();
 
@@ -95,8 +96,60 @@ const getSingleItemHandler: RequestHandler = async (req: Request, res: Response)
   }
 };
 
+const deleteItemHandler: RequestHandler = async (req: Request, res: Response) => {
+  const { itemId } = req.params;
+
+  if (!itemId || isNaN(Number(itemId))) {
+    res.status(400).json({ error: "Valid itemId param required" });
+    return;
+  }
+
+  const userId = req.user?.user_id;
+  if (!userId) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
+  try {
+    // 1) Check owner
+    const check = await pool.query(
+      `SELECT user_id FROM "ITEM" WHERE item_id = $1`,
+      [itemId]
+    );
+
+    if (check.rows.length === 0) {
+      res.status(404).json({ error: "Item not found" });
+      return;
+    }
+
+    if (check.rows[0].user_id !== userId) {
+      res.status(403).json({ error: "Not authorized to delete this item" });
+      return;
+    }
+
+    // 2) Delete images
+    await pool.query(
+      `DELETE FROM "IMAGE" WHERE item_id = $1`,
+      [itemId]
+    );
+
+    // 3) Delete item
+    await pool.query(
+      `DELETE FROM "ITEM" WHERE item_id = $1`,
+      [itemId]
+    );
+
+    res.json({ message: "Item deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting item:", err);
+    res.status(500).json({ error: "Failed to delete item" });
+  }
+};
+
+
 // Routes
 router.get("/", getAllItemsHandler);
 router.get("/:itemId", getSingleItemHandler);
+router.delete("/:itemId", verifyToken, deleteItemHandler);
 
 export default router;

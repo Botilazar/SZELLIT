@@ -178,27 +178,34 @@ const ProfilePage = () => {
     if (!currentUser) return;
     try {
       const method = hasHonored ? "DELETE" : "POST";
+
       const res = await fetch(`${API_URL}/api/honors/${userId}`, {
         method,
-        headers: { "Content-Type": "application/json", credentials: "include" },
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
+
       if (!res.ok) throw new Error("Failed to update honor");
 
       const data = await res.json();
       setTotalHonors(data.totalHonors);
-
       setHasHonored(!hasHonored);
 
       const badgeRes = await fetch(`${API_URL}/api/honors/${userId}`, {
         credentials: "include",
       });
+
       const honorsData = await badgeRes.json();
       setCurrentBadge(honorsData.currentBadge);
       setBadges(honorsData.earnedBadges);
+
     } catch (err) {
       console.error(err);
     }
   };
+
 
   if (loading) return <LoadingAnimation />;
   if (unauthorized) return <PleaseLogin />;

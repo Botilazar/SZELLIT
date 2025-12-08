@@ -214,7 +214,6 @@
   "terms": {
     "title": "Terms and Conditions",
     "intro": "Welcome to Szellit! These terms outline the rules and guidelines for using our website.",
-
     "section1": {
       "title": "Use of Our Services",
       "text": "By creating an account or using our services, you agree to follow these terms."
@@ -231,16 +230,13 @@
       "title": "Changes to Terms",
       "text": "We may update these terms occasionally. Major updates will be announced here."
     },
-
     "lastUpdated": "Last updated: {{year}}"
   },
   "privacy": {
     "title": "Privacy Policy",
     "intro": "We value your privacy and want you to understand how we handle your information.",
-
     "dataCollection": "Data Collection",
     "dataUse": "We collect basic information such as your email, name, and listings to make the platform work properly.",
-
     "dataStorage": "Data Storage",
     "section3": {
       "list": {
@@ -249,12 +245,10 @@
         "deviceData": "Device and browser data (for security and analytics)"
       }
     },
-
     "section4": {
       "title": "Your Rights and Contact",
       "text": "You can request deletion or correction of your data at any time. If you have questions, reach out to us via the contact page."
     },
-
     "lastUpdated": "Last updated: {{year}}"
   },
   "contact": {
@@ -270,5 +264,11 @@
     "sending": "Sending...",
     "messageTooShort": "Message must be at least 5 characters.",
     "otherContact": "Or reach us directly via email: "
+  },
+  "deleteModal": {
+    "title": "Are you sure you want to delete it?",
+    "subtitle": "This action cannot be undone.",
+    "cancel": "Cancel",
+    "confirm": "Delete"
   }
 }

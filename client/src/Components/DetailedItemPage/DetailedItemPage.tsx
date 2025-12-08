@@ -5,6 +5,10 @@ import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 //import useDarkMode from "../../hooks/useDarkMode";
 import { useAuth } from "../../AuthContext";
 import PleaseLogin from "../Other/pleaseLogin";
+import ConfirmDeleteModal from "../ConfirmDeleteModal/ConfirmDeleteModal";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+
 
 
 interface Item {
@@ -32,7 +36,11 @@ const DetailedItemPage = () => {
   const { itemId, lng } = useParams<{ itemId: string; lng: string }>();
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const [openModal, setOpenModal] = useState(false);
+  const { t } = useTranslation();
 
+
+  const isDarkMode = localStorage.getItem("theme") == "dark" ? true : false;
 
   // 🚨 Guard route: if not logged in, block access
   if (!user) {
@@ -128,6 +136,31 @@ const DetailedItemPage = () => {
 
   const isFavorite = favoriteIds.includes(item.item_id);
 
+  const handleDeleteItem = async () => {
+
+    const API_URL = import.meta.env.VITE_API_BASE_URL;
+
+    try {
+      const res = await fetch(`${API_URL}/api/items/${item.item_id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        alert("Failed to delete: " + (err.error || res.status));
+        return;
+      }
+
+      toast.success(t("removesuccess"));
+      navigate(`/${lng}/items`); // vagy ahova szeretnéd átirányítani
+    } catch (err) {
+      console.error("Delete failed:", err);
+      toast.error(t("removeerror"));
+    }
+  };
+
+
   return (
     <div className="max-w-7xl mx-auto p-8 grid grid-cols-1 lg:grid-cols-3 gap-10">
       {/* Left side: images & description */}
@@ -207,15 +240,24 @@ const DetailedItemPage = () => {
                       className="absolute right-0 mt-2 w-48 rounded-xl shadow-lg overflow-hidden transition-all duration-200 animate-slide-down z-50 szellit-navbar ring-1 ring-gray-300 dark:ring-gray-700"
                     >
                       <button
-                        className="w-full text-left px-4 py-2 szellit-text hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                        className={`w-full text-left px-4 py-2 szellit-text transition-colors duration-200 ${isDarkMode ? "bg-gray-800 text-white hover:bg-gray-700" : "bg-white text-gray-900 hover:bg-gray-100"}`}
                       >
                         Edit
                       </button>
                       <button
-                        className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                        className={`w-full text-left px-4 py-2  transition-colors duration-200 ${isDarkMode ? "bg-gray-800 text-red-600 hover:bg-gray-700" : "bg-white text-red-600 hover:bg-gray-100"}`}
+                        onClick={() => setOpenModal(true)}
                       >
                         Remove
                       </button>
+                      <ConfirmDeleteModal
+                        open={openModal}
+                        onCancel={() => setOpenModal(false)}
+                        onConfirm={() => {
+                          handleDeleteItem();
+                          setOpenModal(false);
+                        }}
+                      />
                     </div>
                   )}
                 </div>

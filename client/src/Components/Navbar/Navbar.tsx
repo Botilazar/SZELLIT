@@ -69,7 +69,7 @@ const Navbar = () => {
       </nav>
     );
   }
-
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
   return (
     <nav className="w-full h-[93px] szellit-navbar shadow-md flex items-center justify-between px-6">
       {/* Logo */}
@@ -83,11 +83,13 @@ const Navbar = () => {
       {/* Actions */}
       <div className="flex items-center gap-4">
         {/* Sell Button */}
+
         <button
           className="flex items-center gap-2 px-6 py-3 rounded-full 
                bg-gradient-to-r from-blue-500 to-blue-600 
                text-white font-semibold shadow-md 
                transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95"
+
         >
           <FaWallet className="text-lg" />
           <span>{t("navbar.sell")}</span>
@@ -142,7 +144,7 @@ const Navbar = () => {
                   <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden text-white">
                     {user.prof_pic_url ? (
                       <img
-                        src={`http://localhost:5000${user.prof_pic_url}`}
+                        src={`${API_URL}/${user.prof_pic_url}`}
                         alt={`${user.fname} ${user.lname}`}
                         className="w-full h-full object-cover rounded-full"
                       />
@@ -181,11 +183,11 @@ const Navbar = () => {
                       },
                       ...(user?.role === "ADMIN"
                         ? [
-                            {
-                              label: "Admin Panel",
-                              action: () => goTo("/adminpanel"),
-                            },
-                          ]
+                          {
+                            label: "Admin Panel",
+                            action: () => goTo("/adminpanel"),
+                          },
+                        ]
                         : []),
                     ].map(({ label, action }) => (
                       <button
