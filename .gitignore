@@ -34,5 +34,12 @@ docker-compose.yml
 !/server/uploads/profile-pics/.gitkeep
 /server/.env.docker
 /server/Dockerfile
+/server/.env
+/client/.env
+.env.docker
+supervisord.pid
+/server/uploads/item-pics/*
+!/server/uploads/item-pics/.gitkeep
+/server/uploads/items/*
+!/server/uploads/items/.gitkeep
 client/Dockerfile
-

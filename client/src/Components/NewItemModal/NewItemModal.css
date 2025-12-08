@@ -1,0 +1,346 @@
+/* Háttér overlay a modal mögött */
+.new-item-overlay {
+  position: absolute;          /* elég, ha a szülő fixed */
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  /* NINCS z-index, így a modal (később a DOM-ban) felé kerül */
+}
+
+
+.dark .new-item-overlay {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* A modal kártya alap stílusa */
+.new-item-modal-card {
+  position: relative;
+  max-height: 90vh;
+  width: min(95vw, 900px);
+  overflow-y: auto;
+  border-radius: 1rem; /* 2xl */
+  padding: 1.5rem;
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  color: #111827; /* text-gray-900 */
+}
+
+@media (min-width: 768px) {
+  .new-item-modal-card {
+    padding: 2rem;
+  }
+}
+
+.dark .new-item-modal-card {
+  background-color: #111827; /* bg-gray-900 */
+  color: #f9fafb; /* text-gray-100 */
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Drag & drop zóna */
+.new-item-dropzone {
+  border-width: 2px;
+  border-style: dashed;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+  transition: border-color 150ms ease, background-color 150ms ease;
+  border-color: #d1d5db; /* gray-300 */
+}
+
+.dark .new-item-dropzone {
+  border-color: #4b5563; /* gray-600 */
+}
+
+.new-item-dropzone.drag-over {
+  border-color: #2563eb; /* blue-600/500 */
+  background-color: #eff6ff; /* blue-50 */
+}
+
+.dark .new-item-dropzone.drag-over {
+  border-color: #60a5fa; /* blue-400 */
+  background-color: rgba(30, 64, 175, 0.3); /* kb. blue-900/30 */
+}
+
+/* Input / select / textarea alap */
+.new-item-input,
+.new-item-select,
+.new-item-textarea {
+  width: 100%;
+  border-radius: 0.75rem;
+  border-width: 1px;
+  border-style: solid;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+  background-color: #ffffff;
+  border-color: #d1d5db;
+  color: #111827;
+}
+
+.new-item-input::placeholder,
+.new-item-textarea::placeholder {
+  opacity: 0.7;
+  color: #6b7280;
+}
+
+.dark .new-item-input,
+.dark .new-item-select,
+.dark .new-item-textarea {
+  background-color: #1f2933; /* bg-gray-800 */
+  border-color: #374151; /* gray-700 */
+  color: #f9fafb;
+}
+
+.dark .new-item-input::placeholder,
+.dark .new-item-textarea::placeholder {
+  color: #9ca3af;
+}
+
+/* Textarea magasabb legyen */
+.new-item-textarea {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+/* File-választó gomb a dropzónában */
+.new-item-file-button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: #111827;
+  color: #ffffff;
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+
+.new-item-file-button:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.dark .new-item-file-button {
+  background-color: #374151;
+  color: #f9fafb;
+}
+
+.dark .new-item-file-button:hover {
+  background-color: #4b5563;
+}
+
+/* Kis szürke figyelmeztető szöveg */
+.new-item-helper-text {
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+  color: #6b7280;
+}
+
+.dark .new-item-helper-text {
+  color: #9ca3af;
+}
+
+/* Thumbnail grid */
+.new-item-thumbs {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .new-item-thumbs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.new-item-thumb {
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.dark .new-item-thumb {
+  border-color: #374151;
+}
+
+.new-item-thumb img {
+  width: 100%;
+  height: 10rem;
+  object-fit: cover;
+}
+
+/* Thumbnail delete gomb (X) */
+.new-item-thumb-delete {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  display: grid;
+  place-items: center;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25);
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #1f2933;
+}
+
+.new-item-thumb-delete:hover {
+  background-color: #ffffff;
+}
+
+.dark .new-item-thumb-delete {
+  background-color: rgba(17, 24, 39, 0.9);
+  color: #f9fafb;
+}
+
+.dark .new-item-thumb-delete:hover {
+  background-color: #111827;
+}
+
+/* Thumbnail cover gomb (★) */
+.new-item-thumb-cover {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25);
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #1f2933;
+}
+
+.new-item-thumb-cover:hover {
+  background-color: #ffffff;
+}
+
+/* Ha cover aktív */
+.new-item-thumb-cover.is-cover {
+  background-color: #facc15; /* yellow-400 */
+  color: #111827;
+}
+
+.dark .new-item-thumb-cover {
+  background-color: rgba(17, 24, 39, 0.9);
+  color: #f9fafb;
+}
+
+.dark .new-item-thumb-cover:hover {
+  background-color: #111827;
+}
+
+/* Thumbnail hiba overlay */
+.new-item-thumb-error {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  background-color: rgba(220, 38, 38, 0.9);
+  color: #ffffff;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Gombok lent (Cancel / Submit) */
+.new-item-footer {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Cancel gomb */
+.new-item-btn-cancel {
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 150ms ease;
+}
+
+.new-item-btn-cancel:hover {
+  background-color: #f9fafb;
+}
+
+.dark .new-item-btn-cancel {
+  border-color: #374151;
+  color: #f9fafb;
+}
+
+.dark .new-item-btn-cancel:hover {
+  background-color: #1f2933;
+}
+
+/* Submit gomb */
+.new-item-btn-submit {
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  border: none;
+  background-color: #2563eb;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 150ms ease, opacity 150ms ease;
+}
+
+.new-item-btn-submit:hover {
+  background-color: #1d4ed8;
+}
+
+.new-item-btn-submit:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Close (X) gomb a headerben */
+.new-item-close-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #d1d5db;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: background-color 150ms ease;
+  color: #374151;
+}
+
+.new-item-close-btn:hover {
+  background-color: #f9fafb;
+}
+
+.dark .new-item-close-btn {
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+.dark .new-item-close-btn:hover {
+  background-color: #1f2933;
+}
+
+/* Kisebb hibaüzenetek */
+.new-item-error-text {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #b91c1c; /* red-700 */
+}
+
+

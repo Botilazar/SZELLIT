@@ -11,6 +11,7 @@ const ResetPasswordPage = () => {
 
   const [isCooldown, setIsCooldown] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(10); // 10s cooldown
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -20,12 +21,15 @@ const ResetPasswordPage = () => {
     }
 
     try {
-      const response = await fetch("/api/auth/request-reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", //not required here but for consistency
-        body: JSON.stringify({ email, lng }),
-      });
+      const response = await fetch(
+        `${API_URL}/api/auth/request-reset-password`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include", //not required here but for consistency
+          body: JSON.stringify({ email, lng }),
+        }
+      );
 
       const data = await response.json();
 

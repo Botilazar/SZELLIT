@@ -216,9 +216,9 @@ const deleteProfilePicHandler: RequestHandler = async (req, res) => {
         // Update DB
         const updatedUserResult = await pool.query(
             `UPDATE "USER"
-       SET prof_pic_url = NULL
-       WHERE user_id = $1
-       RETURNING user_id, fname, lname, email, prof_pic_url, neptun, role`,
+             SET prof_pic_url = NULL
+             WHERE user_id = $1
+             RETURNING user_id, fname, lname, email, prof_pic_url, neptun, role`,
             [id]
         );
 
@@ -248,12 +248,13 @@ const getUserItemsHandler: RequestHandler = async (req, res) => {
                 (COALESCE(NULLIF(TRIM(u.fname), ''), '') ||
                  CASE WHEN TRIM(COALESCE(u.lname, '')) <> '' THEN ' ' || TRIM(u.lname) ELSE '' END) AS seller_name,
                 'Budapest' AS city,
+                i.user_id,
+                u.prof_pic_url,
                 (
                     SELECT ARRAY_REMOVE(ARRAY_AGG(img.img_url ORDER BY img.place ASC), NULL)
                     FROM "IMAGE" img
                     WHERE img.item_id = i.item_id
-                ) AS image_url,
-                u.prof_pic_url
+                ) AS img_urls
             FROM "ITEM" i
             JOIN "CATEGORY" c ON i.category_id = c.category_id
             JOIN "USER" u ON u.user_id = i.user_id

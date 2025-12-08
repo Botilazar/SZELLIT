@@ -2,7 +2,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, MouseEvent, useRef } from "react";
 import { Heart, MoreHorizontal } from "lucide-react";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
-//import useDarkMode from "../../hooks/useDarkMode";
 import { useAuth } from "../../AuthContext";
 import PleaseLogin from "../Other/pleaseLogin";
 import ConfirmDeleteModal from "../ConfirmDeleteModal/ConfirmDeleteModal";
@@ -28,7 +27,6 @@ const DetailedItemPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-
   const [item, setItem] = useState<Item | null>(null);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
@@ -41,11 +39,11 @@ const DetailedItemPage = () => {
 
 
   const isDarkMode = localStorage.getItem("theme") == "dark" ? true : false;
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
 
-  // 🚨 Guard route: if not logged in, block access
+  // Ha nincs user, akkor nem engedjük a detailed view-t
   if (!user) {
-    return (
-      <PleaseLogin />)
+    return <PleaseLogin />;
   }
 
   useEffect(() => {
@@ -53,8 +51,6 @@ const DetailedItemPage = () => {
     const start = Date.now();
 
     (async () => {
-      const API_URL = import.meta.env.VITE_API_BASE_URL;
-
       try {
         const res = await fetch(`${API_URL}/api/items/${itemId}`);
         if (!res.ok) throw new Error("Item fetch failed");
@@ -86,9 +82,7 @@ const DetailedItemPage = () => {
     return () => {
       alive = false;
     };
-  }, [itemId]);
-
-
+  }, [itemId, API_URL]);
 
   // Detect click outside dropdown
   useEffect(() => {
@@ -101,10 +95,12 @@ const DetailedItemPage = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleFavoriteClick = async (e: MouseEvent<HTMLButtonElement>, itemId: number) => {
+  const handleFavoriteClick = async (
+    e: MouseEvent<HTMLButtonElement>,
+    itemId: number
+  ) => {
     e.stopPropagation();
 
-    const API_URL = import.meta.env.VITE_API_BASE_URL;
     const isFavorited = favoriteIds.includes(itemId);
     const method = isFavorited ? "DELETE" : "POST";
 
@@ -168,7 +164,7 @@ const DetailedItemPage = () => {
         {selectedImg && (
           <div className="szellit-navbar rounded-2xl overflow-hidden shadow-lg w-full h-[550px] flex items-center justify-center">
             <img
-              src={selectedImg}
+              src={resolveImgUrl(selectedImg) ?? ""}
               alt={item.title}
               className="w-full h-full object-contain"
             />
@@ -181,13 +177,14 @@ const DetailedItemPage = () => {
               <button
                 key={idx}
                 onClick={() => setSelectedImg(url)}
-                className={`rounded-lg overflow-hidden shadow-sm border-2 transition ${selectedImg === url
-                  ? "border-blue-500"
-                  : "border-transparent hover:border-gray-300"
-                  }`}
+                className={`rounded-lg overflow-hidden shadow-sm border-2 transition ${
+                  selectedImg === url
+                    ? "border-blue-500"
+                    : "border-transparent hover:border-gray-300"
+                }`}
               >
                 <img
-                  src={url}
+                  src={resolveImgUrl(url) ?? ""}
                   alt={`Thumbnail ${idx + 1}`}
                   className="h-20 w-28 object-cover"
                 />
@@ -217,11 +214,14 @@ const DetailedItemPage = () => {
               {/* Heart icon */}
               <button
                 onClick={(e) => handleFavoriteClick(e, item.item_id)}
-                className={`text-gray-500 hover:text-red-500 ${isFavorite ? "text-red-500" : ""
-                  }`}
+                className={`text-gray-500 hover:text-red-500 ${
+                  isFavorite ? "text-red-500" : ""
+                }`}
                 title="Add to favorites"
               >
-                <Heart className={`w-6 h-6 ${isFavorite ? "fill-red-500" : ""}`} />
+                <Heart
+                  className={`w-6 h-6 ${isFavorite ? "fill-red-500" : ""}`}
+                />
               </button>
 
               {/* Three dots dropdown */}
@@ -269,7 +269,10 @@ const DetailedItemPage = () => {
             <p>
               <span className="font-semibold">Seller:</span>{" "}
               <span
-                onClick={() => { navigate(`/${lng}/profiles/${item.user_id}`); console.log(`${lng}/profiles/${item.user_id}`) }}
+                onClick={() => {
+                  navigate(`/${lng}/profiles/${item.user_id}`);
+                  console.log(`${lng}/profiles/${item.user_id}`);
+                }}
                 className="hover:text-blue-500 cursor-pointer"
               >
                 {item.seller_name}
@@ -294,7 +297,10 @@ const DetailedItemPage = () => {
           <div className="space-y-2">
             <p>
               <span className="font-semibold">Email:</span>{" "}
-              <a href="mailto:placeholder@email.com" className="kkm-text hover:text-blue-500">
+              <a
+                href="mailto:placeholder@email.com"
+                className="kkm-text hover:text-blue-500"
+              >
                 placeholder@email.com
               </a>
             </p>
@@ -315,10 +321,6 @@ const DetailedItemPage = () => {
       </aside>
     </div>
   );
-
-
-
-
 };
 
 export default DetailedItemPage;

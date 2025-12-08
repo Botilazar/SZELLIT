@@ -14,6 +14,7 @@ const ConfirmResetPasswordPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     if (!token) {
@@ -40,12 +41,15 @@ const ConfirmResetPasswordPage = () => {
     }
 
     try {
-      const response = await fetch("/api/auth/confirm-reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ token, newPassword }),
-      });
+      const response = await fetch(
+        `${API_URL}/api/auth/confirm-reset-password`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ token, newPassword }),
+        }
+      );
 
       const data = await response.json();
 

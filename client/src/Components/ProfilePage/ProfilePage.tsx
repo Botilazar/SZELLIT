@@ -9,6 +9,8 @@ import PleaseLogin from "../Other/pleaseLogin";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../AuthContext";
 
+import { resolveImgUrl } from "../../utils/imageHelpers"; // 🆕 közös helper
+
 interface User {
   user_id: number;
   email: string;
@@ -26,8 +28,14 @@ interface Item {
   category_name: string;
   city: string;
   seller_name: string;
-  image_url?: string;
+  image_url?: string; // borítókép
   user_id: number;
+}
+
+// Nyers forma: lehet img_urls, lehet image_url, lehet mindkettő
+interface RawItem extends Omit<Item, "image_url"> {
+  img_urls?: string[] | string | null;
+  image_url?: string | null;
 }
 
 interface Badge {
@@ -60,8 +68,47 @@ const ProfilePage = () => {
   const [hasHonored, setHasHonored] = useState(false);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
 
-  //const numUserId = Number(userId);
   const isOwner = currentUser?.user_id.toString() === userId;
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
+
+  // -------- Helper: borítókép kiválasztása --------
+  const pickCoverFromRaw = (rawItem: RawItem): string | undefined => {
+    // 1) Ha img_urls tömb
+    if (Array.isArray(rawItem.img_urls)) {
+      if (rawItem.img_urls.length > 0) {
+        return rawItem.img_urls[0] || undefined;
+      }
+    }
+
+    // 2) Ha img_urls string
+    if (typeof rawItem.img_urls === "string") {
+      const first = rawItem.img_urls.split(",")[0].trim();
+      if (first) return first;
+    }
+
+    // 3) Ha nincs img_urls, de van image_url
+    if (typeof rawItem.image_url === "string") {
+      if (rawItem.image_url.includes(",")) {
+        const first = rawItem.image_url.split(",")[0].trim();
+        if (first) return first;
+      }
+      if (rawItem.image_url.trim().length > 0) {
+        return rawItem.image_url.trim();
+      }
+    }
+
+    return undefined;
+  };
+
+  const normalizeItems = (data: RawItem[]): Item[] => {
+    return data.map((it) => {
+      const cover = pickCoverFromRaw(it);
+      return {
+        ...it,
+        image_url: cover,
+      };
+    });
+  };
 
   useEffect(() => {
     let alive = true;
@@ -75,8 +122,6 @@ const ProfilePage = () => {
     };
 
     const fetchData = async () => {
-      const API_URL = import.meta.env.VITE_API_BASE_URL;
-
       try {
         setLoading(true);
         const resUser = await fetch(`${API_URL}/api/users/${userId}`, {
@@ -91,7 +136,10 @@ const ProfilePage = () => {
         });
         if (check401(resItems)) return;
         if (!resItems.ok) throw new Error(t("profile.fetchItemsError"));
-        const itemData = await resItems.json();
+        const raw = await resItems.json();
+
+        const rawItems: RawItem[] = Array.isArray(raw) ? raw : [];
+        const normalizedItems = normalizeItems(rawItems);
 
         const resHonors = await fetch(`${API_URL}/api/honors/${userId}`, {
           credentials: "include",
@@ -102,12 +150,9 @@ const ProfilePage = () => {
         let hasHonoredRes = false;
         if (!isOwner) {
           try {
-            const resCheck = await fetch(
-              `${API_URL}/api/honors/${userId}`, ///status`,
-              {
-                credentials: "include",
-              }
-            );
+            const resCheck = await fetch(`${API_URL}/api/honors/${userId}`, {
+              credentials: "include",
+            });
             if (resCheck.ok) {
               const honorsStatus = await resCheck.json();
               hasHonoredRes = honorsStatus.hasHonored || false;
@@ -118,7 +163,7 @@ const ProfilePage = () => {
         }
 
         if (alive) {
-          setHasHonored(hasHonoredRes); // ✅ make sure this is set after fetching
+          setHasHonored(hasHonoredRes);
         }
 
         let favData: number[] = [];
@@ -132,7 +177,7 @@ const ProfilePage = () => {
         if (alive) {
           if (Array.isArray(favData)) setFavoriteIds(favData as number[]);
           setUser(userData);
-          setItems(itemData);
+          setItems(normalizedItems);
           setTotalHonors(honorsData.totalHonors);
           setCurrentBadge(honorsData.currentBadge);
           setBadges(honorsData.earnedBadges);
@@ -170,11 +215,9 @@ const ProfilePage = () => {
     return () => {
       alive = false;
     };
-  }, [userId, t, isOwner]);
+  }, [userId, t, isOwner, currentUser, API_URL]);
 
   const handleHonorClick = async () => {
-    const API_URL = import.meta.env.VITE_API_BASE_URL;
-
     if (!currentUser) return;
     try {
       const method = hasHonored ? "DELETE" : "POST";
@@ -214,7 +257,9 @@ const ProfilePage = () => {
 
   return (
     <div
-      className={`max-w-7xl mx-auto p-8 space-y-10 ${isDarkMode ? "text-gray-200" : "text-gray-900"}`}
+      className={`max-w-7xl mx-auto p-8 space-y-10 ${
+        isDarkMode ? "text-gray-200" : "text-gray-900"
+      }`}
     >
       {/* Header Card */}
       <div className="flex flex-col md:flex-row items-center justify-between szellit-navbar p-6 rounded-2xl shadow-md gap-6">
@@ -223,7 +268,7 @@ const ProfilePage = () => {
           <div className="w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shadow-md">
             {user.prof_pic_url ? (
               <img
-                src={`http://localhost:5000${user.prof_pic_url}`}
+                src={resolveImgUrl(user.prof_pic_url)}
                 alt={`${user.fname} ${user.lname}`}
                 className="w-full h-full object-cover rounded-full"
               />
@@ -237,13 +282,11 @@ const ProfilePage = () => {
             </h1>
             <p className="text-gray-500">{user.email}</p>
 
-            {/* Star icon + total honors */}
             <div className="flex items-center gap-1 text-yellow-500 mt-1 font-semibold">
               <Star className="w-5 h-5" />
               <span>{totalHonors}</span>
             </div>
 
-            {/* Progress bar for owner */}
             {isOwner && honorProgress && (
               <div className="mt-2 w-56">
                 <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden shadow-inner">
@@ -265,7 +308,6 @@ const ProfilePage = () => {
 
         {/* Right: Badge + Honor Button */}
         <div className="flex flex-col items-center gap-3">
-          {/* Badges row */}
           {badges.length > 0 && (
             <div className="flex justify-center mt-4">
               <div className="flex gap-4 px-6 py-4 szellit-background rounded-3xl shadow-md">
@@ -279,7 +321,7 @@ const ProfilePage = () => {
                     <img
                       src={b.icon_url}
                       alt={b.name}
-                      className="w-16 h-16 cursor-pointer" // bigger badges
+                      className="w-16 h-16 cursor-pointer"
                       onClick={() => {
                         navigate(`/${lng}/badges`);
                       }}
@@ -295,18 +337,20 @@ const ProfilePage = () => {
             </div>
           )}
 
-          {/* Max Rank */}
           {isOwner && !honorProgress && (
             <span className="text-xs text-gray-500 mt-1 font-semibold">
               (MAX RANK)
             </span>
           )}
 
-          {/* Honor button */}
           {!isOwner && (
             <button
               className={`mt-2 flex items-center gap-2 px-4 py-2 rounded-full font-semibold shadow-lg
-                                ${hasHonored ? "bg-gray-400 text-gray-800" : "bg-yellow-400 text-gray-900 hover:bg-yellow-500"}`}
+                ${
+                  hasHonored
+                    ? "bg-gray-400 text-gray-800"
+                    : "bg-yellow-400 text-gray-900 hover:bg-yellow-500"
+                }`}
               onClick={handleHonorClick}
             >
               <Star className="w-5 h-5" /> {hasHonored ? "Honored" : "Honor"}
@@ -317,7 +361,9 @@ const ProfilePage = () => {
 
       {/* Contact Info */}
       <div className="szellit-navbar p-6 rounded-2xl shadow-md">
-        <h2 className="text-xl font-semibold mb-4">{t("profile.contact")}</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          {t("profile.contact")}
+        </h2>
         <div className="flex gap-6 items-center">
           <a
             href={`mailto:${user.email}`}
@@ -351,11 +397,14 @@ const ProfilePage = () => {
                 price={item.price}
                 location={item.city}
                 sellerName={item.seller_name}
-                imgUrl={item.image_url}
+                // 🆕 egységes helper használata
+                imgUrl={resolveImgUrl(item.image_url)}
                 itemId={item.item_id}
                 isFavorited={favoriteIds.includes(item.item_id)}
                 sellerProfilePic={user.prof_pic_url}
-                onCardClick={() => navigate(`/${lng}/items/${item.item_id}`)}
+                onCardClick={() =>
+                  navigate(`/${lng}/items/${item.item_id}`)
+                }
                 sellerId={item.user_id}
               />
             ))}

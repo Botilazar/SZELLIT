@@ -27,10 +27,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   //check cookie or session once on mount
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
+
   const refreshUser = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/me", {
+      const res = await fetch(`${API_URL}/api/auth/me`, {
         method: "GET",
         credentials: "include",
       });
@@ -59,7 +61,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = async () => {
     try {
-      await fetch("/api/auth/logout", {
+      await fetch(`${API_URL}/api/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
