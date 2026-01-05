@@ -7,8 +7,8 @@ import PleaseLogin from "../Other/pleaseLogin";
 import ConfirmDeleteModal from "../ConfirmDeleteModal/ConfirmDeleteModal";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-
-
+import { resolveImgUrl } from "../../utils/imageHelpers";
+import NewItemModal from "../NewItemModal/NewItemModal";
 
 interface Item {
   item_id: number;
@@ -36,13 +36,15 @@ const DetailedItemPage = () => {
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [openModal, setOpenModal] = useState(false);
   const { t } = useTranslation();
+  const [editOpen, setEditOpen] = useState(false);
+
 
 
   const isDarkMode = localStorage.getItem("theme") == "dark" ? true : false;
   const API_URL = import.meta.env.VITE_API_BASE_URL;
 
   // Ha nincs user, akkor nem engedjük a detailed view-t
-  if (!user) {
+  if (!user && !loading) {
     return <PleaseLogin />;
   }
 
@@ -177,11 +179,10 @@ const DetailedItemPage = () => {
               <button
                 key={idx}
                 onClick={() => setSelectedImg(url)}
-                className={`rounded-lg overflow-hidden shadow-sm border-2 transition ${
-                  selectedImg === url
-                    ? "border-blue-500"
-                    : "border-transparent hover:border-gray-300"
-                }`}
+                className={`rounded-lg overflow-hidden shadow-sm border-2 transition ${selectedImg === url
+                  ? "border-blue-500"
+                  : "border-transparent hover:border-gray-300"
+                  }`}
               >
                 <img
                   src={resolveImgUrl(url) ?? ""}
@@ -214,9 +215,8 @@ const DetailedItemPage = () => {
               {/* Heart icon */}
               <button
                 onClick={(e) => handleFavoriteClick(e, item.item_id)}
-                className={`text-gray-500 hover:text-red-500 ${
-                  isFavorite ? "text-red-500" : ""
-                }`}
+                className={`text-gray-500 hover:text-red-500 ${isFavorite ? "text-red-500" : ""
+                  }`}
                 title="Add to favorites"
               >
                 <Heart
@@ -241,6 +241,10 @@ const DetailedItemPage = () => {
                     >
                       <button
                         className={`w-full text-left px-4 py-2 szellit-text transition-colors duration-200 ${isDarkMode ? "bg-gray-800 text-white hover:bg-gray-700" : "bg-white text-gray-900 hover:bg-gray-100"}`}
+                        onClick={() => {
+                          setShowMenu(false);
+                          setEditOpen(true);
+                        }}
                       >
                         Edit
                       </button>
@@ -319,7 +323,19 @@ const DetailedItemPage = () => {
           </div>
         </div>
       </aside>
+      {editOpen && item && (
+        <NewItemModal
+          editItem={item}
+          onClose={() => setEditOpen(false)}
+          onSuccess={() => {
+            setEditOpen(false);
+            // Itt érdemes újratölteni az adatokat, hogy látszódjon a változás
+            window.location.reload();
+          }}
+        />
+      )}
     </div>
+
   );
 };
 

@@ -72,7 +72,7 @@ const Navbar = () => {
       </nav>
     );
   }
-  const API_URL = import.meta.env.VITE_API_BASE_URL;
+  //const API_URL = import.meta.env.VITE_API_BASE_URL;
   return (
     <>
       <nav className="w-full h-[93px] szellit-navbar shadow-md flex items-center justify-between px-6">
@@ -107,11 +107,10 @@ const Navbar = () => {
                 key={code}
                 onClick={() => changeLanguage(code as SupportedLang)}
                 className={`relative p-1 rounded-md transition-all duration-200 hover:scale-110
-          ${
-            lng === code
-              ? "scale-105"
-              : "grayscale opacity-70 hover:grayscale-0 hover:opacity-100"
-          }`}
+          ${lng === code
+                    ? "scale-105"
+                    : "grayscale opacity-70 hover:grayscale-0 hover:opacity-100"
+                  }`}
               >
                 <img
                   src={flag}
@@ -147,11 +146,10 @@ const Navbar = () => {
                   <button
                     onClick={() => setProfileOpen(!profileOpen)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium shadow-sm transition-all duration-300
-              ${
-                isDarkMode
-                  ? "bg-gray-800 text-white hover:bg-gray-700"
-                  : "bg-white text-gray-900 hover:bg-gray-100"
-              }`}
+              ${isDarkMode
+                        ? "bg-gray-800 text-white hover:bg-gray-700"
+                        : "bg-white text-gray-900 hover:bg-gray-100"
+                      }`}
                   >
                     {/* Initials avatar */}
                     <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden text-white">
@@ -179,11 +177,10 @@ const Navbar = () => {
                     <div
                       className={`absolute right-0 mt-2 w-48 rounded-xl shadow-lg ring-1 overflow-hidden
                 transition-all duration-200 animate-slide-down z-999
-                ${
-                  isDarkMode
-                    ? "bg-gray-800 text-gray-200 ring-white/20"
-                    : "bg-white text-gray-900 ring-black/10"
-                }`}
+                ${isDarkMode
+                          ? "bg-gray-800 text-gray-200 ring-white/20"
+                          : "bg-white text-gray-900 ring-black/10"
+                        }`}
                     >
                       {[
                         {
@@ -200,22 +197,21 @@ const Navbar = () => {
                         },
                         ...(user?.role === "ADMIN"
                           ? [
-                              {
-                                label: "Admin Panel",
-                                action: () => goTo("/adminpanel"),
-                              },
-                            ]
+                            {
+                              label: "Admin Panel",
+                              action: () => goTo("/adminpanel"),
+                            },
+                          ]
                           : []),
                       ].map(({ label, action }) => (
                         <button
                           key={label}
                           onClick={action}
                           className={`w-full text-left px-4 py-2 transition-colors duration-200
-                    ${
-                      isDarkMode
-                        ? "hover:bg-gray-700 text-gray-200"
-                        : "hover:bg-gray-100 text-gray-900"
-                    }`}
+                    ${isDarkMode
+                              ? "hover:bg-gray-700 text-gray-200"
+                              : "hover:bg-gray-100 text-gray-900"
+                            }`}
                         >
                           {label}
                         </button>
@@ -232,9 +228,8 @@ const Navbar = () => {
                           }
                         }}
                         className={`w-full text-left px-4 py-2 transition-colors duration-200 text-red-600
-                  ${
-                    isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
-                  }`}
+                  ${isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                          }`}
                       >
                         {t("navbar.logout")}
                       </button>
@@ -247,11 +242,10 @@ const Navbar = () => {
               <button
                 onClick={() => goTo("/login")}
                 className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium shadow-sm transition-all duration-300
-          ${
-            isDarkMode
-              ? "bg-gray-800 text-white hover:bg-gray-700"
-              : "bg-white text-gray-900 hover:bg-gray-100"
-          }`}
+          ${isDarkMode
+                    ? "bg-gray-800 text-white hover:bg-gray-700"
+                    : "bg-white text-gray-900 hover:bg-gray-100"
+                  }`}
               >
                 <FaUserCircle className="text-lg" />
                 {t("navbar.login")}
