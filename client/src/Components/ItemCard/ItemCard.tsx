@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../../AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
+import { resolveImgUrl } from "../../utils/imageHelpers";
 
 interface ItemCardProps {
   category: string;
@@ -47,6 +48,8 @@ const ItemCard = ({
     setIsFavorited(initialFavorited);
   }, [initialFavorited]);
 
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
+
   const handleFavoriteClick = async (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
 
@@ -56,7 +59,7 @@ const ItemCard = ({
     }
 
     const newState = !isFavorited;
-    const API_URL = import.meta.env.VITE_API_BASE_URL;
+
     const method = newState ? "POST" : "DELETE";
 
     try {
@@ -75,6 +78,11 @@ const ItemCard = ({
       toast.error("Failed to update favorites!");
     }
   };
+
+  const avatarSrc = sellerProfilePic
+  ? resolveImgUrl(sellerProfilePic)
+  : "/default-avatar.png";
+
 
   return (
     <div
@@ -141,9 +149,9 @@ const ItemCard = ({
             <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shadow-sm">
               {sellerProfilePic ? (
                 <img
-                  src={`http://localhost:5000${sellerProfilePic}`}
+                  src={avatarSrc}
                   alt={sellerName}
-                  className="w-full h-full object-cover rounded-full"
+                  className="w-8 h-8 rounded-full object-cover"
                 />
               ) : (
                 <UserCircle2 className="w-6 h-6 text-gray-400" />

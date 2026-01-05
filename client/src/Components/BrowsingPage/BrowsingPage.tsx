@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams, useNavigate } from "react-router-dom";
-//import { useAuth } from "../../AuthContext";
 
 import SearchBar from "../../Components/SearchBar/SearchBar";
 import CategorySelector from "../../Components/CategorySelector/CategorySelector";
 import FilterDropdown from "../../Components/FilterDropdown/FilterDropdown";
 import ItemCard from "../../Components/ItemCard/ItemCard";
 import Pagination from "../Pagination/Pagination";
-import LoadingAnimation from "../LoadingAnimation/LoadingAnimation"; // ✅ import
+import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
+
+import { resolveFirstFromArray } from "../../utils/imageHelpers";
 
 interface Item {
   item_id: number;
@@ -39,9 +40,8 @@ const BrowsingPage = () => {
   const initialLimit = parseInt(searchParams.get("limit") || "8", 10);
 
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedFilter, setSelectedFilter] = useState<FilterOptionKey>(
-    "filters.newestUpload"
-  );
+  const [selectedFilter, setSelectedFilter] =
+    useState<FilterOptionKey>("filters.newestUpload");
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [filteredItems, setFilteredItems] = useState<Item[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
@@ -89,10 +89,9 @@ const BrowsingPage = () => {
   useEffect(() => {
     let alive = true;
     const start = Date.now();
+    const API_URL = import.meta.env.VITE_API_BASE_URL;
 
     (async () => {
-      const API_URL = import.meta.env.VITE_API_BASE_URL;
-
       try {
         const itemsRes = await fetch(`${API_URL}/api/items`, {
           credentials: "include",
@@ -112,7 +111,6 @@ const BrowsingPage = () => {
           setAllItems(itemsData as Item[]);
           if (Array.isArray(favData)) setFavoriteIds(favData as number[]);
 
-          // ensure at least 500ms spinner time
           const elapsed = Date.now() - start;
           const remaining = 500 - elapsed;
           if (remaining > 0) setTimeout(() => setLoading(false), remaining);
@@ -171,7 +169,6 @@ const BrowsingPage = () => {
 
   const handleCardClick = (item: Item) => navigate(`${item.item_id}`);
 
-  // ✅ show loading animation
   if (loading) return <LoadingAnimation />;
 
   return (
@@ -205,7 +202,8 @@ const BrowsingPage = () => {
                 price={item.price}
                 location={item.seller_city}
                 sellerName={item.seller_name}
-                imgUrl={item.img_urls?.[0] ?? undefined}
+                // 🔴 ITT VOLT A HIBA: hiányzott az API_URL prefix
+                imgUrl={resolveFirstFromArray(item.img_urls)}
                 itemId={item.item_id}
                 isFavorited={favoriteIds.includes(item.item_id)}
                 sellerProfilePic={item.prof_pic_url}

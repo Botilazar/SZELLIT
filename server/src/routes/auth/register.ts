@@ -61,7 +61,7 @@ router.post("/", async (req: any, res: any) => {
     const newUser = result.rows[0];
 
     const jwtSecret = process.env.JWT_SECRET!;
-    const frontendURL = process.env.FRONTEND_URL!;
+    const frontendURL = process.env.CLIENT_URL!;
 
     const token = jwt.sign({ email }, jwtSecret, { expiresIn: "1d" });
     const verificationLink = `${frontendURL}/${lng}/verify-email?token=${token}`;

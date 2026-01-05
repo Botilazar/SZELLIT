@@ -189,7 +189,6 @@
   "terms": {
     "title": "Allgemeine Geschäftsbedingungen",
     "intro": "Willkommen bei Szellit! Diese Bedingungen beschreiben die Regeln für die Nutzung unserer Website.",
-
     "section1": {
       "title": "Nutzung unserer Dienste",
       "text": "Durch das Erstellen eines Kontos oder die Nutzung unserer Dienste stimmst du diesen Bedingungen zu."
@@ -206,16 +205,13 @@
       "title": "Änderungen der Bedingungen",
       "text": "Diese Bedingungen können gelegentlich aktualisiert werden. Größere Änderungen werden hier bekannt gegeben."
     },
-
     "lastUpdated": "Zuletzt aktualisiert: {{year}}"
   },
   "privacy": {
     "title": "Datenschutzrichtlinie",
     "intro": "Wir respektieren deine Privatsphäre und möchten erklären, wie wir mit deinen Daten umgehen.",
-
     "dataCollection": "Datenerhebung",
     "dataUse": "Wir erheben grundlegende Daten wie E-Mail, Name und Anzeigen, um die Plattform funktionsfähig zu machen.",
-
     "dataStorage": "Datenspeicherung",
     "section3": {
       "list": {
@@ -224,12 +220,10 @@
         "deviceData": "Geräte- und Browserdaten (zur Sicherheit und Analyse)"
       }
     },
-
     "section4": {
       "title": "Deine Rechte und Kontakt",
       "text": "Du kannst jederzeit die Löschung oder Korrektur deiner Daten anfordern. Bei Fragen erreichst du uns über die Kontaktseite."
     },
-
     "lastUpdated": "Zuletzt aktualisiert: {{year}}"
   },
   "contact": {
@@ -245,5 +239,43 @@
     "sending": "Senden...",
     "messageTooShort": "Die Nachricht muss mindestens 5 Zeichen lang sein.",
     "otherContact": "Oder kontaktieren Sie uns direkt per E-Mail: "
+  },
+  "deleteModal": {
+    "title": "Bist du sicher, dass du es löschen möchtest?",
+    "subtitle": "Diese Aktion kann nicht rückgängig gemacht werden.",
+    "cancel": "Abbrechen",
+    "confirm": "Löschen"
+  },
+  "newitemmodal": {
+  "popup": "Neue Anzeige",
+  "photolabel": "Bilder der Anzeige",
+  "drag": "Ziehen Sie Ihre Dateien hierher",
+  "dragarea": "Drag-Bereich",
+  "choosefiles": "Wählen Sie Ihre Dateien",
+  "rules": "Sie können maximal 10 Bilder hochladen",
+  "advertisementname": "Titel Ihrer Anzeige",
+  "titleplaceholder": "Radiergummi",
+  "category": "Kategorie",
+  "categoryplaceholder": "Buch",
+  "loadingcategories": "",
+  "price": "Preis",
+  "priceplaceholder": "999",
+  "description": "Beschreibung",
+  "optional": "Optional",
+  "descriptionplaceholder": "Kaum benutzt, guter Zustand",
+  "maxcharacter": "Maximale Zeichenanzahl",
+  "cancel": "Abbrechen",
+  "upload": "Hochladen",
+  "errors": {
+    "titleRequired": "Ein Titel ist erforderlich!",
+    "titleTooLong": "Der Titel ist zu lang!",
+    "categoryRequired": "Sie müssen eine Kategorie auswählen!",
+    "priceRequired": "Sie müssen einen Preis festlegen!",
+    "priceInvalid": "Ungültiger Preis!",
+    "descriptionTooLong": "Die Beschreibung ist zu lang, bitte kürzen!",
+    "tooManyImages": "Sie haben zu viele Bilder hinzugefügt!",
+    "imageType": "Ihr Bild hat ein falsches Format!",
+    "imageSize": "Ihr Bild hat die falsche Größe!"
   }
+}
 }
